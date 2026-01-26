@@ -1,0 +1,30 @@
+{# this file can be imported by other html files in '/templates' to define some basic stuff #}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {# anything between the {% %} is jinja2 code, allowing us to use dynamic HTML, CSS and JS #}
+    {# this block makes the title of the webpage whatever we choose (see index.html) #}
+    <title>{% block title %}My App{% endblock %}</title>
+
+    {# defines the same .css stylesheet for every file #}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    {# defines a navigation bar from where you can access different hyperlinks #}
+    <nav>
+        {# 'url_for()' searches for an 'app.route' decorator in your code or a location in your files #}
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('get_contacts') }}">Contacts</a>
+    </nav>
+
+    <main>
+        {# all content for the webpage is supplied here #}
+        {% block content %}{% endblock %}
+    </main>
+
+    {# the location of the javascript file is given for every html file #}
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

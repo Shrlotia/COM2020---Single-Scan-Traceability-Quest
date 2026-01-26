@@ -1,0 +1,8 @@
+{
+    "recommendations": [
+        "batisteo.vscode-django",
+        "maptz.camelcasenavigation",
+        "visualstudioexptteam.vscodeintellicode"
+    ],
+    "unwantedRecommendations": []
+}
