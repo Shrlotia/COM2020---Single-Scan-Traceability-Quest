@@ -1,8 +1,4 @@
 # contains all the python 'pip' libraries that someone running the program would need
-Flask==2.3.2
-Flask-SQLAlchemy==3.0.3
-Jinja2==3.1.2
-Werkzeug==2.3.4
-Flask-Cors==3.1.1
-requests==2.32.0
-python-dotenv==1.0.0
+flask==3.1.2
+flask_sqlalchemy==3.1.1
+flask_cors==6.0.2

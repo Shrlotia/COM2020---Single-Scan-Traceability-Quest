@@ -2,7 +2,8 @@
     "recommendations": [
         "batisteo.vscode-django",
         "maptz.camelcasenavigation",
-        "visualstudioexptteam.vscodeintellicode"
+        "visualstudioexptteam.vscodeintellicode",
+        "mathematic.vscode-pdf"
     ],
     "unwantedRecommendations": []
 }

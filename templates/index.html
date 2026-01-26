@@ -7,17 +7,4 @@
 {# you can add the main 'body' of your webpage #}
 {% block content %}
 <h1>Welcome</h1>
-
-{# forms are built-in structures and can be 'submitted' with a button #}
-<form method="POST">
-    <input type="text" name="username" placeholder="Username" required>
-    <button type="submit">Submit</button>
-</form>
-
-{# more jinja2 code that checks if the username is null, if not it dynamically adds a hello message #}
-{% if username %}
-<p>Hello, {{ username }}!</p>
-{% endif %}
-
-{# must 'end' every block of code from the 'base.html' file #}
 {% endblock %}
