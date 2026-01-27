@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Scan{% endblock %}
+
+{% block content %}
+<h1>Scan a Barcode</h1>
+
+<p>Click start to open your camera and scan a barcode.</p>
+
+<div>
+    <button id="start-scan" type="button">Start Camera</button>
+    <button id="stop-scan" type="button">Stop / Close</button>
+</div>
+
+<p id="status">Scanner is idle.</p>
+<p id="detected"></p>
+
+<div class="scanner">
+    <video id="preview" autoplay muted playsinline></video>
+    <div class="scan-overlay" aria-hidden="true">
+        <div class="scan-box"></div>
+    </div>
+</div>
+
+<script type="module" src="{{ url_for('static', filename='js/scan.js') }}"></script>
+{% endblock %}
