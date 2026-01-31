@@ -118,3 +118,4 @@ async function startScanning() {
 startButton?.addEventListener("click", startScanning);
 stopButton?.addEventListener("click", () => stopScanning(true));
 window.addEventListener("beforeunload", () => stopScanning(false));
+

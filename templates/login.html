@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+{% block custom_css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">{% endblock %}
+{% block custom_js%}<script type="module" src="{{ url_for('static', filename='js/login.js') }}" defer></script>{% endblock %}
+
+{% block content %}
+<div class="body-element">
+    <h1>Login</h1>
+
+    <p>Enter your username and password below</p>
+
+    <form id="login-register-form" action="{{ url_for('login') }}" method="POST">
+        <input id="username" name="username" placeholder="Username" required>
+        <input id="password" name="password" type="password" placeholder="Password" required>
+        <label><input id="is-verifier" name="is_verifier" type="checkbox">I am a product owner/verifier</label>
+        <button type="submit" name="action" value="login">Login</button>
+        <button type="submit" name="action" value="register">Register</button>
+    </form>
+</div>
+{% endblock %}

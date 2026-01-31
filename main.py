@@ -2,8 +2,117 @@
 import json
 from pathlib import Path
 
-from flask import render_template
+from flask import render_template, request, redirect, url_for, flash
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from config import app, db
+from models import User
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = "login"
+
+@login_manager.user_loader
+def load_user(user_id):
+    return db.session.get(User, int(user_id))
+
+# connects to the index (/) of the web app and shows the default view
+@app.route("/", methods=["GET"])
+def home():
+    return render_template("home.html")
+
+# basic scan page
+@app.route("/scan", methods=["GET", "POST"])
+def scan():
+    if request.method == "GET":
+        return render_template("scan.html")
+    elif request.method == "POST":
+        barcode = request.form.get("barcode", "").strip()
+        
+        if not barcode:
+            return redirect(url_for("scan"))
+
+        return redirect(url_for("product", barcode=barcode))
+
+# simple product page that receives the detected barcode
+@app.route("/product/<barcode>", methods=["GET"])
+def product(barcode: str):
+    normalized = normalize_barcode(barcode)
+    product_name = lookup_product_name(normalized)
+    return render_template("product.html", barcode=normalized, product_name=product_name)
+
+# basic scan page
+@app.route("/saved_products", methods=["GET"])
+def saved():
+    return render_template("saved.html")
+
+# basic scan page
+@app.route("/trace_quest", methods=["GET"])
+def tracequest():
+    return render_template("tracequest.html")
+
+# basic scan page
+@app.route("/timeline", methods=["GET"])
+def timeline():
+    return render_template("timeline.html")
+
+
+@app.route("/profile", methods=["GET"])
+@login_required
+def profile():
+    return render_template("profile.html")
+
+# basic scan page
+@app.route("/add_product", methods=["GET"])
+@login_required
+def add():
+    return render_template("add.html")
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "GET":
+        return render_template("login.html")
+    elif request.method == "POST":
+        action = request.form.get("action")
+        username = request.form.get("username")
+        password = request.form.get("password")
+        
+        if not username or not password:
+            flash("Username and password required", "error")
+            return redirect(url_for("login"))
+        
+        user = User.query.filter_by(username=username).first()
+            
+        if action == "login":
+            if not user or not user.check_password(password):
+                flash("Invalid username or password", "error")
+                return redirect(url_for("login"))
+            else:
+                login_user(user)
+                return redirect(url_for("home"))
+            
+        if action == "register":
+            role = "verifier" if (request.form.get("is_verifier") is not None) else "consumer"
+            
+            if user:
+                flash("Username already exists: Pick another", "error")
+                return redirect(url_for("login"))
+            else:
+                new_user = User(username=username, role=role)
+                new_user.set_password(password)
+                
+                db.session.add(new_user)
+                db.session.commit()
+                
+                login_user(new_user)
+                flash("Account successfully created", "success")
+                return redirect(url_for("home"))
+            
+@app.route("/logout", methods=["GET"])
+@login_required
+def logout():
+    logout_user()  # Clears the session
+    flash("You have been logged out", "success")
+    return redirect(url_for("home"))  # Or wherever you want users to go
 
 # local data file containing barcodes and product names
 OFF_DATA_PATH = Path(__file__).with_name("SimplifiedOFFData.jsonl")
@@ -12,14 +121,12 @@ OFF_DATA_PATH = Path(__file__).with_name("SimplifiedOFFData.jsonl")
 PRODUCT_INDEX: dict[str, str] = {}
 PRODUCT_INDEX_READY = False
 
-
 def normalize_barcode(value: str) -> str:
     digits = "".join(ch for ch in str(value) if ch.isdigit())
     if len(digits) == 12:
         # UPC-A is often represented as EAN-13 with a leading 0.
         return f"0{digits}"
     return digits or str(value)
-
 
 def ensure_product_index() -> None:
     global PRODUCT_INDEX_READY
@@ -44,7 +151,6 @@ def ensure_product_index() -> None:
 
     PRODUCT_INDEX_READY = True
 
-
 def lookup_product_name(barcode: str) -> str | None:
     ensure_product_index()
     normalized = normalize_barcode(barcode)
@@ -55,28 +161,6 @@ def lookup_product_name(barcode: str) -> str | None:
         product_name = PRODUCT_INDEX.get(normalized[1:])
 
     return product_name
-
-
-# connects to the index (/) of the web app and shows the default view
-@app.route("/", methods=["GET"])
-def index():
-    return render_template("index.html")
-
-# basic scan page
-@app.route("/scan", methods=["GET"])
-def scan():
-    return render_template("scan.html")
-
-# simple product page that receives the detected barcode
-@app.route("/product/<barcode>", methods=["GET"])
-def product(barcode: str):
-    normalized = normalize_barcode(barcode)
-    product_name = lookup_product_name(normalized)
-    return render_template(
-        "product.html",
-        barcode=normalized,
-        product_name=product_name,
-    )
 
 # when this file is ran, the DB is created and application is started
 if __name__ == "__main__":  
