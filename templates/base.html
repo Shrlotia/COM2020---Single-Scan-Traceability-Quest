@@ -42,7 +42,7 @@
                 <a href="{{ url_for('timeline')}}">Traceability Timeline</a>
                 <a href="{{ url_for('tracequest') }}">Play Trace Quest</a>
                 {% if current_user.is_authenticated %}
-                    {% if current_user.is_verifier %}
+                    {% if current_user.is_verifier or current_user.is_admin %}
                         <a href="{{ url_for('add') }}">Add Products</a>
                     {% endif %}
                 {% endif %}
@@ -53,7 +53,7 @@
 
             <div class="sidebar-bottom">
                 {% if current_user.is_authenticated %}
-                    {% if current_user.is_admin %}
+                    {% if current_user.is_admin or current_user.is_verifier %}
                         <a href="{{ url_for('admin') }}">Admin</a>
                     {% endif %}
                     <a href="{{ url_for('profile') }}">Profile</a>

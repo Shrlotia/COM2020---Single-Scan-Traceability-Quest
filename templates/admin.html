@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}Profile{% endblock %}
+{% block custom_css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">{% endblock %}
+{% block custom_js%}<script type="module" src="{{ url_for('static', filename='js/admin.js') }}" defer></script>{% endblock %}
+
+{% block content %}
+<div class="body-element">
+    <h1>Admin Portal</h1>
+</div>
+{% endblock %}

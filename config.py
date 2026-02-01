@@ -8,14 +8,22 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-# THE CODE BELOW defines the secret (encryption key) for the web app (its thanks to this that authentication can be secure)
-# furthermore, by running the second line in the terminal, that value is stored as an environment variable, taking it out
-# of the program and making the encryption secure (this will only be used once the app is fully finished and deployed) 
+# THE CODE BELOW defines the 'secret' (encryption key) for the web app (its thanks to this that authentication can be secure)
+
+# os.environment.get(...) - stores the app secret in an environment variable, outside of the program (only after the app is finished) 
+# os.urandom(32) - makes the secret random everytime the app is run; useful when you want users to be logged out on restart
+# "temp" - makes the secret the same everytime and users can only be logged out when the browser is closed
+
+# UN-COMMENT one of the three lines below if you need to test something
 
 # app.secret_key = os.environ.get("SECRET_KEY", "backup")
-# export SECRET_KEY="x"
+app.secret_key = os.urandom(32)
+# app.secret_key = "temp"
 
-app.secret_key = "temp"
+# by running the code below in the terminal, the value of 'x' is stored as an environment variable, taking it out
+# of the program and making the encryption secure (this will only be used once the app is fully finished and deployed) 
+
+# export SECRET_KEY="x"
 
 # sets the name and location of the DB
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///trace_quest.db"

@@ -22,6 +22,7 @@ def home():
 
 # basic scan page
 @app.route("/scan", methods=["GET", "POST"])
+@login_required
 def scan():
     if request.method == "GET":
         return render_template("scan.html")
@@ -35,26 +36,23 @@ def scan():
 
 # simple product page that receives the detected barcode
 @app.route("/product/<barcode>", methods=["GET"])
+@login_required
 def product(barcode: str):
     normalized = normalize_barcode(barcode)
     product_name = lookup_product_name(normalized)
     return render_template("product.html", barcode=normalized, product_name=product_name)
 
 # basic scan page
-@app.route("/saved_products", methods=["GET"])
-def saved():
-    return render_template("saved.html")
-
-# basic scan page
-@app.route("/trace_quest", methods=["GET"])
-def tracequest():
-    return render_template("tracequest.html")
-
-# basic scan page
 @app.route("/timeline", methods=["GET"])
+@login_required
 def timeline():
     return render_template("timeline.html")
 
+# basic scan page
+@app.route("/trace_quest", methods=["GET"])
+@login_required
+def tracequest():
+    return render_template("tracequest.html")
 
 @app.route("/profile", methods=["GET"])
 @login_required
@@ -110,9 +108,14 @@ def login():
 @app.route("/logout", methods=["GET"])
 @login_required
 def logout():
-    logout_user()  # Clears the session
+    logout_user()  
     flash("You have been logged out", "success")
-    return redirect(url_for("home"))  # Or wherever you want users to go
+    return redirect(url_for("home"))
+
+@app.route("/admin", methods=["GET"])
+@login_required
+def admin():
+    return render_template("admin.html")
 
 # local data file containing barcodes and product names
 OFF_DATA_PATH = Path(__file__).with_name("SimplifiedOFFData.jsonl")
@@ -168,4 +171,5 @@ if __name__ == "__main__":
         db.create_all()
         
     # Listen on all interfaces so the app is reachable from your phone on the same Wi-Fi.
+    # does not work on mobile no matter what I try, might have to fix later
     app.run(debug=True, host="0.0.0.0", port=5000)
