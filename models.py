@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
+# table for all the products in the DB - the same ones that can be viewed in the Timeline and Trace Quest
 class Product(db.Model):
     __tablename__ = "products"
     
@@ -14,9 +15,11 @@ class Product(db.Model):
     description = db.Column(db.String(512), nullable=False)
     image = db.Column(db.String(256), nullable=True)
     
+    # '__repr__' methods can be used to easily check/test table records
     def __repr__(self):
         return f"Barcode: {self.barcode} - Name: {self.name}"
     
+# table for every possible stage in the product 'creation' process (i.e.: raw materials, processing, etc.)
 class Stage(db.Model):
     __tablename__ = "stages"
     
@@ -29,6 +32,9 @@ class Stage(db.Model):
     end_date = db.Column(db.Date, nullable=True)
     description = db.Column(db.String(256), nullable=False)
     
+    # in the SQLAlchemy module, you can create 'backrefs' that create a 2-way connection between a table with a foreign key and the table
+    # which the foreign key is pointing to. This is purely inside of python and does NOT affect the SQL at all
+    # essentially, you can access the 'stage' from the 'product' and vice versa with one line of code
     product = db.relationship("Product", backref="stages")
     
     def __repr__(self):
