@@ -7,6 +7,24 @@
 {% block content %}
 <div class="body-element">
     <h1>Add Products</h1>
+    <h2>Enter a Barcode</h2>
+
+    <p>Type in a valid barcode (including leading zeroes) to start</p>
+
+    <form id="barcode-form">
+        <input id="barcode" name="barcode" placeholder="Barcode" required>
+        <button type="submit">Next</button>
+    </form>
+
+    <div id="details-form" hidden>
+        <form id="productDetailsForm">
+            <input id="name" name="name" placeholder="Product Name" required>
+            <input id="category" name="category" placeholder="Product Category" required>
+            <input id="brand" name="brand" placeholder="Product Brand" required>
+            <input id="Description" name="Description" placeholder="Product Description" required>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
 </div>
 <div class="body-element">
     <h1>Update Products</h1>

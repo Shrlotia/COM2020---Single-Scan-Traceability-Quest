@@ -9,6 +9,8 @@ from auth_decorators import roles_required
 from config import app, db
 from models import User
 
+import add_product
+
 # creates a new login manager for the current application where the default login view (if you aren't logged in) is 'login.html'
 login_manager = LoginManager()
 login_manager.init_app(app)
