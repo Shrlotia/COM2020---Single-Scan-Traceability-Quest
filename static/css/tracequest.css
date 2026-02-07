@@ -1,0 +1,22 @@
+.body-element{
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
+}
+.left_section{
+    height: 75vh;
+    display: grid;
+    grid-template-rows: 100px 1fr;
+}
+.right_section{
+    height: 100vh;
+    display: grid;
+    grid-template-rows: 100px 1fr;
+}
+
+.bottom_left{
+    padding: 5px 5px 5px 5px;
+    display: grid;
+    grid-template-rows: auto;
+}
