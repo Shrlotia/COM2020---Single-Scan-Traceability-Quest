@@ -1,22 +1,25 @@
 .body-element{
     display: grid;
-    grid-template-columns: 100px 1fr;
+    grid-template-columns: 4fr 3fr;
     margin: 0 0 0 0;
-    padding: 0 0 0 0;
+    padding: 0px 0px 0px 0px;
 }
-.left_section{
-    height: 75vh;
-    display: grid;
-    grid-template-rows: 100px 1fr;
+.play_button{
+    width:180px;
+    height:120px;
+    font-size: 28px;
 }
-.right_section{
-    height: 100vh;
-    display: grid;
-    grid-template-rows: 100px 1fr;
+.left_section {
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    gap: 12px; 
 }
-
-.bottom_left{
-    padding: 5px 5px 5px 5px;
-    display: grid;
-    grid-template-rows: auto;
+.difficulty_button{
+    width: 140px;
+    height: 100px;
+    font-size: 28px;
+}
+.cancel_button{
+    align-self: flex-start;
 }
