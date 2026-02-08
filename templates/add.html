@@ -15,6 +15,21 @@
         <input id="barcode" name="barcode" placeholder="Barcode" required>
         <button type="submit">Next</button>
     </form>
+    <p id="error" class="error-message" hidden></p>
+
+    <h2>Or scan barcode with camera</h2>
+    <div>
+        <button id="start-scan" type="button">Start Camera</button>
+        <button id="stop-scan" type="button">Stop / Close</button>
+    </div>
+    <p id="status">Scanner is idle.</p>
+    <p id="detected"></p>
+    <div class="scanner">
+        <video id="preview" autoplay muted playsinline></video>
+        <div class="scan-overlay" aria-hidden="true">
+            <div class="scan-box"></div>
+        </div>
+    </div>
 
     <div id="details-form" hidden>
         <form id="productDetailsForm">
@@ -25,8 +40,5 @@
             <button type="submit">Submit</button>
         </form>
     </div>
-</div>
-<div class="body-element">
-    <h1>Update Products</h1>
 </div>
 {% endblock %}

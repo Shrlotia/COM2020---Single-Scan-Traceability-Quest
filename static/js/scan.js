@@ -5,6 +5,8 @@ const stopButton = document.getElementById("stop-scan");
 const video = document.getElementById("preview");
 const statusText = document.getElementById("status");
 const detectedText = document.getElementById("detected");
+const barcodeInput = document.getElementById("barcode");
+const barcodeForm = document.getElementById("barcode-form");
 
 const reader = new BrowserMultiFormatReader();
 
@@ -82,10 +84,19 @@ async function startScanning() {
             if (detectedText) {
                 detectedText.textContent = `Detected: ${barcode}`;
             }
-            statusText.textContent = "Detected. Opening product page...";
+            statusText.textContent = "Detected. Submitting barcode...";
 
             stopScanning(false);
-            window.location.href = `/product/${encodeURIComponent(barcode)}`;
+            if (barcodeInput) {
+                barcodeInput.value = barcode;
+            }
+            if (barcodeForm) {
+                if (typeof barcodeForm.requestSubmit === "function") {
+                    barcodeForm.requestSubmit();
+                } else {
+                    barcodeForm.submit();
+                }
+            }
             return;
         }
 
@@ -118,4 +129,3 @@ async function startScanning() {
 startButton?.addEventListener("click", startScanning);
 stopButton?.addEventListener("click", () => stopScanning(true));
 window.addEventListener("beforeunload", () => stopScanning(false));
-
