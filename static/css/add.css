@@ -34,3 +34,12 @@
     border-radius: 10px;
     box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.35);
 }
+
+.captured-image {
+    margin-top: 10px;
+    width: 100%;
+    max-width: 320px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    display: block;
+}

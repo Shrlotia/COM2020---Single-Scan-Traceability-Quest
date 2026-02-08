@@ -33,6 +33,19 @@
 
     <div id="details-form" hidden>
         <form id="productDetailsForm">
+            <input id="image_url" name="image_url" type="hidden">
+
+            <h3>Take Product Photo</h3>
+            <div>
+                <button id="start-photo-camera" type="button">Open Photo Camera</button>
+                <button id="capture-photo" type="button">Capture Photo</button>
+                <button id="stop-photo-camera" type="button">Close Photo Camera</button>
+            </div>
+            <p id="image-status">No photo uploaded yet.</p>
+            <div class="scanner">
+                <video id="photo-preview" autoplay muted playsinline></video>
+            </div>
+            <img id="captured-image" class="captured-image" alt="Captured product photo" hidden>
             <input id="name" name="name" placeholder="Product Name" required>
             <input id="category" name="category" placeholder="Product Category" required>
             <input id="brand" name="brand" placeholder="Product Brand" required>

@@ -134,6 +134,105 @@
     text-decoration: underline;
 }
 
+.editor-panel {
+    margin-top: 20px;
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    padding: 16px;
+}
+
+.editor-panel h2 {
+    margin-top: 0;
+    margin-bottom: 12px;
+}
+
+.editor-form {
+    display: grid;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.editor-form input,
+.editor-form textarea {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px;
+    font: inherit;
+}
+
+.image-edit-tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.image-status {
+    margin: 4px 0 0;
+    color: var(--text-muted);
+}
+
+.primary-button,
+.danger-button,
+.secondary-button {
+    border: 0;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.primary-button {
+    background: var(--accent);
+    color: #ffffff;
+}
+
+.primary-button:hover {
+    background: var(--accent-hover);
+}
+
+.secondary-button {
+    background: #e9eef6;
+    color: #1b1f24;
+}
+
+.secondary-button:hover {
+    background: #d9e2f0;
+}
+
+.danger-button {
+    background: #c62828;
+    color: #ffffff;
+}
+
+.danger-button:hover {
+    background: #a21d1d;
+}
+
+.scanner {
+    position: relative;
+    margin-top: 10px;
+    width: 100%;
+    max-width: 420px;
+}
+
+.scanner video {
+    display: block;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background: #000;
+}
+
+.captured-image {
+    margin-top: 10px;
+    width: 100%;
+    max-width: 320px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    display: block;
+}
+
 @media (max-width: 860px) {
     .product-card {
         grid-template-columns: 1fr;
