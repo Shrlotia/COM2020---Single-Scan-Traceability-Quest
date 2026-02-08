@@ -7,7 +7,7 @@ from flask import render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from auth_decorators import roles_required
 from config import app, db
-from models import User
+from models import User, Product
 
 import add_product
 
@@ -44,17 +44,25 @@ def scan():
         if not barcode:
             return redirect(url_for("scan"))
 
-        # if the barcode is valid, we send it the the '/product' endpoint to be displayed 
-        return redirect(url_for("product", barcode=barcode))
+        # if the barcode is valid, we send it the the '/product/<barcode>' endpoint to be displayed
+        return redirect(url_for("product_detail", barcode=barcode))
 
-# simple product page that receives the detected barcode
+# product list page that shows all products in the DB
+@app.route("/product", methods=["GET"])
+@login_required
+def product():
+    products = Product.query.order_by(Product.name.asc()).all()
+    return render_template("product.html", products=products)
+
+# simple product details page that receives the detected barcode
 @app.route("/product/<barcode>", methods=["GET"])
 @login_required
-def product(barcode: str):
-    # normalises barcode to standard UK encoding
-    normalized = normalize_barcode(barcode)
-    product_name = lookup_product_name(normalized)
-    return render_template("product.html", barcode=normalized, product_name=product_name)
+def product_detail(barcode):
+    product = db.session.get(Product, barcode)
+    if not product:
+        return render_template("error.html", message="Product not found")
+    return render_template("product_detail.html", barcode = product.barcode, name = product.name, category = product.category,
+                            brand = product.brand, description = product.description, image = product.image)
 
 # allows the user to check the 'Traceability Timeline' for a given product
 @app.route("/timeline", methods=["GET"])
@@ -146,54 +154,6 @@ def logout():
 @roles_required("verifier", "admin")
 def admin():
     return render_template("admin.html")
-
-# local data file containing barcodes and product names
-OFF_DATA_PATH = Path(__file__).with_name("SimplifiedOFFData.jsonl")
-
-# lightweight in-memory index: barcode -> product_name
-PRODUCT_INDEX: dict[str, str] = {}
-PRODUCT_INDEX_READY = False
-
-def normalize_barcode(value: str) -> str:
-    digits = "".join(ch for ch in str(value) if ch.isdigit())
-    if len(digits) == 12:
-        # UPC-A is often represented as EAN-13 with a leading 0.
-        return f"0{digits}"
-    return digits or str(value)
-
-def ensure_product_index() -> None:
-    global PRODUCT_INDEX_READY
-    if PRODUCT_INDEX_READY:
-        return
-
-    if not OFF_DATA_PATH.exists():
-        PRODUCT_INDEX_READY = True
-        return
-
-    with OFF_DATA_PATH.open("r", encoding="utf-8") as handle:
-        for line in handle:
-            try:
-                item = json.loads(line)
-            except json.JSONDecodeError:
-                continue
-
-            code = normalize_barcode(item.get("code", ""))
-            name = (item.get("product_name") or "").strip()
-            if code and name and code not in PRODUCT_INDEX:
-                PRODUCT_INDEX[code] = name
-
-    PRODUCT_INDEX_READY = True
-
-def lookup_product_name(barcode: str) -> str | None:
-    ensure_product_index()
-    normalized = normalize_barcode(barcode)
-
-    # Try the normalized code first, then a UPC-A variant without a leading 0.
-    product_name = PRODUCT_INDEX.get(normalized)
-    if not product_name and len(normalized) == 13 and normalized.startswith("0"):
-        product_name = PRODUCT_INDEX.get(normalized[1:])
-
-    return product_name
 
 # when this file is ran, the DB is created and application is started
 if __name__ == "__main__":  

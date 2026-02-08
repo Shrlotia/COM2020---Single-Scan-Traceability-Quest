@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Product{% endblock %}
+
+{% block custom_css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/product.css') }}">{% endblock %}
+{% block custom_js%}<script type="module" src="{{ url_for('static', filename='js/product.js') }}" defer></script>{% endblock %}
+
+{% block content %}
+<section class="product-page">
+    <h1>Product Details</h1>
+
+    <article class="product-card">
+        <div class="product-image-wrapper">
+            {% if image %}
+                <img
+                    id="product-image"
+                    class="product-image"
+                    src="{{ image }}"
+                    alt="{{ name }} image"
+                    loading="lazy">
+            {% else %}
+                <div id="product-image-fallback" class="product-image-fallback">No image available</div>
+            {% endif %}
+        </div>
+
+        <div class="product-info">
+            <p class="field">
+                <span class="label">Name</span>
+                <span class="value">{{ name }}</span>
+            </p>
+            <p class="field">
+                <span class="label">Barcode</span>
+                <span class="value">{{ barcode }}</span>
+            </p>
+            <p class="field">
+                <span class="label">Brand</span>
+                <span class="value">{{ brand }}</span>
+            </p>
+            <p class="field">
+                <span class="label">Category</span>
+                <span class="value">{{ category }}</span>
+            </p>
+            <div class="field description-field">
+                <span class="label">Description</span>
+                <p id="description" class="description collapsed">{{ description }}</p>
+                <button id="toggle-description" type="button" class="toggle-button">Show more</button>
+            </div>
+        </div>
+    </article>
+
+    <div class="page-actions">
+        <a class="action-link" href="{{ url_for('product') }}">Back to all products</a>
+    </div>
+</section>
+{% endblock %}

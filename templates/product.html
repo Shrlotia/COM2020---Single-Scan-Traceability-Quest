@@ -1,22 +1,23 @@
 {% extends "base.html" %}
 
-{% block title %}Product{% endblock %}
-
-{% block custom_css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/product.css') }}">{% endblock %}
-{% block custom_js%}<script type="module" src="{{ url_for('static', filename='js/product.js') }}" defer></script>{% endblock %}
+{% block title %}Products{% endblock %}
+{% block custom_css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/product_list.css') }}">{% endblock %}
 
 {% block content %}
-<h1>Product</h1>
+<section class="product-list-page">
+    <h1>All Products</h1>
 
-<p>Detected barcode:</p>
-<p><strong>{{ barcode }}</strong></p>
-
-{% if product_name %}
-<p>Product name:</p>
-<p><strong>{{ product_name }}</strong></p>
-{% else %}
-<p>Product name not found in SimplifiedOFFData.</p>
-{% endif %}
-
-<p><a href="{{ url_for('scan') }}">Scan another barcode</a></p>
+    {% if products %}
+        <div class="product-grid">
+            {% for product in products %}
+                <a class="product-block" href="{{ url_for('product_detail', barcode=product.barcode) }}">
+                    <p class="product-barcode">{{ product.barcode }}</p>
+                    <p class="product-name">{{ product.name }}</p>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="empty-message">No products found in database.</p>
+    {% endif %}
+</section>
 {% endblock %}
