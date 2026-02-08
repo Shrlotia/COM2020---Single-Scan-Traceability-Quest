@@ -28,5 +28,33 @@
 </div>
 <div class="body-element">
     <h1>Update Products</h1>
+    <h2>Enter a Barcode</h2>
+    <form id="barcodeUpdateForm">
+        <input id="barcodeToUpdate" name="barcode" placeholder="Barcode" required>
+        <button type="submit">Next</button>
+    </form>
+
+    <div id="UpdateProductDetails" hidden>
+        <p>
+            <strong>Product Details of product with Barcode: </strong> <span id="update-barcode"></span>
+        </p>
+        <p class="updateName">
+            <strong>Name:</strong> <span id="update-name"></span>
+            <button id="update-name">Update</button>
+        </p>
+        <p class="updateCategory">
+            <strong>Category:</strong> <span id="update-category"></span>
+            <button id="update-category">Update</button>
+        </p>
+        <p class="updateBrand">
+            <strong>Brand:</strong> <span id="update-brand"></span>
+            <button id="update-brand">Update</button>
+        </p>
+        <p class="updateDescription">
+            <strong>Description:</strong> <span id="update-description"></span>
+            <button id="update-description">Update</button>
+        </p>
+        <button id="cancel-update-button">Cancel</button>
+    </div>
 </div>
 {% endblock %}

@@ -7,6 +7,7 @@ from flask import render_template, request, redirect, url_for, flash, abort, jso
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from auth_decorators import roles_required
+from sqlalchemy import tuple_
 
 # endpoint that allows a verifier to add/update products within the DB, adding claims and evidence labels
 @app.route("/add_product", methods=["POST"])
@@ -27,7 +28,7 @@ def add_Product():
         abort(400)
 
     product = Product(
-       barcode = barcode,
+        barcode = barcode,
         name = name,
         category = category,
         brand = brand,
@@ -58,7 +59,63 @@ def validate_barcode():
     
     return {"valid": True}
 
+# endpoint that allows a verifier to add/update products within the DB, adding claims and evidence labels
+@app.route("/update_product", methods=["POST","GET"])
+@roles_required("verifier", "admin")
+def update_product():
+
+    if request.method == "POST":        
+        data = request.get_json()
+        
+        product_data = data.get("productData", {})
+
+        barcode = (product_data.get("barcode") or "").strip()
+        new_name = (product_data.get("name") or "").strip()
+        new_category = (product_data.get("category") or "").strip()
+        new_brand = (product_data.get("brand") or "").strip()
+        new_Description = (product_data.get("Description") or "").strip()
+
+        updated_values = {
+            "name": new_name,
+            "category": new_category,
+            "brand": new_brand,
+            "description": new_Description
+        }
+
+        product = Product.query.get(barcode)
+
+        changed=False
+
+        for field, new_value in updated_values:
+            if new_value is not None and getattr(product, field)!=new_value:
+                setattr(product, field, new_value)
+                changed=True
+
+        if changed:
+            db.session.commit()
+            return jsonify({"success": True, "barcode": barcode})
+        else:
+            return jsonify({"success": False, "message": "Nothing to update"})
 
 
+        #return jsonify({"success": True, "barcode": barcode})
 
+    if request.method == "GET":
+        barcode = request.args.get("barcode", "").strip()
 
+        
+        if not barcode:
+            return jsonify({"error": "Barcode required"}), 400
+
+        product = Product.query.get(barcode)
+        if not product:
+            return jsonify({"error": "Product not found"}), 404
+
+        product_details = {
+            "name": product.name,
+            "category": product.category,
+            "brand": product.brand,
+            "description": product.description
+        }
+
+        return jsonify(product_details)
