@@ -202,4 +202,4 @@ if __name__ == "__main__":
         
     # Listen on all interfaces so the app is reachable from your phone on the same Wi-Fi.
     # does not work on mobile no matter what I try, might have to fix later
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    app.run(debug=True, host="0.0.0.0", port=8000)

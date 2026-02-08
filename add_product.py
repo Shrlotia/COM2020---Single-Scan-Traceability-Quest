@@ -42,8 +42,6 @@ def add_Product():
 
     return jsonify({"success": True, "barcode": barcode})
 
-
-
 @app.route("/validate_barcode", methods=["POST"])
 @roles_required("verifier", "admin") # you can only visit this page if your auth user type is 'verifier' or 'admin'
 def validate_barcode():
@@ -57,8 +55,3 @@ def validate_barcode():
         return {"valid": False, "message": "Barcode already exists"}
     
     return {"valid": True}
-
-
-
-
-
