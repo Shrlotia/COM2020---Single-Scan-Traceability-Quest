@@ -1,13 +1,11 @@
 from config import app, db
 from pathlib import Path
-from config import db
 from models import Product
 
-from flask import render_template, request, redirect, url_for, flash, abort, jsonify
-from flask_sqlalchemy import SQLAlchemy
-from flask_cors import CORS
+from flask import request, url_for, abort, jsonify, redirect, flash
 from auth_decorators import roles_required
-from sqlalchemy import tuple_
+from werkzeug.utils import secure_filename
+from uuid import uuid4
 
 # endpoint that allows a verifier to add/update products within the DB, adding claims and evidence labels
 @app.route("/add_product", methods=["POST"])
@@ -23,6 +21,7 @@ def add_Product():
     category = (product_data.get("category") or "").strip()
     brand = (product_data.get("brand") or "").strip()
     Description = (product_data.get("Description") or "").strip()
+    image = (product_data.get("image") or "").strip()
     
     if Product.query.get(barcode):
         abort(400)
@@ -33,7 +32,7 @@ def add_Product():
         category = category,
         brand = brand,
         description = Description,
-        image =" "
+        image = image
     )
     print(product)
 
@@ -43,7 +42,34 @@ def add_Product():
 
     return jsonify({"success": True, "barcode": barcode})
 
+@app.route("/upload_product_image", methods=["POST"])
+@roles_required("verifier", "admin")
+def upload_product_image():
+    image_file = request.files.get("image")
+    barcode = (request.form.get("barcode") or "").strip()
 
+    if not image_file:
+        return jsonify({"success": False, "message": "Image file is required"}), 400
+
+    if not image_file.mimetype or not image_file.mimetype.startswith("image/"):
+        return jsonify({"success": False, "message": "Invalid image type"}), 400
+
+    extension = image_file.mimetype.split("/")[-1].lower()
+    if extension == "jpeg":
+        extension = "jpg"
+    if extension not in {"jpg", "png", "webp"}:
+        extension = "jpg"
+
+    safe_barcode = secure_filename(barcode) if barcode else "product"
+    filename = f"{safe_barcode}-{uuid4().hex[:12]}.{extension}"
+
+    upload_dir = Path(app.static_folder) / "uploads" / "products"
+    upload_dir.mkdir(parents=True, exist_ok=True)
+    file_path = upload_dir / filename
+    image_file.save(file_path)
+
+    image_url = url_for("static", filename=f"uploads/products/{filename}")
+    return jsonify({"success": True, "image_url": image_url})
 
 @app.route("/validate_barcode", methods=["POST"])
 @roles_required("verifier", "admin") # you can only visit this page if your auth user type is 'verifier' or 'admin'
@@ -59,63 +85,60 @@ def validate_barcode():
     
     return {"valid": True}
 
-# endpoint that allows a verifier to add/update products within the DB, adding claims and evidence labels
-@app.route("/update_product", methods=["POST","GET"])
+@app.route("/product/<barcode>/edit", methods=["POST"])
 @roles_required("verifier", "admin")
-def update_product():
+def edit_product(barcode):
+    product = db.session.get(Product, barcode)
+    if not product:
+        flash("Product not found.", "error")
+        return redirect(url_for("product"))
 
-    if request.method == "POST":        
-        data = request.get_json()
-        
-        product_data = data.get("productData", {})
+    new_barcode = (request.form.get("barcode") or "").strip()
+    name = (request.form.get("name") or "").strip()
+    category = (request.form.get("category") or "").strip()
+    brand = (request.form.get("brand") or "").strip()
+    description = (request.form.get("description") or "").strip()
+    image = (request.form.get("image") or "").strip()
 
-        barcode = (product_data.get("barcode") or "").strip()
-        new_name = (product_data.get("name") or "").strip()
-        new_category = (product_data.get("category") or "").strip()
-        new_brand = (product_data.get("brand") or "").strip()
-        new_Description = (product_data.get("Description") or "").strip()
+    if not all([new_barcode, name, category, brand, description]):
+        flash("All fields except image are required.", "error")
+        return redirect(url_for("product_detail", barcode=barcode))
 
-        updated_values = {
-            "name": new_name,
-            "category": new_category,
-            "brand": new_brand,
-            "description": new_Description
-        }
+    if new_barcode != barcode and db.session.get(Product, new_barcode):
+        flash("Barcode already exists.", "error")
+        return redirect(url_for("product_detail", barcode=barcode))
 
-        product = Product.query.get(barcode)
+    try:
+        product.barcode = new_barcode
+        product.name = name
+        product.category = category
+        product.brand = brand
+        product.description = description
+        product.image = image
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        flash("Failed to update product.", "error")
+        return redirect(url_for("product_detail", barcode=barcode))
 
-        changed=False
+    flash("Product updated successfully.", "success")
+    return redirect(url_for("product_detail", barcode=new_barcode))
 
-        for field, new_value in updated_values:
-            if new_value is not None and getattr(product, field)!=new_value:
-                setattr(product, field, new_value)
-                changed=True
+@app.route("/product/<barcode>/delete", methods=["POST"])
+@roles_required("verifier", "admin")
+def delete_product(barcode):
+    product = db.session.get(Product, barcode)
+    if not product:
+        flash("Product not found.", "error")
+        return redirect(url_for("product"))
 
-        if changed:
-            db.session.commit()
-            return jsonify({"success": True, "barcode": barcode})
-        else:
-            return jsonify({"success": False, "message": "Nothing to update"})
+    try:
+        db.session.delete(product)
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        flash("Failed to delete product. It may be referenced by other records.", "error")
+        return redirect(url_for("product_detail", barcode=barcode))
 
-
-        #return jsonify({"success": True, "barcode": barcode})
-
-    if request.method == "GET":
-        barcode = request.args.get("barcode", "").strip()
-
-        
-        if not barcode:
-            return jsonify({"error": "Barcode required"}), 400
-
-        product = Product.query.get(barcode)
-        if not product:
-            return jsonify({"error": "Product not found"}), 404
-
-        product_details = {
-            "name": product.name,
-            "category": product.category,
-            "brand": product.brand,
-            "description": product.description
-        }
-
-        return jsonify(product_details)
+    flash("Product deleted successfully.", "success")
+    return redirect(url_for("product"))
