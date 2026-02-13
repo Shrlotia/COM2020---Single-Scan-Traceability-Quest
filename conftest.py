@@ -10,9 +10,9 @@ def client():
         "TESTING": True,
         "SQLALCHEMY_DATABASE_URI": "sqlite:///:memory:",
     })
-
+    #make a fake user
     with app.app_context():
-
+        #make sure it will be a flash db
         db.drop_all()
         db.create_all()
 
@@ -22,7 +22,7 @@ def client():
         db.session.commit()
 
     with app.test_client() as client:
-
+        #simulated login
         with client.session_transaction() as session:
             session["_user_id"] =  "1"
 
@@ -31,6 +31,7 @@ def client():
     with app.app_context():
         db.session.remove()
         db.drop_all()
+
 
 
 
