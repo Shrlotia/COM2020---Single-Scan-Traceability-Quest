@@ -80,7 +80,7 @@ def validate_barcode():
     if not barcode:
         return {"valid": False, "message": "Barcode required"} 
     
-    if Product.query.get(barcode):
+    if db.session.get(Product, barcode):
         return {"valid": False, "message": "Barcode already exists"}
     
     return {"valid": True}
