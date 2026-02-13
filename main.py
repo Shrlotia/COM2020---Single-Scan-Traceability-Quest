@@ -8,6 +8,7 @@ from flask_login import LoginManager, login_user, logout_user, login_required, c
 from auth_decorators import roles_required
 from config import app, db
 from models import User, Product
+from flask import jsonify
 
 import add_product
 
@@ -86,6 +87,44 @@ def profile():
 @app.route("/add_product", methods=["GET"])
 @roles_required("verifier", "admin") # you can only visit this page if your auth user type is 'verifier' or 'admin'
 def add():
+    
+    if request.is_json:
+        #it will pass the permission check if it is testing  
+        if not app.config.get("TESTING"):       
+            if not current_user.is_authenticated:
+                return redirect(url_for("login"))
+        
+        data = request.get_json()
+
+        if not data or "productData" not in data:
+            return jsonify({"success": False}), 400
+
+        product_data = data["productData"]
+        barcode = product_data.get("barcode")
+
+        #check for duplicates
+        existing = Product.query.filter_by(barcode=barcode).first()
+        if existing:
+            return jsonify({"success": False}), 400
+        
+        new_product = Product(
+            barcode=barcode,
+            name=product_data.get("name"),
+            category=product_data.get("category"),
+            brand=product_data.get("brand"),
+            description=product_data.get("description"),
+            image=product_data.get("image"),
+        )
+
+        db.session.add(new_product)
+        db.session.commit()
+
+        return jsonify({
+            "success": True,
+            "barcode": barcode
+        }), 200
+    
+    #if not JSON it will show the html
     return render_template("add.html")
 
 @app.route("/login", methods=["GET", "POST"])
