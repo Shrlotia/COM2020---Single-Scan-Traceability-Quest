@@ -2,19 +2,16 @@ import argparse
 import json
 from pathlib import Path
 
-from config import app, db
-from models import Product
-
+from sstq.config import app, db
+from sstq.models import Product
 
 DEFAULT_JSONL = Path(__file__).with_name("SimplifiedOFFData.jsonl")
-
 
 def normalize_barcode(value: str) -> str:
     digits = "".join(ch for ch in str(value or "") if ch.isdigit())
     if len(digits) == 12:
         return f"0{digits}"
     return digits
-
 
 def normalize_text(value, fallback: str, max_len: int) -> str:
     if isinstance(value, list):
@@ -25,7 +22,6 @@ def normalize_text(value, fallback: str, max_len: int) -> str:
     if not text:
         text = fallback
     return text[:max_len]
-
 
 def import_products(jsonl_path: Path, update_existing: bool) -> None:
     inserted = 0
@@ -84,7 +80,6 @@ def import_products(jsonl_path: Path, update_existing: bool) -> None:
 
     print(f"Done. inserted={inserted}, updated={updated}, skipped={skipped}, invalid={invalid}")
 
-
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Import code/product_name/brands/categories from SimplifiedOFFData.jsonl into products table."
@@ -106,7 +101,6 @@ def main() -> None:
         raise FileNotFoundError(f"File not found: {jsonl_path}")
 
     import_products(jsonl_path, update_existing=args.update_existing)
-
 
 if __name__ == "__main__":
     main()

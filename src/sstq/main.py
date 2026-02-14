@@ -1,16 +1,16 @@
 # imports all tools for requesting and responding to HTTP requests, as well as the 'app' and 'db' elements
-import json
-from pathlib import Path
+# import json
+# from pathlib import Path
 
 # all imports for flask web app deployment, flask role-based auth and links to the app, database and user table from 'config.py' and 'models.py'
-from flask import render_template, request, redirect, url_for, flash
+from flask import render_template, redirect, url_for, flash, jsonify, request
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-from auth_decorators import roles_required
-from config import app, db
-from models import User, Product
-from flask import jsonify
 
-import add_product
+from sstq.auth_decorators import roles_required
+from sstq.config import app, db
+from sstq.models import User, Product
+# import all the routes from add_product to register them
+from sstq import add_product
 
 # creates a new login manager for the current application where the default login view (if you aren't logged in) is 'login.html'
 login_manager = LoginManager()

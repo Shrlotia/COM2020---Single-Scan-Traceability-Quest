@@ -1,11 +1,11 @@
-from config import app, db
 from pathlib import Path
-from models import Product
-
 from flask import request, url_for, abort, jsonify, redirect, flash
-from auth_decorators import roles_required
 from werkzeug.utils import secure_filename
 from uuid import uuid4
+
+from sstq.config import app, db
+from sstq.models import Product
+from sstq.auth_decorators import roles_required
 
 # endpoint that allows a verifier to add/update products within the DB, adding claims and evidence labels
 @app.route("/add_product", methods=["POST"])

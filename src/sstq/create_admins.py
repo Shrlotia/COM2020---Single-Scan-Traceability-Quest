@@ -1,9 +1,9 @@
 # this class exists to create the 'admin' accounts for all of the team members
 # so far, they don't provide any real differences compared to 'verifier' accounts but this could change in the future
 # if you accidentally delete all the users, just type 'python3 create_admins.py' in the terminal
-from main import app
-from config import db
-from models import User
+from sstq.main import app
+from sstq.config import db
+from sstq.models import User
 
 # usernames and passwords (might change later)
 admins = [

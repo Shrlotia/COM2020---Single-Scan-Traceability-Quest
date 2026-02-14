@@ -11,12 +11,14 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
+.pytest_cache
 
 # === Virtual_environment ===
 venv/
 .venv/
 env/
 ENV/
+dist/
 
 # === logs ===
 *.log

@@ -1,8 +1,5 @@
-from config import db
-from models import User
-from models import Product, Stage
-from models import Claim, Evidence
-from models import Player
+from sstq.config import db
+from sstq.models import User, Product, Stage, Claim, Evidence, Player
 from sqlalchemy.exc import IntegrityError
 import pytest
 
@@ -37,8 +34,6 @@ def test_duplicate_username_raises(client):
         with pytest.raises(IntegrityError):
             db.session.commit()
 
-
-
 def test_user_roles(client):
     with client.application.app_context():
         user = User(username="simba", role="admin")
@@ -51,7 +46,6 @@ def test_user_roles(client):
         assert user.is_admin
         assert not user.is_consumer
         assert not user.is_verifier
-
 
 #test to ensure that the foreign key correctly links to the product, and verify that the SQLAlchemy backreferences are bidirectionally valid.
 def test_product_stage_relationship(client):
@@ -76,7 +70,6 @@ def test_product_stage_relationship(client):
 
         assert product.stages
         assert product.stages[0].stage_type == "Processing"
-
 
 #Same as testing the relationship of product and stage 
 def test_claim_evidence_relationship(client):
@@ -105,7 +98,6 @@ def test_claim_evidence_relationship(client):
 
         assert evidence.claim == claim
         assert claim.evidence[0].evidence_type == "Certificate"
-
 
 #test the 1 to 1 relationship between user and player
 def test_user_player_relationship(client):

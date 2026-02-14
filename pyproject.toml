@@ -1,0 +1,15 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "sstq"
+version = "0.1.0"
+description = "COM2020---Single-Scan-Traceability-Quest"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+
+dependencies = [
+  "flask>=3.1.2"
+]

@@ -43,5 +43,3 @@ def test_validate_barcode(client):
     data = response.get_json()
 
     assert data["valid"] is True
-
-
