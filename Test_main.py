@@ -7,13 +7,11 @@ def login(client, username="testuser", password="1234"):
     })
 
 
-#test for homepage
 def test_home(client):
     response = client.get("/")
     assert response.status_code == 200
 
 
-#test for register
 def test_register(client):
     response = client.post("/login", data={
         "username": "newuser",
@@ -24,13 +22,11 @@ def test_register(client):
     assert response.status_code == 302  #it will be redirected
 
 
-#test for login
 def test_login(client):
     response = login(client)
     assert response.status_code == 302
 
 
-#test for add product(JSON)
 def test_add_product(client):
     response = client.get(
         "/add_product",
@@ -48,3 +44,4 @@ def test_add_product(client):
 
     assert response.status_code == 200
     assert response.json["success"] is True
+
