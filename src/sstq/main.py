@@ -1,4 +1,4 @@
-from sstq.init import create_app
+from sstq import create_app
 from sstq.extensions import db
 
 app = create_app()
