@@ -82,7 +82,7 @@ def profile():
 # endpoint that allows a verifier to add/update products within the DB, adding claims and evidence labels
 @app.route("/add_product", methods=["GET"])
 @roles_required("verifier", "admin") # you can only visit this page if your auth user type is 'verifier' or 'admin'
-def add():
+def product_add():
     
     if request.is_json:
         #it will pass the permission check if it is testing  
@@ -121,7 +121,7 @@ def add():
         }), 200
     
     #if not JSON it will show the html
-    return render_template("add.html")
+    return render_template("product_add.html")
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
