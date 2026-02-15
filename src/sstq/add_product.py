@@ -71,7 +71,7 @@ def product_edit(barcode):
 
 @app.route("/product/edit/<barcode>", methods=["POST"])
 @roles_required("verifier", "admin")
-def edit_product(barcode):
+def product_update(barcode):
     product = db.session.get(Product, barcode)
     if not product:
         flash("Product not found.", "error")

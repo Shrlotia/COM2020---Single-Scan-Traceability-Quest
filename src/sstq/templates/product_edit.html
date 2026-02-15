@@ -50,7 +50,7 @@
 
     <section class="editor-panel">
         <h2>Edit Product</h2>
-        <form class="editor-form" method="POST" action="{{ url_for('edit_product', barcode=barcode) }}">
+        <form class="editor-form" method="POST" action="{{ url_for('product_update', barcode=barcode) }}">
             <label for="edit-barcode">Barcode</label>
             <input id="edit-barcode" name="barcode" value="{{ barcode }}" required>
 
