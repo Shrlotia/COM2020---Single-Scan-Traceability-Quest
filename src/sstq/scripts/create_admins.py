@@ -2,7 +2,7 @@
 # so far, they don't provide any real differences compared to 'verifier' accounts but this could change in the future
 # if you accidentally delete all the users, just type 'python3 create_admins.py' in the terminal
 from sstq.main import app
-from sstq.config import db
+from sstq.extensions import db
 from sstq.models import User
 
 # usernames and passwords (might change later)

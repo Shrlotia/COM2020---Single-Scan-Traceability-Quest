@@ -1,11 +1,11 @@
 # Simple data import tools
 # use to added products data from the SimplifiedOFFData.json file to database
-
 import argparse
 import json
 from pathlib import Path
+from flask import current_app
 
-from sstq.config import app, db
+from sstq.extensions import db
 from sstq.models import Product
 
 DEFAULT_JSONL = Path(__file__).with_name("SimplifiedOFFData.jsonl")
@@ -32,7 +32,7 @@ def import_products(jsonl_path: Path, update_existing: bool) -> None:
     skipped = 0
     invalid = 0
 
-    with app.app_context():
+    with current_app.app_context():
         db.create_all()
 
         with jsonl_path.open("r", encoding="utf-8") as handle:
