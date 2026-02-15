@@ -6,7 +6,7 @@ from sstq.auth_decorators import roles_required
 from sstq.config import app, db
 from sstq.models import User, Product
 # import all the routes from add_product to register them
-# from sstq import add_product
+from sstq import add_product
 
 # creates a new login manager for the current application where the default login view (if you aren't logged in) is 'login.html'
 login_manager = LoginManager()

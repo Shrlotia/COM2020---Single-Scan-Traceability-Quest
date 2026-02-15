@@ -1,5 +1,5 @@
 from pathlib import Path
-from flask import request, url_for, abort, jsonify, redirect, flash
+from flask import request, url_for, abort, jsonify, redirect, flash, render_template
 from werkzeug.utils import secure_filename
 from uuid import uuid4
 
@@ -85,7 +85,26 @@ def validate_barcode():
     
     return {"valid": True}
 
-@app.route("/product/<barcode>/edit", methods=["POST"])
+@app.route("/product/edit/<barcode>", methods=["GET"])
+@roles_required("verifier", "admin")
+def product_edit(barcode):
+    product = db.session.get(Product, barcode)
+    if not product:
+        flash("Product not found.", "error")
+        return redirect(url_for("product"))
+
+    return render_template(
+        "product_edit.html",
+        barcode=product.barcode,
+        name=product.name,
+        category=product.category,
+        brand=product.brand,
+        description=product.description,
+        image=product.image,
+    )
+
+
+@app.route("/product/edit/<barcode>", methods=["POST"])
 @roles_required("verifier", "admin")
 def edit_product(barcode):
     product = db.session.get(Product, barcode)
@@ -102,11 +121,11 @@ def edit_product(barcode):
 
     if not all([new_barcode, name, category, brand, description]):
         flash("All fields except image are required.", "error")
-        return redirect(url_for("product_detail", barcode=barcode))
+        return redirect(url_for("product_edit", barcode=barcode))
 
     if new_barcode != barcode and db.session.get(Product, new_barcode):
         flash("Barcode already exists.", "error")
-        return redirect(url_for("product_detail", barcode=barcode))
+        return redirect(url_for("product_edit", barcode=barcode))
 
     try:
         product.barcode = new_barcode
@@ -119,7 +138,7 @@ def edit_product(barcode):
     except Exception:
         db.session.rollback()
         flash("Failed to update product.", "error")
-        return redirect(url_for("product_detail", barcode=barcode))
+        return redirect(url_for("product_edit", barcode=barcode))
 
     flash("Product updated successfully.", "success")
     return redirect(url_for("product_detail", barcode=new_barcode))
@@ -138,7 +157,7 @@ def delete_product(barcode):
     except Exception:
         db.session.rollback()
         flash("Failed to delete product. It may be referenced by other records.", "error")
-        return redirect(url_for("product_detail", barcode=barcode))
+        return redirect(url_for("product_edit", barcode=barcode))
 
     flash("Product deleted successfully.", "success")
     return redirect(url_for("product"))

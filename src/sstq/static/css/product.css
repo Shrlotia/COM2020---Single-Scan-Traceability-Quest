@@ -67,6 +67,7 @@
     display: flex;
     flex-direction: column;
     gap: 3px;
+    padding-left: 12px;
 }
 
 .label {
@@ -122,6 +123,10 @@
 
 .page-actions {
     margin-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
 }
 
 .action-link {
@@ -170,25 +175,6 @@
 .image-status {
     margin: 4px 0 0;
     color: var(--text-muted);
-}
-
-.primary-button,
-.danger-button,
-.secondary-button {
-    border: 0;
-    border-radius: 8px;
-    padding: 10px 14px;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.primary-button {
-    background: var(--accent);
-    color: #ffffff;
-}
-
-.primary-button:hover {
-    background: var(--accent-hover);
 }
 
 .secondary-button {
