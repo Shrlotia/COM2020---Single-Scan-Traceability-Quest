@@ -5,7 +5,7 @@ The team project for the group 'HK Corner'. Intended to allow the user to enter 
 ## Team Members & Roles
 
 - **Dawid Kwiecien** - Project Leader, Technical Lead
-- **Simba Chan Chan** - Programming Lead
+- **Simba Chan** - Programming Lead
 - **Cia Lloyd-Hole** - Data Lead
 - **Sylvester Koroma** - Requirements Lead, Documentation Lead
 - **Ali Mahdami** - UI/UX Lead
