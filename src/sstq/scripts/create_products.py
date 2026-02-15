@@ -1,3 +1,6 @@
+# Simple data import tools
+# use to added products data from the SimplifiedOFFData.json file to database
+
 import argparse
 import json
 from pathlib import Path
