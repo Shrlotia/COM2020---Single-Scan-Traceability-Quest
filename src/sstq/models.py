@@ -1,5 +1,5 @@
 # imports the 'db' object from 'config.py'
-from sstq.config import db
+from sstq.extensions import db
 
 from datetime import datetime, timezone
 from flask_login import UserMixin

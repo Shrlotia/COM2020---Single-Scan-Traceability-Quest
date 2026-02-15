@@ -10,7 +10,7 @@
     {% if products %}
         <div class="product-grid">
             {% for product in products %}
-                <a class="product-block" href="{{ url_for('product_detail', barcode=product.barcode) }}">
+                <a class="product-block" href="{{ url_for('product.product_detail', barcode=product.barcode) }}">
                     <p class="product-barcode">{{ product.barcode }}</p>
                     <p class="product-name">{{ product.name }}</p>
                 </a>

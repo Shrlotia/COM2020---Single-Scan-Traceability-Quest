@@ -281,7 +281,7 @@ productDetailsForm?.addEventListener("submit", (event) => {
         name: document.getElementById("name")?.value.trim() || "",
         category: document.getElementById("category")?.value.trim() || "",
         brand: document.getElementById("brand")?.value.trim() || "",
-        Description: document.getElementById("Description")?.value.trim() || "",
+        description: document.getElementById("Description")?.value.trim() || "",
         image: imageUrlInput?.value.trim() || "",
     };
 

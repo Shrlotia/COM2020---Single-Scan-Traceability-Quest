@@ -10,7 +10,7 @@
 
     <p>Enter your username and password below</p>
 
-    <form id="login-register-form" action="{{ url_for('login') }}" method="POST">
+    <form id="login-register-form" action="{{ url_for('auth.login') }}" method="POST">
         <input id="username" name="username" placeholder="Username" required>
         <input id="password" name="password" type="password" placeholder="Password" required>
         <label><input id="is-verifier" name="is_verifier" type="checkbox">I am a product owner/verifier</label>

@@ -44,13 +44,13 @@
     </article>
 
     <div class="page-actions">
-        <a class="action-link" href="{{ url_for('product_detail', barcode=barcode) }}">Back to product detail</a>
-        <a class="action-link" href="{{ url_for('product') }}">Back to all products</a>
+        <a class="action-link" href="{{ url_for('product.product_detail', barcode=barcode) }}">Back to product detail</a>
+        <a class="action-link" href="{{ url_for('product.product') }}">Back to all products</a>
     </div>
 
     <section class="editor-panel">
         <h2>Edit Product</h2>
-        <form class="editor-form" method="POST" action="{{ url_for('product_update', barcode=barcode) }}">
+        <form class="editor-form" method="POST" action="{{ url_for('product.product_update', barcode=barcode) }}">
             <label for="edit-barcode">Barcode</label>
             <input id="edit-barcode" name="barcode" value="{{ barcode }}" required>
 
@@ -90,7 +90,7 @@
             <button type="submit" class="primary-button">Save Changes</button>
         </form>
 
-        <form method="POST" action="{{ url_for('delete_product', barcode=barcode) }}" onsubmit="return confirm('Delete this product? This cannot be undone.');">
+        <form method="POST" action="{{ url_for('product.delete_product', barcode=barcode) }}" onsubmit="return confirm('Delete this product? This cannot be undone.');">
             <button type="submit" class="danger-button">Delete Product</button>
         </form>
     </section>

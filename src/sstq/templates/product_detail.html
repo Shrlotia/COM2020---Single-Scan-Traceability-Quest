@@ -47,9 +47,9 @@
     </article>
 
     <div class="page-actions">
-        <a class="action-link" href="{{ url_for('product') }}">Back to all products</a>
+        <a class="action-link" href="{{ url_for('product.product') }}">Back to all products</a>
         {% if current_user.is_authenticated and (current_user.is_verifier or current_user.is_admin) %}
-            <a class="action-link" href="{{ url_for('product_edit', barcode=barcode) }}">Edit Product</a>
+            <a class="action-link" href="{{ url_for('product.product_edit', barcode=barcode) }}">Edit Product</a>
         {% endif %}
     </div>
 </section>
