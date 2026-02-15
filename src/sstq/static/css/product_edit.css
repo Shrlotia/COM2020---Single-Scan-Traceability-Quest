@@ -177,15 +177,6 @@
     color: var(--text-muted);
 }
 
-.secondary-button {
-    background: #e9eef6;
-    color: #1b1f24;
-}
-
-.secondary-button:hover {
-    background: #d9e2f0;
-}
-
 .danger-button {
     background: #c62828;
     color: #ffffff;

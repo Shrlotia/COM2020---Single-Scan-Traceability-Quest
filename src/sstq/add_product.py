@@ -1,46 +1,11 @@
 from pathlib import Path
-from flask import request, url_for, abort, jsonify, redirect, flash, render_template
+from flask import request, url_for, jsonify, redirect, flash, render_template
 from werkzeug.utils import secure_filename
 from uuid import uuid4
 
 from sstq.config import app, db
 from sstq.models import Product
 from sstq.auth_decorators import roles_required
-
-# endpoint that allows a verifier to add/update products within the DB, adding claims and evidence labels
-@app.route("/add_product", methods=["POST"])
-@roles_required("verifier", "admin") # you can only visit this page if your auth user type is 'verifier' or 'admin'
-def add_Product():
-
-    data = request.get_json()
-    
-    product_data = data.get("productData", {})
-
-    barcode = (product_data.get("barcode") or "").strip()
-    name = (product_data.get("name") or "").strip()
-    category = (product_data.get("category") or "").strip()
-    brand = (product_data.get("brand") or "").strip()
-    Description = (product_data.get("Description") or "").strip()
-    image = (product_data.get("image") or "").strip()
-    
-    if Product.query.get(barcode):
-        abort(400)
-
-    product = Product(
-        barcode = barcode,
-        name = name,
-        category = category,
-        brand = brand,
-        description = Description,
-        image = image
-    )
-    print(product)
-
-    db.session.add(product)
-
-    db.session.commit()
-
-    return jsonify({"success": True, "barcode": barcode})
 
 @app.route("/upload_product_image", methods=["POST"])
 @roles_required("verifier", "admin")

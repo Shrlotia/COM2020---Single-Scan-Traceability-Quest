@@ -3,7 +3,6 @@
 {% block title %}Product{% endblock %}
 
 {% block custom_css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/product_detail.css') }}">{% endblock %}
-{% block custom_js%}<script type="module" src="{{ url_for('static', filename='js/product_detail.js') }}" defer></script>{% endblock %}
 
 {% block content %}
 <section class="product-page">
@@ -43,7 +42,6 @@
             <div class="field description-field">
                 <span class="label">Description</span>
                 <p id="description" class="description collapsed">{{ description }}</p>
-                <button id="toggle-description" type="button" class="toggle-button">Show more</button>
             </div>
         </div>
     </article>
