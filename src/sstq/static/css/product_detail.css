@@ -18,15 +18,32 @@
     margin-bottom: 18px;
 }
 
-.product-card {
-    display: grid;
-    grid-template-columns: minmax(220px, 320px) 1fr;
-    gap: 22px;
+.page-subtitle {
+    margin-top: -10px;
+    color: var(--text-muted);
+}
+
+.product-card,
+.content-card {
     background: var(--card-bg);
     border: 1px solid var(--border-color);
     border-radius: 14px;
     padding: 18px;
     box-shadow: 0 6px 20px rgba(16, 24, 40, 0.08);
+}
+
+.product-card {
+    display: grid;
+    grid-template-columns: minmax(220px, 320px) 1fr;
+    gap: 22px;
+}
+
+.content-card {
+    margin-top: 16px;
+}
+
+.content-card h2 {
+    margin-top: 0;
 }
 
 .product-image-wrapper {
@@ -84,10 +101,6 @@
     word-break: break-word;
 }
 
-.description-field {
-    margin-top: 4px;
-}
-
 .description {
     margin: 0;
     color: var(--text-main);
@@ -95,11 +108,66 @@
     white-space: pre-line;
 }
 
-.description.collapsed {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 4;
-    overflow: hidden;
+.list-wrapper {
+    display: grid;
+    gap: 10px;
+}
+
+.list-item {
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 12px;
+}
+
+.list-item h3 {
+    margin: 0 0 6px;
+}
+
+.list-item p {
+    margin: 4px 0;
+}
+
+.claim-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+}
+
+.claim-card {
+    display: block;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 12px;
+    color: inherit;
+    text-decoration: none;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.claim-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.12);
+}
+
+.claim-type {
+    margin: 0;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-size: 0.8rem;
+}
+
+.claim-text {
+    margin: 8px 0;
+    font-weight: 600;
+}
+
+.claim-confidence {
+    margin: 0;
+    color: var(--accent);
+}
+
+.empty-text {
+    margin: 0;
+    color: var(--text-muted);
 }
 
 .page-actions {

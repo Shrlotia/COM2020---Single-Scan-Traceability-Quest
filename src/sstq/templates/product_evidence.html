@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Evidence View{% endblock %}
+
+{% block custom_css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/product_detail.css') }}">{% endblock %}
+
+{% block content %}
+<section class="product-page">
+    <h1>Claim Evidence View</h1>
+    <p class="page-subtitle">{{ product.name }} ({{ product.barcode }})</p>
+
+    {% if claims %}
+        <div class="list-wrapper">
+            {% for claim in claims %}
+                <article class="content-card" id="claim-{{ claim.claim_id }}">
+                    <h2>{{ claim.claim_type }}</h2>
+                    <p><strong>Claim:</strong> {{ claim.claim_text }}</p>
+                    <p><strong>Confidence:</strong> {{ claim.confidence_label or "No label" }}</p>
+                    {% if claim.rationale %}
+                        <p><strong>Rationale:</strong> {{ claim.rationale }}</p>
+                    {% endif %}
+
+                    <h3>Evidence</h3>
+                    {% if claim.evidence %}
+                        <div class="list-wrapper">
+                            {% for evidence in claim.evidence %}
+                                <article class="list-item">
+                                    <p><strong>Type:</strong> {{ evidence.evidence_type }}</p>
+                                    <p><strong>Issuer:</strong> {{ evidence.issuer or "-" }}</p>
+                                    <p><strong>Date:</strong> {{ evidence.date.date() if evidence.date else "-" }}</p>
+                                    {% if evidence.summary %}
+                                        <p><strong>Summary:</strong> {{ evidence.summary }}</p>
+                                    {% endif %}
+                                    {% if evidence.file_reference %}
+                                        <p><strong>File:</strong> {{ evidence.file_reference }}</p>
+                                    {% endif %}
+                                </article>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="empty-text">No evidence attached.</p>
+                    {% endif %}
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="empty-text">No claims found for this product.</p>
+    {% endif %}
+
+    <div class="page-actions">
+        <a class="action-link" href="{{ url_for('product.product_detail', barcode=product.barcode) }}">Back to Product Detail</a>
+        {% if current_user.is_authenticated and (current_user.is_verifier or current_user.is_admin) %}
+            <a class="action-link" href="{{ url_for('product.product_edit', barcode=product.barcode) }}">Edit Product Data</a>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
