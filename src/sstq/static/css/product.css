@@ -45,6 +45,17 @@
     color: #111827;
 }
 
+.product-search {
+  margin: 12px 0 20px;
+}
+
+#productSearch {
+  width: 100%;
+  max-width: 520px;
+  padding: 10px 12px;
+  font-size: 16px;
+}
+
 .empty-message {
     color: #4f5b6b;
 }
