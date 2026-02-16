@@ -2,16 +2,129 @@
 
 {% block title %}Trace Quest{% endblock %}
 {% block custom_css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/tracequest.css') }}">{% endblock %}
-{% block custom_js%}<script type="module" src="{{ url_for('static', filename='js/tracequest.js') }}" defer></script>{% endblock %}
 
 {% block content %}
-<div class="body-element">
-    <h1>Trace Quest</h1>
-    <div class="left_section">
-        <button class="play_button">Play</button>
+<section class="quest-page">
+    <h1>Traceability Quest</h1>
+    <p class="intro">Choose a product and difficulty tier, then answer missions based on real traceability data.</p>
+
+    <div class="stats-grid">
+        <article class="stat-card"><p class="label">Points</p><p class="value">{{ player.points }}</p></article>
+        <article class="stat-card"><p class="label">Played</p><p class="value">{{ stats.total }}</p></article>
+        <article class="stat-card"><p class="label">Correct</p><p class="value">{{ stats.correct }}</p></article>
+        <article class="stat-card"><p class="label">Accuracy</p><p class="value">{{ stats.accuracy }}%</p></article>
+        <article class="stat-card"><p class="label">Basic</p><p class="value">{{ stats.tier_counts.basic }}</p></article>
+        <article class="stat-card"><p class="label">Intermediate</p><p class="value">{{ stats.tier_counts.intermediate }}</p></article>
+        <article class="stat-card"><p class="label">Advanced</p><p class="value">{{ stats.tier_counts.advanced }}</p></article>
     </div>
-    <div class="right_section">
-        leaderboard section 
-    </div>
-</div>
+
+    <section class="panel">
+        <h2>Generate Mission</h2>
+        <form method="POST" class="generate-form">
+            <input type="hidden" name="action" value="generate">
+
+            <label for="product-barcode">Product</label>
+            <select id="product-barcode" name="product_barcode" required>
+                {% for product in products %}
+                    <option value="{{ product.barcode }}" {% if selected_barcode == product.barcode %}selected{% endif %}>
+                        {{ product.name }} ({{ product.barcode }})
+                    </option>
+                {% endfor %}
+            </select>
+
+            <label for="tier">Tier</label>
+            <select id="tier" name="tier" required>
+                <option value="basic" {% if selected_tier == 'basic' %}selected{% endif %}>basic</option>
+                <option value="intermediate" {% if selected_tier == 'intermediate' %}selected{% endif %}>intermediate</option>
+                <option value="advanced" {% if selected_tier == 'advanced' %}selected{% endif %}>advanced</option>
+            </select>
+
+            <button type="submit">Generate Mission</button>
+        </form>
+    </section>
+
+    {% if current_mission %}
+        <section class="panel">
+            <h2>Current Mission ({{ current_mission.tier }})</h2>
+            <p class="mission-question">{{ current_mission.question }}</p>
+
+            <form method="POST" class="answer-form">
+                <input type="hidden" name="action" value="submit">
+                <input type="hidden" name="product_barcode" value="{{ selected_barcode }}">
+                <input type="hidden" name="tier" value="{{ current_mission.tier }}">
+                <input type="hidden" name="mission_question" value="{{ current_mission.question }}">
+                <input type="hidden" name="mission_answer" value="{{ current_mission.answer }}">
+                <input type="hidden" name="mission_explanation" value="{{ current_mission.explanation }}">
+                <input type="hidden" name="mission_options" value="{{ current_mission.choices | join(',') }}">
+
+                {% for choice in current_mission.choices %}
+                    <label class="choice-row">
+                        <input type="radio" name="player_answer" value="{{ choice }}" required>
+                        <span>{{ choice }}</span>
+                    </label>
+                {% endfor %}
+
+                <button type="submit">Submit Answer</button>
+            </form>
+        </section>
+    {% endif %}
+
+    {% if mission_result %}
+        <section class="panel result-panel {% if mission_result.correct %}success{% else %}error{% endif %}">
+            <h2>{% if mission_result.correct %}Correct{% else %}Not Quite{% endif %}</h2>
+            <p>Your answer: <strong>{{ mission_result.player_answer }}</strong></p>
+            <p>Correct answer: <strong>{{ mission_result.answer }}</strong></p>
+            <p>Points gained: <strong>{{ mission_result.gained_points }}</strong></p>
+            <p>Explanation: {{ mission_result.explanation }}</p>
+        </section>
+    {% endif %}
+
+    <section class="panel">
+        <h2>Badges</h2>
+        {% if badges %}
+            <div class="badge-grid">
+                {% for badge in badges %}
+                    <article class="badge-card">
+                        <p class="badge-name">{{ badge.name }}</p>
+                        <p class="badge-tier">{{ badge.tier }}</p>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="muted">No badges yet.</p>
+        {% endif %}
+    </section>
+
+    <section class="panel">
+        <h2>Recent Missions</h2>
+        {% if recent_missions %}
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tier</th>
+                            <th>Question</th>
+                            <th>Your Answer</th>
+                            <th>Correct</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for mission in recent_missions %}
+                            <tr>
+                                <td>{{ mission.mission_id }}</td>
+                                <td>{{ mission.tier }}</td>
+                                <td>{{ mission.question }}</td>
+                                <td>{{ mission.player_answer }}</td>
+                                <td>{% if mission.player_answer|lower == mission.answer|lower %}yes{% else %}no{% endif %}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="muted">No mission attempts yet.</p>
+        {% endif %}
+    </section>
+</section>
 {% endblock %}

@@ -40,6 +40,16 @@
                     {% else %}
                         <p class="empty-text">No evidence attached.</p>
                     {% endif %}
+
+                    <h3>Report an Issue</h3>
+                    <form method="POST" action="{{ url_for('product.report_issue', claim_id=claim.claim_id) }}" class="report-form">
+                        <input type="hidden" name="barcode" value="{{ product.barcode }}">
+                        <label for="issue-type-{{ claim.claim_id }}">Issue Type</label>
+                        <input id="issue-type-{{ claim.claim_id }}" name="issue_type" placeholder="claim seems false" required>
+                        <label for="issue-desc-{{ claim.claim_id }}">Description</label>
+                        <textarea id="issue-desc-{{ claim.claim_id }}" name="description" rows="3" placeholder="Explain what seems incorrect or missing." required></textarea>
+                        <button type="submit">Submit Issue</button>
+                    </form>
                 </article>
             {% endfor %}
         </div>

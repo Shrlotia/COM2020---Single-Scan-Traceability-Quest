@@ -1,11 +1,106 @@
 {% extends "base.html" %}
 
-{% block title %}Profile{% endblock %}
+{% block title %}Admin{% endblock %}
 {% block custom_css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">{% endblock %}
-{% block custom_js%}<script type="module" src="{{ url_for('static', filename='js/admin.js') }}" defer></script>{% endblock %}
 
 {% block content %}
-<div class="body-element">
+<section class="admin-page">
     <h1>Admin Portal</h1>
-</div>
+    <p class="intro">Verifier workflow dashboard: edit products, moderate issues, and review change history.</p>
+
+    <div class="stats-grid">
+        <article class="stat-card"><p class="label">Products</p><p class="value">{{ stats.products }}</p></article>
+        <article class="stat-card"><p class="label">Stages</p><p class="value">{{ stats.stages }}</p></article>
+        <article class="stat-card"><p class="label">Claims</p><p class="value">{{ stats.claims }}</p></article>
+        <article class="stat-card"><p class="label">Evidence</p><p class="value">{{ stats.evidence }}</p></article>
+        <article class="stat-card"><p class="label">Open/In Review Issues</p><p class="value">{{ stats.issues_open }}</p></article>
+        <article class="stat-card"><p class="label">Total Issues</p><p class="value">{{ stats.issues_total }}</p></article>
+    </div>
+
+    <section class="panel">
+        <h2>Quick Actions</h2>
+        <div class="action-row">
+            <a class="action-link" href="{{ url_for('product.product_add') }}">Add Product</a>
+            <a class="action-link" href="{{ url_for('product.product') }}">Open Product List</a>
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>Issue Moderation</h2>
+        <p class="muted">Status summary:
+            {% for status, count in status_breakdown.items() %}
+                <span class="status-chip">{{ status }}: {{ count }}</span>
+            {% endfor %}
+        </p>
+
+        {% if issue_rows %}
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Issue</th>
+                            <th>Product</th>
+                            <th>Claim</th>
+                            <th>Reporter</th>
+                            <th>Status</th>
+                            <th>Resolution Note</th>
+                            <th>Update</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for issue, claim, product, user in issue_rows %}
+                            <tr>
+                                <td>
+                                    <strong>#{{ issue.issue_id }}</strong><br>
+                                    <span class="muted">{{ issue.issue_type }}</span><br>
+                                    {{ issue.description }}
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('product.product_detail', barcode=product.barcode) }}">{{ product.name }}</a><br>
+                                    <span class="muted">{{ product.barcode }}</span>
+                                </td>
+                                <td>{{ claim.claim_type }}</td>
+                                <td>{{ user.username if user else "anonymous" }}</td>
+                                <td>{{ issue.status }}</td>
+                                <td>{{ issue.resolution_note or "-" }}</td>
+                                <td>
+                                    <form method="POST" action="{{ url_for('admin.update_issue', issue_id=issue.issue_id) }}" class="issue-form">
+                                        <select name="status" required>
+                                            {% set current_status = issue.status or 'open' %}
+                                            <option value="open" {% if current_status == 'open' %}selected{% endif %}>open</option>
+                                            <option value="in_review" {% if current_status == 'in_review' %}selected{% endif %}>in_review</option>
+                                            <option value="resolved" {% if current_status == 'resolved' %}selected{% endif %}>resolved</option>
+                                            <option value="rejected" {% if current_status == 'rejected' %}selected{% endif %}>rejected</option>
+                                        </select>
+                                        <input name="resolution_note" placeholder="Resolution note" value="{{ issue.resolution_note or '' }}">
+                                        <button type="submit">Save</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="muted">No issues reported yet.</p>
+        {% endif %}
+    </section>
+
+    <section class="panel">
+        <h2>Recent Change Log</h2>
+        {% if recent_changes %}
+            <ul class="change-list">
+                {% for log, user in recent_changes %}
+                    <li>
+                        <span class="time">{{ log.timestamp }}</span>
+                        <strong>{{ user.username }}</strong>
+                        <span>{{ log.change_summary }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="muted">No changes logged yet.</p>
+        {% endif %}
+    </section>
+</section>
 {% endblock %}

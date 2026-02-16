@@ -1,25 +1,155 @@
-.body-element{
+.quest-page {
+    max-width: 1080px;
+    margin: 20px auto;
+    padding: 0 8px 24px;
+}
+
+.intro {
+    color: #5f6b7a;
+}
+
+.stats-grid {
     display: grid;
-    grid-template-columns: 4fr 3fr;
-    margin: 0 0 0 0;
-    padding: 0px 0px 0px 0px;
+    gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    margin: 14px 0;
 }
-.play_button{
-    width:180px;
-    height:120px;
-    font-size: 28px;
+
+.stat-card {
+    background: #fff;
+    border: 1px solid #d9dde5;
+    border-radius: 10px;
+    padding: 10px;
 }
-.left_section {
+
+.stat-card .label {
+    margin: 0;
+    color: #5f6b7a;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}
+
+.stat-card .value {
+    margin: 6px 0 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.panel {
+    background: #fff;
+    border: 1px solid #d9dde5;
+    border-radius: 12px;
+    padding: 14px;
+    margin-top: 12px;
+}
+
+.panel h2 {
+    margin: 0 0 8px;
+}
+
+.generate-form,
+.answer-form {
+    display: grid;
+    gap: 8px;
+    max-width: 540px;
+}
+
+.generate-form select,
+.generate-form button,
+.answer-form button {
+    border: 1px solid #d9dde5;
+    border-radius: 8px;
+    padding: 9px;
+    font: inherit;
+}
+
+.generate-form button,
+.answer-form button {
+    background: #1f6feb;
+    color: #fff;
+    border: 0;
+    cursor: pointer;
+}
+
+.mission-question {
+    font-weight: 600;
+}
+
+.choice-row {
     display: flex;
-    flex-direction: column;
-    align-items: center; 
-    gap: 12px; 
+    align-items: center;
+    gap: 8px;
+    border: 1px solid #d9dde5;
+    border-radius: 8px;
+    padding: 8px;
 }
-.difficulty_button{
-    width: 140px;
-    height: 100px;
-    font-size: 28px;
+
+.result-panel.success {
+    border-color: #96d9b0;
+    background: #f2fbf6;
 }
-.cancel_button{
-    align-self: flex-start;
+
+.result-panel.error {
+    border-color: #e6a8a8;
+    background: #fff4f4;
+}
+
+.badge-grid {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+}
+
+.badge-card {
+    border: 1px solid #d9dde5;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.badge-name {
+    margin: 0;
+    font-weight: 700;
+}
+
+.badge-tier {
+    margin: 6px 0 0;
+    color: #5f6b7a;
+}
+
+.table-wrap {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    border: 1px solid #d9dde5;
+    text-align: left;
+    vertical-align: top;
+    padding: 8px;
+    font-size: 0.9rem;
+}
+
+th {
+    background: #f8fafc;
+}
+
+.muted {
+    color: #5f6b7a;
+}
+
+@media (max-width: 700px) {
+    .panel {
+        padding: 10px;
+    }
+
+    th,
+    td {
+        font-size: 0.82rem;
+        padding: 6px;
+    }
 }

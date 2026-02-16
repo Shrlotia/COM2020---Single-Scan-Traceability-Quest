@@ -5,7 +5,7 @@ from flask_login import current_user, login_required
 
 from sstq.auth_decorators import roles_required
 from sstq.extensions import db
-from sstq.models import Breakdown, Claim, Evidence, Product, Stage
+from sstq.models import Breakdown, ChangeLog, Claim, Evidence, Issue, Product, Stage
 
 product_bp = Blueprint("product", __name__)
 
@@ -109,6 +109,11 @@ def _build_edit_payload(product):
     }
 
 
+def _log_change(summary):
+    if current_user.is_authenticated:
+        db.session.add(ChangeLog(user_id=current_user.user_id, change_summary=summary))
+
+
 # product list page that shows all products in the DB
 @product_bp.route("/product", methods=["GET"])
 @login_required
@@ -148,6 +153,46 @@ def product_evidence(barcode):
 
     claims = sorted(product.claims, key=lambda c: c.claim_id)
     return render_template("product_evidence.html", product=product, claims=claims)
+
+
+@product_bp.route("/product/claim/<int:claim_id>/report_issue", methods=["POST"])
+@login_required
+def report_issue(claim_id):
+    claim = db.session.get(Claim, claim_id)
+    barcode = (request.form.get("barcode") or "").strip()
+    if not claim:
+        flash("Claim not found.", "error")
+        if barcode:
+            return redirect(url_for("product.product_evidence", barcode=barcode))
+        return redirect(url_for("product.product"))
+
+    issue_type = (request.form.get("issue_type") or "").strip()
+    description = (request.form.get("description") or "").strip()
+
+    if not issue_type or not description:
+        flash("Issue type and description are required.", "error")
+        return redirect(url_for("product.product_evidence", barcode=claim.product_barcode))
+
+    try:
+        issue = Issue(
+            claim_id=claim.claim_id,
+            user_id=current_user.user_id,
+            issue_type=issue_type,
+            description=description,
+            status="open",
+        )
+        db.session.add(issue)
+        _log_change(
+            f"Reported issue for claim #{claim.claim_id} on product {claim.product_barcode}: {issue_type}."
+        )
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        flash("Failed to submit issue report.", "error")
+        return redirect(url_for("product.product_evidence", barcode=claim.product_barcode))
+
+    flash("Issue report submitted.", "success")
+    return redirect(url_for("product.product_evidence", barcode=claim.product_barcode))
 
 
 @product_bp.route("/product/edit/<barcode>", methods=["GET"])
@@ -335,6 +380,9 @@ def product_update(barcode):
                 )
             )
 
+        _log_change(
+            f"Updated product '{name}' ({new_barcode}) with timeline/breakdown/claim/evidence changes."
+        )
         db.session.commit()
     except Exception:
         db.session.rollback()
@@ -378,6 +426,7 @@ def product_add():
         )
 
         db.session.add(new_product)
+        _log_change(f"Created product '{new_product.name}' ({new_product.barcode}).")
         db.session.commit()
 
         return jsonify({"success": True, "barcode": barcode}), 200
@@ -396,7 +445,9 @@ def delete_product(barcode):
         return redirect(url_for("product.product"))
 
     try:
+        product_name = product.name
         db.session.delete(product)
+        _log_change(f"Deleted product '{product_name}' ({barcode}).")
         db.session.commit()
     except Exception:
         db.session.rollback()

@@ -170,6 +170,28 @@
     color: var(--text-muted);
 }
 
+.report-form {
+    margin-top: 10px;
+    display: grid;
+    gap: 6px;
+}
+
+.report-form input,
+.report-form textarea,
+.report-form button {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 8px;
+    font: inherit;
+}
+
+.report-form button {
+    background: var(--accent);
+    color: #fff;
+    border: 0;
+    cursor: pointer;
+}
+
 .page-actions {
     margin-top: 16px;
     display: flex;

@@ -2,10 +2,87 @@
 
 {% block title %}Profile{% endblock %}
 {% block custom_css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">{% endblock %}
-{% block custom_js%}<script type="module" src="{{ url_for('static', filename='js/profile.js') }}" defer></script>{% endblock %}
 
 {% block content %}
-<div class="body-element">
+<section class="profile-page">
     <h1>{{ current_user.username }}'s Profile</h1>
-</div>
+    <p class="intro">Role: <strong>{{ current_user.role }}</strong></p>
+
+    <div class="stats-grid">
+        <article class="stat-card"><p class="label">Points</p><p class="value">{{ progress.points }}</p></article>
+        <article class="stat-card"><p class="label">Missions Played</p><p class="value">{{ progress.missions_total }}</p></article>
+        <article class="stat-card"><p class="label">Missions Correct</p><p class="value">{{ progress.missions_correct }}</p></article>
+        <article class="stat-card"><p class="label">Accuracy</p><p class="value">{{ progress.accuracy }}%</p></article>
+        <article class="stat-card"><p class="label">Basic</p><p class="value">{{ progress.tier_counts.basic }}</p></article>
+        <article class="stat-card"><p class="label">Intermediate</p><p class="value">{{ progress.tier_counts.intermediate }}</p></article>
+        <article class="stat-card"><p class="label">Advanced</p><p class="value">{{ progress.tier_counts.advanced }}</p></article>
+    </div>
+
+    <section class="panel">
+        <h2>Badges</h2>
+        {% if badges %}
+            <div class="badge-grid">
+                {% for badge in badges %}
+                    <article class="badge-card">
+                        <p class="badge-name">{{ badge.name }}</p>
+                        <p class="badge-tier">{{ badge.tier }}</p>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="muted">No badges yet.</p>
+        {% endif %}
+    </section>
+
+    <section class="panel">
+        <h2>My Reported Issues</h2>
+        {% if my_issues %}
+            <p class="muted">
+                {% for status, count in issue_status_breakdown.items() %}
+                    <span class="status-chip">{{ status }}: {{ count }}</span>
+                {% endfor %}
+            </p>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Issue</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Resolution</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for issue in my_issues %}
+                            <tr>
+                                <td>#{{ issue.issue_id }} - Claim {{ issue.claim_id }}</td>
+                                <td>{{ issue.issue_type }}</td>
+                                <td>{{ issue.status }}</td>
+                                <td>{{ issue.resolution_note or '-' }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="muted">You have not reported any issues yet.</p>
+        {% endif %}
+    </section>
+
+    <section class="panel">
+        <h2>Recent Account Activity</h2>
+        {% if my_changes %}
+            <ul class="change-list">
+                {% for change in my_changes %}
+                    <li>
+                        <span class="time">{{ change.timestamp }}</span>
+                        <span>{{ change.change_summary }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="muted">No recorded changes yet.</p>
+        {% endif %}
+    </section>
+</section>
 {% endblock %}
