@@ -14,3 +14,14 @@ The team project for the group 'HK Corner'. Intended to allow the user to enter 
 ## Link to Scrum Board
 
 - https://hkcorner.atlassian.net/jira/core/projects/ABCDE/board?filter=&groupBy=status
+
+## How to run the Application
+
+- Giving permisson to the shell script file
+```chmod +x build.sh run.sh```
+
+- Install the requirements and get in venv
+```./build.sh```
+
+- Run the Application
+```./run.sh```
