@@ -12,10 +12,8 @@ product_bp = Blueprint("product", __name__)
 def _safe_text(value):
     return str(value or "").replace("|", "/").replace("\n", " ").strip()
 
-
 def _serialize_rows(rows):
     return "\n".join("|".join(_safe_text(field) for field in row) for row in rows)
-
 
 def _parse_rows(raw_text, expected_parts):
     rows = []
@@ -30,7 +28,6 @@ def _parse_rows(raw_text, expected_parts):
         rows.append((line_no, parts))
     return rows
 
-
 def _parse_date(value, field_name, line_no):
     value = (value or "").strip()
     if not value:
@@ -40,14 +37,12 @@ def _parse_date(value, field_name, line_no):
     except ValueError as exc:
         raise ValueError(f"Invalid date for {field_name} on line {line_no}. Use YYYY-MM-DD.") from exc
 
-
 def _format_date(value):
     if not value:
         return ""
     if isinstance(value, datetime):
         return value.strftime("%Y-%m-%d")
     return value.strftime("%Y-%m-%d")
-
 
 def _build_edit_payload(product):
     stages = sorted(product.stages, key=lambda s: (s.start_date or datetime.min.date(), s.stage_id))
@@ -108,11 +103,9 @@ def _build_edit_payload(product):
         "evidence_rows": _serialize_rows(evidence_rows),
     }
 
-
 def _log_change(summary):
     if current_user.is_authenticated:
         db.session.add(ChangeLog(user_id=current_user.user_id, change_summary=summary))
-
 
 # product list page that shows all products in the DB
 @product_bp.route("/product", methods=["GET"])
@@ -120,7 +113,6 @@ def _log_change(summary):
 def product():
     products = Product.query.order_by(Product.name.asc()).all()
     return render_template("product.html", products=products)
-
 
 @product_bp.route("/product/<barcode>", methods=["GET"])
 @login_required
@@ -142,7 +134,6 @@ def product_detail(barcode):
         claims=claims,
     )
 
-
 @product_bp.route("/product/evidence/<barcode>", methods=["GET"])
 @login_required
 def product_evidence(barcode):
@@ -153,47 +144,6 @@ def product_evidence(barcode):
 
     claims = sorted(product.claims, key=lambda c: c.claim_id)
     return render_template("product_evidence.html", product=product, claims=claims)
-
-
-@product_bp.route("/product/claim/<int:claim_id>/report_issue", methods=["POST"])
-@login_required
-def report_issue(claim_id):
-    claim = db.session.get(Claim, claim_id)
-    barcode = (request.form.get("barcode") or "").strip()
-    if not claim:
-        flash("Claim not found.", "error")
-        if barcode:
-            return redirect(url_for("product.product_evidence", barcode=barcode))
-        return redirect(url_for("product.product"))
-
-    issue_type = (request.form.get("issue_type") or "").strip()
-    description = (request.form.get("description") or "").strip()
-
-    if not issue_type or not description:
-        flash("Issue type and description are required.", "error")
-        return redirect(url_for("product.product_evidence", barcode=claim.product_barcode))
-
-    try:
-        issue = Issue(
-            claim_id=claim.claim_id,
-            user_id=current_user.user_id,
-            issue_type=issue_type,
-            description=description,
-            status="open",
-        )
-        db.session.add(issue)
-        _log_change(
-            f"Reported issue for claim #{claim.claim_id} on product {claim.product_barcode}: {issue_type}."
-        )
-        db.session.commit()
-    except Exception:
-        db.session.rollback()
-        flash("Failed to submit issue report.", "error")
-        return redirect(url_for("product.product_evidence", barcode=claim.product_barcode))
-
-    flash("Issue report submitted.", "success")
-    return redirect(url_for("product.product_evidence", barcode=claim.product_barcode))
-
 
 @product_bp.route("/product/edit/<barcode>", methods=["GET"])
 @roles_required("verifier", "admin")
@@ -392,7 +342,6 @@ def product_update(barcode):
     flash("Product updated successfully.", "success")
     return redirect(url_for("product.product_detail", barcode=new_barcode))
 
-
 # endpoint that allows a verifier to add/update products within the DB, adding claims and evidence labels
 @product_bp.route("/add_product", methods=["GET", "POST"])
 @roles_required("verifier", "admin")
@@ -434,7 +383,6 @@ def product_add():
     # if not JSON it will show the html
     return render_template("product_add.html")
 
-
 # endpoint to delete a product from the DB, only accessible to verifiers and admins
 @product_bp.route("/product/<barcode>/delete", methods=["POST"])
 @roles_required("verifier", "admin")
@@ -456,3 +404,42 @@ def delete_product(barcode):
 
     flash("Product deleted successfully.", "success")
     return redirect(url_for("product.product"))
+
+@product_bp.route("/product/claim/<int:claim_id>/report_issue", methods=["POST"])
+@login_required
+def report_issue(claim_id):
+    claim = db.session.get(Claim, claim_id)
+    barcode = (request.form.get("barcode") or "").strip()
+    if not claim:
+        flash("Claim not found.", "error")
+        if barcode:
+            return redirect(url_for("product.product_evidence", barcode=barcode))
+        return redirect(url_for("product.product"))
+
+    issue_type = (request.form.get("issue_type") or "").strip()
+    description = (request.form.get("description") or "").strip()
+
+    if not issue_type or not description:
+        flash("Issue type and description are required.", "error")
+        return redirect(url_for("product.product_evidence", barcode=claim.product_barcode))
+
+    try:
+        issue = Issue(
+            claim_id=claim.claim_id,
+            user_id=current_user.user_id,
+            issue_type=issue_type,
+            description=description,
+            status="open",
+        )
+        db.session.add(issue)
+        _log_change(
+            f"Reported issue for claim #{claim.claim_id} on product {claim.product_barcode}: {issue_type}."
+        )
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        flash("Failed to submit issue report.", "error")
+        return redirect(url_for("product.product_evidence", barcode=claim.product_barcode))
+
+    flash("Issue report submitted.", "success")
+    return redirect(url_for("product.product_evidence", barcode=claim.product_barcode))
