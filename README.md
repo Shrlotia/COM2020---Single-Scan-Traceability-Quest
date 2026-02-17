@@ -20,7 +20,7 @@ The team project for the group 'HK Corner'. Intended to allow the user to enter 
 - Giving permisson to the shell script file
 ```chmod +x build.sh run.sh```
 
-- Install the requirements and get in venv
+- Get venv and Install the requirements
 ```./build.sh```
 
 - Run the Application
