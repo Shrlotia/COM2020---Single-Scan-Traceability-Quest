@@ -13,7 +13,6 @@
     <form id="login-register-form" action="{{ url_for('auth.login') }}" method="POST">
         <input id="username" name="username" placeholder="Username" required>
         <input id="password" name="password" type="password" placeholder="Password" required>
-        <label><input id="is-verifier" name="is_verifier" type="checkbox">I am a product owner/verifier</label>
         <button type="submit" name="action" value="login">Login</button>
         <button type="submit" name="action" value="register">Register</button>
     </form>
