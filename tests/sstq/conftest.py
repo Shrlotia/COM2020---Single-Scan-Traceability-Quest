@@ -1,6 +1,6 @@
 import pytest
 import sstq.main
-from sstq.config import app, db
+from sstq.main import app, db
 from sstq.models import User
 
 @pytest.fixture
