@@ -32,6 +32,8 @@ The team project for the group 'HK Corner'. Intended to allow the user to enter 
 
 ***Prerequisite**: must have **Python 3.11 (or higher)** and **PIP package installer** installed*
 
+***WARNING: You must use the app BEFORE testing - otherwise the database will not work as intended*** 
+
 - Move into the root folder of the code repository within the terminal (i.e.: ```cd Downloads\COM2020---Single-Scan-Traceability-Quest-main```)
 
 - Type in ```build``` to build the ```.venv``` directory and install all of the required PyPi packages
