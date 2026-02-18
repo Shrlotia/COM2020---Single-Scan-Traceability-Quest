@@ -25,3 +25,5 @@ The team project for the group 'HK Corner'. Intended to allow the user to enter 
 
 - Run the Application
 ```./run.sh```
+
+- Access the application from your browser by typing ```http://127.0.0.1:8000``` into the address bar or by pressing ```shift+click``` on the same link in the terminal (in GitHub Codespaces)
