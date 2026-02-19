@@ -1,57 +1,76 @@
-{% extends "base.html" %}
-
-{% block title %}Add Product{% endblock %}
-{% block custom_css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/product_add.css') }}">{% endblock %}
-{% block custom_js%}<script type="module" src="{{ url_for('static', filename='js/product_add.js') }}" defer></script>{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% block title %}Add Product{% endblock %} {% block
+custom_css %}<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/product_add.css') }}"
+/>{% endblock %} {% block custom_js%}
+<script
+  type="module"
+  src="{{ url_for('static', filename='js/product_add.js') }}"
+  defer
+></script>
+{% endblock %} {% block content %}
 <div class="body-element">
-    <h1>Add Products</h1>
-    <h2>Enter a Barcode</h2>
+  <h1>Add Products</h1>
+  <h2>Enter a Barcode</h2>
 
-    <p>Type in a valid barcode (including leading zeroes) to start</p>
+  <p>Type in a valid barcode (including leading zeroes) to start</p>
 
-    <form id="barcode-form">
-        <input id="barcode" name="barcode" placeholder="Barcode" required>
-        <button type="submit">Next</button>
+  <form id="barcode-form">
+    <input id="barcode" name="barcode" placeholder="Barcode" required />
+    <button type="submit">Next</button>
+  </form>
+  <p id="error" class="error-message" hidden></p>
+
+  <h2>Or scan barcode with camera</h2>
+  <div>
+    <button id="start-scan" type="button">Start Camera</button>
+    <button id="stop-scan" type="button">Stop / Close</button>
+  </div>
+  <p id="status">Scanner is idle.</p>
+  <p id="detected"></p>
+  <div class="scanner">
+    <video id="preview" autoplay muted playsinline></video>
+    <div class="scan-overlay" aria-hidden="true">
+      <div class="scan-box"></div>
+    </div>
+  </div>
+
+  <div id="details-form" hidden>
+    <form id="productDetailsForm">
+      <input id="image_url" name="image_url" type="hidden" />
+
+      <h3>Take Product Photo</h3>
+      <div>
+        <button id="start-photo-camera" type="button">Open Photo Camera</button>
+        <button id="capture-photo" type="button">Capture Photo</button>
+        <button id="stop-photo-camera" type="button">Close Photo Camera</button>
+      </div>
+      <p id="image-status">No photo uploaded yet.</p>
+      <div class="scanner">
+        <video id="photo-preview" autoplay muted playsinline></video>
+      </div>
+      <img
+        id="captured-image"
+        class="captured-image"
+        alt="Captured product photo"
+        hidden
+      />
+      <input id="name" name="name" placeholder="Product Name" required />
+      <input
+        id="category"
+        name="category"
+        placeholder="Product Category"
+        required
+      />
+      <input id="brand" name="brand" placeholder="Product Brand" required />
+      <input
+        id="Description"
+        name="Description"
+        placeholder="Product Description"
+        required
+      />
+      <button type="submit">Submit</button>
     </form>
-    <p id="error" class="error-message" hidden></p>
-
-    <h2>Or scan barcode with camera</h2>
-    <div>
-        <button id="start-scan" type="button">Start Camera</button>
-        <button id="stop-scan" type="button">Stop / Close</button>
-    </div>
-    <p id="status">Scanner is idle.</p>
-    <p id="detected"></p>
-    <div class="scanner">
-        <video id="preview" autoplay muted playsinline></video>
-        <div class="scan-overlay" aria-hidden="true">
-            <div class="scan-box"></div>
-        </div>
-    </div>
-
-    <div id="details-form" hidden>
-        <form id="productDetailsForm">
-            <input id="image_url" name="image_url" type="hidden">
-
-            <h3>Take Product Photo</h3>
-            <div>
-                <button id="start-photo-camera" type="button">Open Photo Camera</button>
-                <button id="capture-photo" type="button">Capture Photo</button>
-                <button id="stop-photo-camera" type="button">Close Photo Camera</button>
-            </div>
-            <p id="image-status">No photo uploaded yet.</p>
-            <div class="scanner">
-                <video id="photo-preview" autoplay muted playsinline></video>
-            </div>
-            <img id="captured-image" class="captured-image" alt="Captured product photo" hidden>
-            <input id="name" name="name" placeholder="Product Name" required>
-            <input id="category" name="category" placeholder="Product Category" required>
-            <input id="brand" name="brand" placeholder="Product Brand" required>
-            <input id="Description" name="Description" placeholder="Product Description" required>
-            <button type="submit">Submit</button>
-        </form>
-    </div>
+  </div>
 </div>
 {% endblock %}

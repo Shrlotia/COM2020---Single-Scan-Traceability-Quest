@@ -6,8 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const items = grid.querySelectorAll(".product-block");
 
-  const normalize = (str) =>
-    (str || "").toString().trim().toLowerCase();
+  const normalize = (str) => (str || "").toString().trim().toLowerCase();
 
   input.addEventListener("input", () => {
     const query = normalize(input.value);
@@ -17,9 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const name = normalize(item.dataset.name);
 
       const match =
-        query === "" ||
-        barcode.includes(query) ||
-        name.includes(query);
+        query === "" || barcode.includes(query) || name.includes(query);
 
       item.style.display = match ? "" : "none";
     });

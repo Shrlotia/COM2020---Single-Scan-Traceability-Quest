@@ -1,111 +1,133 @@
-{% extends "base.html" %}
-
-{% block title %}Product{% endblock %}
-
-{% block custom_css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/product_detail.css') }}">{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% block title %}Product{% endblock %} {% block
+custom_css %}<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/product_detail.css') }}"
+/>{% endblock %} {% block content %}
 <section class="product-page">
-    <h1>Product Detail</h1>
+  <h1>Product Detail</h1>
 
-    <article class="product-card">
-        <div class="product-image-wrapper">
-            {% if product.image %}
-                <img
-                    id="product-image"
-                    class="product-image"
-                    src="{{ product.image }}"
-                    alt="{{ product.name }} image"
-                    loading="lazy">
-            {% else %}
-                <div id="product-image-fallback" class="product-image-fallback">No image available</div>
-            {% endif %}
-        </div>
-
-        <div class="product-info">
-            <p class="field">
-                <span class="label">Name</span>
-                <span class="value">{{ product.name }}</span>
-            </p>
-            <p class="field">
-                <span class="label">Barcode</span>
-                <span class="value">{{ product.barcode }}</span>
-            </p>
-            <p class="field">
-                <span class="label">Brand</span>
-                <span class="value">{{ product.brand }}</span>
-            </p>
-            <p class="field">
-                <span class="label">Category</span>
-                <span class="value">{{ product.category }}</span>
-            </p>
-            <div class="field description-field">
-                <span class="label">Description</span>
-                <p id="description" class="description">{{ product.description }}</p>
-            </div>
-        </div>
-    </article>
-
-    <section class="content-card">
-        <h2>Timeline</h2>
-        {% if stages %}
-            <div class="list-wrapper">
-                {% for stage in stages %}
-                    <article class="list-item">
-                        <h3>{{ stage.stage_type }}</h3>
-                        <p>{{ stage.country }}{% if stage.region %}, {{ stage.region }}{% endif %}</p>
-                        <p>{{ stage.start_date or "-" }} to {{ stage.end_date or "-" }}</p>
-                        <p>{{ stage.description }}</p>
-                    </article>
-                {% endfor %}
-            </div>
-        {% else %}
-            <p class="empty-text">No timeline data yet.</p>
-        {% endif %}
-    </section>
-
-    <section class="content-card">
-        <h2>Origin Breakdown</h2>
-        {% if breakdowns %}
-            <div class="list-wrapper">
-                {% for breakdown in breakdowns %}
-                    <article class="list-item">
-                        <h3>{{ breakdown.breakdown_name }}</h3>
-                        <p>{{ breakdown.country }} | {{ "%.2f"|format(breakdown.percentage) }}%</p>
-                        {% if breakdown.notes %}
-                            <p>{{ breakdown.notes }}</p>
-                        {% endif %}
-                    </article>
-                {% endfor %}
-            </div>
-        {% else %}
-            <p class="empty-text">No origin breakdown data yet.</p>
-        {% endif %}
-    </section>
-
-    <section class="content-card">
-        <h2>Claim Cards</h2>
-        {% if claims %}
-            <div class="claim-grid">
-                {% for claim in claims %}
-                    <a class="claim-card" href="{{ url_for('product.product_evidence', barcode=product.barcode) }}#claim-{{ claim.claim_id }}">
-                        <p class="claim-type">{{ claim.claim_type }}</p>
-                        <p class="claim-text">{{ claim.claim_text }}</p>
-                        <p class="claim-confidence">{{ claim.confidence_label or "No label" }}</p>
-                    </a>
-                {% endfor %}
-            </div>
-        {% else %}
-            <p class="empty-text">No claims yet.</p>
-        {% endif %}
-    </section>
-
-    <div class="page-actions">
-        <a class="action-link" href="{{ url_for('product.product') }}">Back to all products</a>
-        <a class="action-link" href="{{ url_for('product.product_evidence', barcode=product.barcode) }}">Open Evidence View</a>
-        {% if current_user.is_authenticated and (current_user.is_verifier or current_user.is_admin) %}
-            <a class="action-link" href="{{ url_for('product.product_edit', barcode=product.barcode) }}">Edit Product</a>
-        {% endif %}
+  <article class="product-card">
+    <div class="product-image-wrapper">
+      {% if product.image %}
+      <img
+        id="product-image"
+        class="product-image"
+        src="{{ product.image }}"
+        alt="{{ product.name }} image"
+        loading="lazy"
+      />
+      {% else %}
+      <div id="product-image-fallback" class="product-image-fallback">
+        No image available
+      </div>
+      {% endif %}
     </div>
+
+    <div class="product-info">
+      <p class="field">
+        <span class="label">Name</span>
+        <span class="value">{{ product.name }}</span>
+      </p>
+      <p class="field">
+        <span class="label">Barcode</span>
+        <span class="value">{{ product.barcode }}</span>
+      </p>
+      <p class="field">
+        <span class="label">Brand</span>
+        <span class="value">{{ product.brand }}</span>
+      </p>
+      <p class="field">
+        <span class="label">Category</span>
+        <span class="value">{{ product.category }}</span>
+      </p>
+      <div class="field description-field">
+        <span class="label">Description</span>
+        <p id="description" class="description">{{ product.description }}</p>
+      </div>
+    </div>
+  </article>
+
+  <section class="content-card">
+    <h2>Timeline</h2>
+    {% if stages %}
+    <div class="list-wrapper">
+      {% for stage in stages %}
+      <article class="list-item">
+        <h3>{{ stage.stage_type }}</h3>
+        <p>
+          {{ stage.country }}{% if stage.region %}, {{ stage.region }}{% endif
+          %}
+        </p>
+        <p>{{ stage.start_date or "-" }} to {{ stage.end_date or "-" }}</p>
+        <p>{{ stage.description }}</p>
+      </article>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="empty-text">No timeline data yet.</p>
+    {% endif %}
+  </section>
+
+  <section class="content-card">
+    <h2>Origin Breakdown</h2>
+    {% if breakdowns %}
+    <div class="list-wrapper">
+      {% for breakdown in breakdowns %}
+      <article class="list-item">
+        <h3>{{ breakdown.breakdown_name }}</h3>
+        <p>
+          {{ breakdown.country }} | {{ "%.2f"|format(breakdown.percentage) }}%
+        </p>
+        {% if breakdown.notes %}
+        <p>{{ breakdown.notes }}</p>
+        {% endif %}
+      </article>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="empty-text">No origin breakdown data yet.</p>
+    {% endif %}
+  </section>
+
+  <section class="content-card">
+    <h2>Claim Cards</h2>
+    {% if claims %}
+    <div class="claim-grid">
+      {% for claim in claims %}
+      <a
+        class="claim-card"
+        href="{{ url_for('product.product_evidence', barcode=product.barcode) }}#claim-{{ claim.claim_id }}"
+      >
+        <p class="claim-type">{{ claim.claim_type }}</p>
+        <p class="claim-text">{{ claim.claim_text }}</p>
+        <p class="claim-confidence">
+          {{ claim.confidence_label or "No label" }}
+        </p>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="empty-text">No claims yet.</p>
+    {% endif %}
+  </section>
+
+  <div class="page-actions">
+    <a class="action-link" href="{{ url_for('product.product') }}"
+      >Back to all products</a
+    >
+    <a
+      class="action-link"
+      href="{{ url_for('product.product_evidence', barcode=product.barcode) }}"
+      >Open Evidence View</a
+    >
+    {% if current_user.is_authenticated and (current_user.is_verifier or
+    current_user.is_admin) %}
+    <a
+      class="action-link"
+      href="{{ url_for('product.product_edit', barcode=product.barcode) }}"
+      >Edit Product</a
+    >
+    {% endif %}
+  </div>
 </section>
 {% endblock %}

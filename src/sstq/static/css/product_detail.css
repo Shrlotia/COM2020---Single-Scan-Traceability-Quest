@@ -1,221 +1,223 @@
 :root {
-    --card-bg: #ffffff;
-    --border-color: #d9dde5;
-    --text-main: #1b1f24;
-    --text-muted: #5f6b7a;
-    --accent: #1f6feb;
-    --accent-hover: #195bcc;
+  --card-bg: #ffffff;
+  --border-color: #d9dde5;
+  --text-main: #1b1f24;
+  --text-muted: #5f6b7a;
+  --accent: #1f6feb;
+  --accent-hover: #195bcc;
 }
 
 .product-page {
-    max-width: 980px;
-    margin: 24px auto;
-    padding: 0 8px 24px;
+  max-width: 980px;
+  margin: 24px auto;
+  padding: 0 8px 24px;
 }
 
 .product-page h1 {
-    color: var(--text-main);
-    margin-bottom: 18px;
+  color: var(--text-main);
+  margin-bottom: 18px;
 }
 
 .page-subtitle {
-    margin-top: -10px;
-    color: var(--text-muted);
+  margin-top: -10px;
+  color: var(--text-muted);
 }
 
 .product-card,
 .content-card {
-    background: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 14px;
-    padding: 18px;
-    box-shadow: 0 6px 20px rgba(16, 24, 40, 0.08);
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 6px 20px rgba(16, 24, 40, 0.08);
 }
 
 .product-card {
-    display: grid;
-    grid-template-columns: minmax(220px, 320px) 1fr;
-    gap: 22px;
+  display: grid;
+  grid-template-columns: minmax(220px, 320px) 1fr;
+  gap: 22px;
 }
 
 .content-card {
-    margin-top: 16px;
+  margin-top: 16px;
 }
 
 .content-card h2 {
-    margin-top: 0;
+  margin-top: 0;
 }
 
 .product-image-wrapper {
-    width: 100%;
+  width: 100%;
 }
 
 .product-image {
-    display: block;
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    object-fit: cover;
-    border-radius: 12px;
-    border: 1px solid var(--border-color);
-    background: #f2f4f8;
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: #f2f4f8;
 }
 
 .product-image-fallback {
-    display: grid;
-    place-items: center;
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    border-radius: 12px;
-    border: 1px dashed var(--border-color);
-    color: var(--text-muted);
-    background: #f8fafc;
-    text-align: center;
-    padding: 12px;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  border: 1px dashed var(--border-color);
+  color: var(--text-muted);
+  background: #f8fafc;
+  text-align: center;
+  padding: 12px;
 }
 
 .product-info {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .field {
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    padding-left: 12px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding-left: 12px;
 }
 
 .label {
-    color: var(--text-muted);
-    font-size: 0.84rem;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+  color: var(--text-muted);
+  font-size: 0.84rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .value {
-    color: var(--text-main);
-    font-size: 1.02rem;
-    line-height: 1.4;
-    word-break: break-word;
+  color: var(--text-main);
+  font-size: 1.02rem;
+  line-height: 1.4;
+  word-break: break-word;
 }
 
 .description {
-    margin: 0;
-    color: var(--text-main);
-    line-height: 1.55;
-    white-space: pre-line;
+  margin: 0;
+  color: var(--text-main);
+  line-height: 1.55;
+  white-space: pre-line;
 }
 
 .list-wrapper {
-    display: grid;
-    gap: 10px;
+  display: grid;
+  gap: 10px;
 }
 
 .list-item {
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 12px;
 }
 
 .list-item h3 {
-    margin: 0 0 6px;
+  margin: 0 0 6px;
 }
 
 .list-item p {
-    margin: 4px 0;
+  margin: 4px 0;
 }
 
 .claim-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
 }
 
 .claim-card {
-    display: block;
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    padding: 12px;
-    color: inherit;
-    text-decoration: none;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  display: block;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 12px;
+  color: inherit;
+  text-decoration: none;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 .claim-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.12);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.12);
 }
 
 .claim-type {
-    margin: 0;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    font-size: 0.8rem;
+  margin: 0;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-size: 0.8rem;
 }
 
 .claim-text {
-    margin: 8px 0;
-    font-weight: 600;
+  margin: 8px 0;
+  font-weight: 600;
 }
 
 .claim-confidence {
-    margin: 0;
-    color: var(--accent);
+  margin: 0;
+  color: var(--accent);
 }
 
 .empty-text {
-    margin: 0;
-    color: var(--text-muted);
+  margin: 0;
+  color: var(--text-muted);
 }
 
 .report-form {
-    margin-top: 10px;
-    display: grid;
-    gap: 6px;
+  margin-top: 10px;
+  display: grid;
+  gap: 6px;
 }
 
 .report-form input,
 .report-form textarea,
 .report-form button {
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 8px;
-    font: inherit;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px;
+  font: inherit;
 }
 
 .report-form button {
-    background: var(--accent);
-    color: #fff;
-    border: 0;
-    cursor: pointer;
+  background: var(--accent);
+  color: #fff;
+  border: 0;
+  cursor: pointer;
 }
 
 .page-actions {
-    margin-top: 16px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .action-link {
-    color: var(--accent);
-    text-decoration: none;
-    font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
 }
 
 .action-link:hover {
-    text-decoration: underline;
+  text-decoration: underline;
 }
 
 @media (max-width: 860px) {
-    .product-card {
-        grid-template-columns: 1fr;
-    }
+  .product-card {
+    grid-template-columns: 1fr;
+  }
 
-    .product-image-wrapper {
-        max-width: 360px;
-    }
+  .product-image-wrapper {
+    max-width: 360px;
+  }
 }

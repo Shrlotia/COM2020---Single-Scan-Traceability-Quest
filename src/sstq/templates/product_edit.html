@@ -1,115 +1,205 @@
-{% extends "base.html" %}
-
-{% block title %}Edit Product{% endblock %}
-
-{% block custom_css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/product_edit.css') }}">{% endblock %}
-{% block custom_js%}<script type="module" src="{{ url_for('static', filename='js/product_edit.js') }}" defer></script>{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% block title %}Edit Product{% endblock %} {% block
+custom_css %}<link
+  rel="stylesheet"
+  href="{{ url_for('static', filename='css/product_edit.css') }}"
+/>{% endblock %} {% block custom_js%}
+<script
+  type="module"
+  src="{{ url_for('static', filename='js/product_edit.js') }}"
+  defer
+></script>
+{% endblock %} {% block content %}
 <section class="product-page">
-    <h1>Edit Product</h1>
+  <h1>Edit Product</h1>
 
-    <article class="product-card">
-        <div class="product-image-wrapper">
-            {% if image %}
-                <img
-                    id="product-image"
-                    class="product-image"
-                    src="{{ image }}"
-                    alt="{{ name }} image"
-                    loading="lazy">
-            {% else %}
-                <div id="product-image-fallback" class="product-image-fallback">No image available</div>
-            {% endif %}
-        </div>
-
-        <div class="product-info">
-            <p class="field">
-                <span class="label">Current Name</span>
-                <span class="value">{{ name }}</span>
-            </p>
-            <p class="field">
-                <span class="label">Current Barcode</span>
-                <span class="value">{{ barcode }}</span>
-            </p>
-            <p class="field">
-                <span class="label">Current Brand</span>
-                <span class="value">{{ brand }}</span>
-            </p>
-            <p class="field">
-                <span class="label">Current Category</span>
-                <span class="value">{{ category }}</span>
-            </p>
-        </div>
-    </article>
-
-    <div class="page-actions">
-        <a class="action-link" href="{{ url_for('product.product_detail', barcode=barcode) }}">Back to product detail</a>
-        <a class="action-link" href="{{ url_for('product.product_evidence', barcode=barcode) }}">Open Evidence View</a>
-        <a class="action-link" href="{{ url_for('product.product') }}">Back to all products</a>
+  <article class="product-card">
+    <div class="product-image-wrapper">
+      {% if image %}
+      <img
+        id="product-image"
+        class="product-image"
+        src="{{ image }}"
+        alt="{{ name }} image"
+        loading="lazy"
+      />
+      {% else %}
+      <div id="product-image-fallback" class="product-image-fallback">
+        No image available
+      </div>
+      {% endif %}
     </div>
 
-    <section class="editor-panel">
-        <h2>Edit Product + Timeline + Origin Breakdown + Claims</h2>
-        <form class="editor-form" method="POST" action="{{ url_for('product.product_update', barcode=barcode) }}">
-            <label for="edit-barcode">Barcode</label>
-            <input id="edit-barcode" name="barcode" value="{{ barcode }}" required>
+    <div class="product-info">
+      <p class="field">
+        <span class="label">Current Name</span>
+        <span class="value">{{ name }}</span>
+      </p>
+      <p class="field">
+        <span class="label">Current Barcode</span>
+        <span class="value">{{ barcode }}</span>
+      </p>
+      <p class="field">
+        <span class="label">Current Brand</span>
+        <span class="value">{{ brand }}</span>
+      </p>
+      <p class="field">
+        <span class="label">Current Category</span>
+        <span class="value">{{ category }}</span>
+      </p>
+    </div>
+  </article>
 
-            <label for="edit-name">Name</label>
-            <input id="edit-name" name="name" value="{{ name }}" required>
+  <div class="page-actions">
+    <a
+      class="action-link"
+      href="{{ url_for('product.product_detail', barcode=barcode) }}"
+      >Back to product detail</a
+    >
+    <a
+      class="action-link"
+      href="{{ url_for('product.product_evidence', barcode=barcode) }}"
+      >Open Evidence View</a
+    >
+    <a class="action-link" href="{{ url_for('product.product') }}"
+      >Back to all products</a
+    >
+  </div>
 
-            <label for="edit-category">Category</label>
-            <input id="edit-category" name="category" value="{{ category }}" required>
+  <section class="editor-panel">
+    <h2>Edit Product + Timeline + Origin Breakdown + Claims</h2>
+    <form
+      class="editor-form"
+      method="POST"
+      action="{{ url_for('product.product_update', barcode=barcode) }}"
+    >
+      <label for="edit-barcode">Barcode</label>
+      <input id="edit-barcode" name="barcode" value="{{ barcode }}" required />
 
-            <label for="edit-brand">Brand</label>
-            <input id="edit-brand" name="brand" value="{{ brand }}" required>
+      <label for="edit-name">Name</label>
+      <input id="edit-name" name="name" value="{{ name }}" required />
 
-            <label for="edit-description">Description</label>
-            <textarea id="edit-description" name="description" rows="4" required>{{ description }}</textarea>
+      <label for="edit-category">Category</label>
+      <input
+        id="edit-category"
+        name="category"
+        value="{{ category }}"
+        required
+      />
 
-            <label>Product Image ** .jpg only **</label>
-            <input id="edit-image" name="image" type="hidden" value="{{ image or '' }}">
-            <div class="image-edit-tools">
-                <input id="edit-image-file" type="file" accept="image/*">
-                <button id="upload-image-file" type="button">Upload Selected Image</button>
-            </div>
+      <label for="edit-brand">Brand</label>
+      <input id="edit-brand" name="brand" value="{{ brand }}" required />
 
-            <div class="image-edit-tools">
-                <button id="start-edit-photo-camera" type="button">Open Camera</button>
-                <button id="capture-edit-photo" type="button">Capture Photo</button>
-                <button id="stop-edit-photo-camera" type="button">Close Camera</button>
-            </div>
+      <label for="edit-description">Description</label>
+      <textarea id="edit-description" name="description" rows="4" required>
+{{ description }}</textarea
+      >
 
-            <p id="edit-image-status" class="image-status">
-                {% if image %}Current image is set.{% else %}No image set yet.{% endif %}
-            </p>
-            <div class="scanner">
-                <video id="edit-photo-preview" autoplay muted playsinline></video>
-            </div>
-            <img id="edit-captured-image" class="captured-image" src="{{ image or '' }}" alt="Product image preview" {% if not image %}hidden{% endif %}>
+      <label>Product Image ** .jpg only **</label>
+      <input
+        id="edit-image"
+        name="image"
+        type="hidden"
+        value="{{ image or '' }}"
+      />
+      <div class="image-edit-tools">
+        <input id="edit-image-file" type="file" accept="image/*" />
+        <button id="upload-image-file" type="button">
+          Upload Selected Image
+        </button>
+      </div>
 
-            <h3>Timeline Rows</h3>
-            <p class="format-help">One row per line: <code>stage_type|country|region|start_date|end_date|description</code> (date format: YYYY-MM-DD)</p>
-            <textarea name="timeline_rows" rows="8" placeholder="Raw Material|Brazil|Amazon|2024-01-01|2024-01-08|Cocoa bean sourcing">{{ stage_rows }}</textarea>
+      <div class="image-edit-tools">
+        <button id="start-edit-photo-camera" type="button">Open Camera</button>
+        <button id="capture-edit-photo" type="button">Capture Photo</button>
+        <button id="stop-edit-photo-camera" type="button">Close Camera</button>
+      </div>
 
-            <h3>Origin Breakdown Rows</h3>
-            <p class="format-help">One row per line: <code>name|country|percentage|notes</code></p>
-            <textarea name="breakdown_rows" rows="6" placeholder="Cocoa|Brazil|65|Rainforest farm region">{{ breakdown_rows }}</textarea>
+      <p id="edit-image-status" class="image-status">
+        {% if image %}Current image is set.{% else %}No image set yet.{% endif
+        %}
+      </p>
+      <div class="scanner">
+        <video id="edit-photo-preview" autoplay muted playsinline></video>
+      </div>
+      <img
+        id="edit-captured-image"
+        class="captured-image"
+        src="{{ image or '' }}"
+        alt="Product image preview"
+        {%
+        if
+        not
+        image
+        %}hidden{%
+        endif
+        %}
+      />
 
-            <h3>Claim Rows</h3>
-            <p class="format-help">One row per line: <code>claim_type|claim_text|confidence_label|rationale</code></p>
-            <textarea name="claim_rows" rows="8" placeholder="Sustainability|Uses certified farms|verified|Checked against latest certificates">{{ claim_rows }}</textarea>
+      <h3>Timeline Rows</h3>
+      <p class="format-help">
+        One row per line:
+        <code>stage_type|country|region|start_date|end_date|description</code>
+        (date format: YYYY-MM-DD)
+      </p>
+      <textarea
+        name="timeline_rows"
+        rows="8"
+        placeholder="Raw Material|Brazil|Amazon|2024-01-01|2024-01-08|Cocoa bean sourcing"
+      >
+{{ stage_rows }}</textarea
+      >
 
-            <h3>Evidence Rows</h3>
-            <p class="format-help">One row per line: <code>claim_index|evidence_type|issuer|date|summary|file_reference</code> (claim index starts from 1 based on Claim Rows)</p>
-            <textarea name="evidence_rows" rows="10" placeholder="1|Certificate|Rainforest Alliance|2024-02-15|Annual certificate renewed|docs/cert-2024.pdf">{{ evidence_rows }}</textarea>
+      <h3>Origin Breakdown Rows</h3>
+      <p class="format-help">
+        One row per line: <code>name|country|percentage|notes</code>
+      </p>
+      <textarea
+        name="breakdown_rows"
+        rows="6"
+        placeholder="Cocoa|Brazil|65|Rainforest farm region"
+      >
+{{ breakdown_rows }}</textarea
+      >
 
-            <button type="submit" class="primary-button">Save Changes</button>
-        </form>
+      <h3>Claim Rows</h3>
+      <p class="format-help">
+        One row per line:
+        <code>claim_type|claim_text|confidence_label|rationale</code>
+      </p>
+      <textarea
+        name="claim_rows"
+        rows="8"
+        placeholder="Sustainability|Uses certified farms|verified|Checked against latest certificates"
+      >
+{{ claim_rows }}</textarea
+      >
 
-        <form method="POST" action="{{ url_for('product.delete_product', barcode=barcode) }}" onsubmit="return confirm('Delete this product? This cannot be undone.');">
-            <button type="submit" class="danger-button">Delete Product</button>
-        </form>
-    </section>
+      <h3>Evidence Rows</h3>
+      <p class="format-help">
+        One row per line:
+        <code
+          >claim_index|evidence_type|issuer|date|summary|file_reference</code
+        >
+        (claim index starts from 1 based on Claim Rows)
+      </p>
+      <textarea
+        name="evidence_rows"
+        rows="10"
+        placeholder="1|Certificate|Rainforest Alliance|2024-02-15|Annual certificate renewed|docs/cert-2024.pdf"
+      >
+{{ evidence_rows }}</textarea
+      >
+
+      <button type="submit" class="primary-button">Save Changes</button>
+    </form>
+
+    <form
+      method="POST"
+      action="{{ url_for('product.delete_product', barcode=barcode) }}"
+      onsubmit="return confirm('Delete this product? This cannot be undone.');"
+    >
+      <button type="submit" class="danger-button">Delete Product</button>
+    </form>
+  </section>
 </section>
 {% endblock %}

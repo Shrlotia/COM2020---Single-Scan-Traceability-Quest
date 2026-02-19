@@ -9,9 +9,13 @@ const uploadImageFileButton = document.getElementById("upload-image-file");
 const editImageStatus = document.getElementById("edit-image-status");
 const editCapturedImage = document.getElementById("edit-captured-image");
 const editPhotoVideo = document.getElementById("edit-photo-preview");
-const startEditPhotoCameraButton = document.getElementById("start-edit-photo-camera");
+const startEditPhotoCameraButton = document.getElementById(
+  "start-edit-photo-camera",
+);
 const captureEditPhotoButton = document.getElementById("capture-edit-photo");
-const stopEditPhotoCameraButton = document.getElementById("stop-edit-photo-camera");
+const stopEditPhotoCameraButton = document.getElementById(
+  "stop-edit-photo-camera",
+);
 
 let editPhotoStream = null;
 
@@ -130,7 +134,8 @@ async function startEditPhotoCamera() {
   stopEditPhotoCamera(false);
 
   if (!navigator.mediaDevices?.getUserMedia) {
-    editImageStatus.textContent = "Camera not available here. Use HTTPS (tunnel) or localhost.";
+    editImageStatus.textContent =
+      "Camera not available here. Use HTTPS (tunnel) or localhost.";
     return;
   }
 
@@ -174,29 +179,35 @@ function captureEditPhoto() {
   context.drawImage(editPhotoVideo, 0, 0, width, height);
   editImageStatus.textContent = "Uploading captured photo...";
 
-  canvas.toBlob(async (blob) => {
-    if (!blob) {
-      editImageStatus.textContent = "Capture failed.";
-      return;
-    }
-
-    try {
-      const data = await uploadImageBlob(blob);
-      if (!data.success) {
-        editImageStatus.textContent = data.message || "Photo upload failed.";
+  canvas.toBlob(
+    async (blob) => {
+      if (!blob) {
+        editImageStatus.textContent = "Capture failed.";
         return;
       }
 
-      applyUploadedImageUrl(data.image_url);
-      editImageStatus.textContent = "Photo uploaded successfully.";
-    } catch (error) {
-      editImageStatus.textContent = "Photo upload failed.";
-    }
-  }, "image/jpeg", 0.9);
+      try {
+        const data = await uploadImageBlob(blob);
+        if (!data.success) {
+          editImageStatus.textContent = data.message || "Photo upload failed.";
+          return;
+        }
+
+        applyUploadedImageUrl(data.image_url);
+        editImageStatus.textContent = "Photo uploaded successfully.";
+      } catch (error) {
+        editImageStatus.textContent = "Photo upload failed.";
+      }
+    },
+    "image/jpeg",
+    0.9,
+  );
 }
 
 uploadImageFileButton?.addEventListener("click", uploadSelectedFile);
 startEditPhotoCameraButton?.addEventListener("click", startEditPhotoCamera);
 captureEditPhotoButton?.addEventListener("click", captureEditPhoto);
-stopEditPhotoCameraButton?.addEventListener("click", () => stopEditPhotoCamera(true));
+stopEditPhotoCameraButton?.addEventListener("click", () =>
+  stopEditPhotoCamera(true),
+);
 window.addEventListener("beforeunload", () => stopEditPhotoCamera(false));
