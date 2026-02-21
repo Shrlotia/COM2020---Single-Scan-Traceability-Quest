@@ -1,5 +1,4 @@
 import pytest
-import sstq.main
 from sstq.main import app, db
 from sstq.models import User
 
