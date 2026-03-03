@@ -1,6 +1,7 @@
 from datetime import datetime
+from pathlib import Path
 
-from flask import Blueprint, current_app, flash, jsonify, redirect, render_template, request, url_for
+from flask import Blueprint, current_app, flash, jsonify, redirect, render_template, request, send_from_directory, url_for
 from flask_login import current_user, login_required
 
 from sstq.auth_decorators import roles_required
@@ -8,6 +9,9 @@ from sstq.extensions import db
 from sstq.models import Breakdown, ChangeLog, Claim, Evidence, Issue, Product, Stage
 
 product_bp = Blueprint("product", __name__)
+
+# Filesystem path to the shared assets/products directory inside the repo static folder.
+ASSET_PRODUCTS_DIR = Path(__file__).resolve().parent.parent / "static" / "assets" / "products"
 
 def _safe_text(value):
     return str(value or "").replace("|", "/").replace("\n", " ").strip()
@@ -112,6 +116,15 @@ def _build_edit_payload(product):
 def _log_change(summary):
     if current_user.is_authenticated:
         db.session.add(ChangeLog(user_id=current_user.user_id, change_summary=summary))
+
+
+@product_bp.route("/assets/products/<path:filename>", methods=["GET"])
+def product_asset_image(filename):
+    """
+    Serve product images from the shared assets/products directory so they
+    can be referenced directly in templates without needing to rerun scripts.
+    """
+    return send_from_directory(ASSET_PRODUCTS_DIR, filename)
 
 
 # product list page that shows all products in the DB

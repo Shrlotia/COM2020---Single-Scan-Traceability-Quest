@@ -11,15 +11,17 @@
     <article class="product-card">
         <div class="product-image-wrapper">
             {% if product.image %}
-                <img
-                    id="product-image"
-                    class="product-image"
-                    src="{{ product.image }}"
-                    alt="{{ product.name }} image"
-                    loading="lazy">
+                {% set image_url = product.image %}
             {% else %}
-                <div id="product-image-fallback" class="product-image-fallback">No image available</div>
+                {% set image_url = url_for('product.product_asset_image', filename=product.barcode ~ '.jpg') %}
             {% endif %}
+
+            <img
+                id="product-image"
+                class="product-image"
+                src="{{ image_url }}"
+                alt="{{ product.name }} image"
+                loading="lazy">
         </div>
 
         <div class="product-info">
