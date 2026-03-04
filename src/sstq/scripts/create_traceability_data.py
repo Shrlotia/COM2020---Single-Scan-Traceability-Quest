@@ -1,12 +1,18 @@
 """Generate random Stage/Breakdown/Claim/Evidence data for existing products.
 
-Usage examples:
-  python sstq.scripts.create_traceability_data 
-  (default: generates all data types for all products)
-  python sstq.scripts.create_traceability_data --barcode 0009542005979 --only timeline claims 
-  (generates only timeline and claims for the specified product)
-  python sstq.scripts.create_traceability_data --replace-existing --seed 42 
-  (defaults to all data types for all products, but with deterministic random values and overwriting existing data)
+Usage:
+  python ./src/sstq/scripts/create_traceability_data.py
+    - Generate all sections (timeline, breakdown, claims, evidence) for all products.
+    - Default behavior does NOT overwrite existing records.
+
+  python ./src/sstq/scripts/create_traceability_data.py --barcode 0009542005979 --only timeline claims
+    - Generate only selected sections for one product.
+
+  python ./src/sstq/scripts/create_traceability_data.py --limit 20 --seed 42
+    - Generate deterministic demo data for the first 20 products.
+
+  python ./src/sstq/scripts/create_traceability_data.py --replace-existing --only claims evidence
+    - Replace old data for selected sections before generating new rows.
 """
 
 from __future__ import annotations

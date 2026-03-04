@@ -1,14 +1,44 @@
-# Simple data import tools
-# use to added products data from the SimplifiedOFFData.json file to database
+"""Import product data from JSONL into the products table.
+
+Usage:
+  python ./src/sstq/scripts/create_products.py
+    - Use default file search:
+      1) ./instance/SimplifiedOFFData.jsonl
+      2) ./src/instance/SimplifiedOFFData.jsonl
+      3) ./src/sstq/scripts/SimplifiedOFFData.jsonl
+
+  python ./src/sstq/scripts/create_products.py --file src/instance/new_products.jsonl
+    - Import from a specific JSONL file.
+
+  python ./src/sstq/scripts/create_products.py --file new_products.jsonl
+    - Relative path works (current dir / instance / src/instance / project root / scripts).
+
+  python ./src/sstq/scripts/create_products.py --file src/instance/new_products.jsonl --update-existing
+    - Update existing products with the same barcode.
+"""
+
 import argparse
 import json
 from pathlib import Path
-from flask import current_app
 
+from sstq import create_app
 from sstq.extensions import db
 from sstq.models import Product
 
-DEFAULT_JSONL = Path(__file__).with_name("SimplifiedOFFData.jsonl")
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+INSTANCE_DIR_CANDIDATES = [
+    PROJECT_ROOT / "instance",
+    PROJECT_ROOT / "src" / "instance",
+]
+LEGACY_DEFAULT_JSONL = Path(__file__).with_name("SimplifiedOFFData.jsonl")
+
+
+def get_default_jsonl_path() -> Path:
+    for instance_dir in INSTANCE_DIR_CANDIDATES:
+        candidate = instance_dir / "SimplifiedOFFData.jsonl"
+        if candidate.exists():
+            return candidate
+    return INSTANCE_DIR_CANDIDATES[0] / "SimplifiedOFFData.jsonl"
 
 def normalize_barcode(value: str) -> str:
     digits = "".join(ch for ch in str(value or "") if ch.isdigit())
@@ -26,13 +56,32 @@ def normalize_text(value, fallback: str, max_len: int) -> str:
         text = fallback
     return text[:max_len]
 
+def resolve_jsonl_path(raw_path: str) -> Path:
+    candidate = Path(raw_path).expanduser()
+    if candidate.is_absolute():
+        return candidate
+
+    instance_paths = [instance_dir / candidate for instance_dir in INSTANCE_DIR_CANDIDATES]
+    search_paths = [
+        Path.cwd() / candidate,
+        *instance_paths,
+        PROJECT_ROOT / candidate,
+        LEGACY_DEFAULT_JSONL.parent / candidate,
+    ]
+    for path in search_paths:
+        if path.exists():
+            return path
+    return candidate
+
+
 def import_products(jsonl_path: Path, update_existing: bool) -> None:
     inserted = 0
     updated = 0
     skipped = 0
     invalid = 0
 
-    with current_app.app_context():
+    app = create_app()
+    with app.app_context():
         db.create_all()
 
         with jsonl_path.open("r", encoding="utf-8") as handle:
@@ -84,13 +133,19 @@ def import_products(jsonl_path: Path, update_existing: bool) -> None:
     print(f"Done. inserted={inserted}, updated={updated}, skipped={skipped}, invalid={invalid}")
 
 def main() -> None:
+    default_file = get_default_jsonl_path()
+    if not default_file.exists() and LEGACY_DEFAULT_JSONL.exists():
+        default_file = LEGACY_DEFAULT_JSONL
     parser = argparse.ArgumentParser(
         description="Import code/product_name/brands/categories from SimplifiedOFFData.jsonl into products table."
     )
     parser.add_argument(
         "--file",
-        default=str(DEFAULT_JSONL),
-        help="Path to OFF jsonl file (default: SimplifiedOFFData.jsonl in project root).",
+        default=str(default_file),
+        help=(
+            "Path to OFF jsonl file. Relative path lookup order: current dir -> instance/ -> "
+            "project root -> scripts/. Default prefers instance/SimplifiedOFFData.jsonl."
+        ),
     )
     parser.add_argument(
         "--update-existing",
@@ -99,7 +154,7 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    jsonl_path = Path(args.file)
+    jsonl_path = resolve_jsonl_path(args.file)
     if not jsonl_path.exists():
         raise FileNotFoundError(f"File not found: {jsonl_path}")
 
