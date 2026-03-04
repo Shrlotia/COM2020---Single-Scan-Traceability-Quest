@@ -13,8 +13,9 @@ body {
 .container {
     display: grid;
     grid-template-columns: 220px 1fr;
-    grid-template-rows: 60px minmax(0, 1fr);
-    min-height: 100vh;
+    grid-template-rows: 60px calc(100vh - 60px);
+    height: 100vh;
+    overflow: hidden;
 }
 
 /* Top bar */
@@ -50,6 +51,7 @@ body {
     padding: 15px;
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
 }
 
 .sidebar-top {
@@ -121,6 +123,9 @@ body {
     .container {
         grid-template-columns: 1fr;
         grid-template-rows: auto auto minmax(0, 1fr);
+        height: auto;
+        min-height: 100vh;
+        overflow: visible;
     }
 
     .header {
