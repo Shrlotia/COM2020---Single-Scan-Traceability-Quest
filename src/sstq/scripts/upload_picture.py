@@ -5,12 +5,16 @@ Usage:
     - Read *.jpg/jpeg from script-local upload_picture folder first.
     - Rename files with the same rule as web upload: <barcode>-<random>.jpg
     - Save files into static/uploads/products and update Product.image.
+    - Skip product when Product.image file already exists.
 
   python ./src/sstq/scripts/upload_picture.py --source upload_picture
     - Use a specific source folder (relative or absolute path).
 
   python ./src/sstq/scripts/upload_picture.py --dry-run
     - Show what would be updated without writing files or database changes.
+
+  python ./src/sstq/scripts/upload_picture.py --replace-existing
+    - Replace Product.image when old image file exists, and delete old file.
 """
 
 from __future__ import annotations
@@ -18,6 +22,7 @@ from __future__ import annotations
 import argparse
 import shutil
 from pathlib import Path
+from urllib.parse import urlparse
 from uuid import uuid4
 
 from werkzeug.utils import secure_filename
@@ -76,14 +81,38 @@ def iter_image_files(source_dir: Path) -> list[Path]:
     return sorted(set(files))
 
 
-def import_pictures(source_dir: Path, dry_run: bool = False) -> None:
+def resolve_image_path(image_value: str | None, static_folder: Path, upload_dir: Path) -> Path | None:
+    if not image_value:
+        return None
+
+    parsed = urlparse(image_value)
+    image_path = parsed.path or image_value
+    if "/static/" in image_path:
+        relative_path = image_path.split("/static/", 1)[1]
+    elif image_path.startswith("static/"):
+        relative_path = image_path.removeprefix("static/")
+    else:
+        return None
+
+    candidate = (static_folder / relative_path).resolve()
+    try:
+        candidate.relative_to(upload_dir.resolve())
+    except ValueError:
+        return None
+    return candidate
+
+
+def import_pictures(source_dir: Path, dry_run: bool = False, replace_existing: bool = False) -> None:
     app = create_app()
     copied = 0
     updated = 0
+    skipped_existing = 0
+    deleted_old = 0
     missing_barcodes: list[str] = []
 
     with app.app_context():
-        upload_dir = Path(app.static_folder) / "uploads" / "products"
+        static_folder = Path(app.static_folder)
+        upload_dir = static_folder / "uploads" / "products"
         if not dry_run:
             upload_dir.mkdir(parents=True, exist_ok=True)
 
@@ -99,10 +128,24 @@ def import_pictures(source_dir: Path, dry_run: bool = False) -> None:
                 missing_barcodes.append(filename_barcode)
                 continue
 
+            old_image_path = resolve_image_path(
+                product.image,
+                static_folder=static_folder,
+                upload_dir=upload_dir,
+            )
+            existing_image_found = bool(old_image_path and old_image_path.exists())
+            if existing_image_found and not replace_existing:
+                skipped_existing += 1
+                continue
+
             safe_barcode = secure_filename(product.barcode) if product.barcode else "product"
             new_filename = f"{safe_barcode}-{uuid4().hex[:12]}.jpg"
             destination = upload_dir / new_filename
             image_url = f"/static/uploads/products/{new_filename}"
+
+            if existing_image_found and old_image_path and not dry_run:
+                old_image_path.unlink(missing_ok=True)
+                deleted_old += 1
 
             if not dry_run:
                 shutil.copy2(image_path, destination)
@@ -119,7 +162,8 @@ def import_pictures(source_dir: Path, dry_run: bool = False) -> None:
     mode = "DRY RUN" if dry_run else "Done"
     print(
         f"{mode}. scanned={total}, copied={copied}, "
-        f"products_updated={updated}, missing={len(missing_barcodes)}"
+        f"products_updated={updated}, skipped_existing={skipped_existing}, "
+        f"deleted_old={deleted_old}, missing={len(missing_barcodes)}"
     )
     if missing_barcodes:
         print("Missing Product.barcode for files:")
@@ -143,6 +187,11 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Preview changes without copying files or writing database updates.",
     )
+    parser.add_argument(
+        "--replace-existing",
+        action="store_true",
+        help="Replace existing Product.image and delete old image files if they exist.",
+    )
     return parser.parse_args()
 
 
@@ -152,7 +201,11 @@ def main() -> None:
     if not source_dir.exists() or not source_dir.is_dir():
         raise FileNotFoundError(f"Source folder not found: {source_dir}")
 
-    import_pictures(source_dir=source_dir, dry_run=args.dry_run)
+    import_pictures(
+        source_dir=source_dir,
+        dry_run=args.dry_run,
+        replace_existing=args.replace_existing,
+    )
 
 
 if __name__ == "__main__":
