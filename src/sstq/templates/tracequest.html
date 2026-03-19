@@ -38,7 +38,40 @@
                 <option value="intermediate" {% if selected_tier == 'intermediate' %}selected{% endif %}>intermediate</option>
                 <option value="advanced" {% if selected_tier == 'advanced' %}selected{% endif %}>advanced</option>
             </select>
+            <div class="button-leaderboard-grid">
+                <div class="button-grid">
+                    <form method="POST" action="/trace_quest_game">
+                        <input type="hidden" name="tier" value="Basic">
+                        <button type="submit" class="play-button">Basic</button>
+                    </form>
 
+                    <form method="POST" action="/trace_quest_game">
+                        <input type="hidden" name="tier" value="Intermediate">
+                        <button type="submit" class="play-button">Intermediate</button>
+                    </form>
+
+                    <form method="POST" action="/trace_quest_game">
+                        <input type="hidden" name="tier" value="Advanced">
+                        <button type="submit" class="play-button">Advanced</button>
+                    </form>
+
+                    <form method="POST" action="/trace_quest_game">
+                        <input type="hidden" name="tier" value="Adaptive">
+                        <button type="submit" class="play-button">Adaptive</button>
+                    </form>
+                </div>
+                <div class="leaderboard-grid">
+                    <h2>LeaderBoard</h2>
+                    <ul>
+                        {% for entry in player_rankings %}
+                        <li class="player-rank {% if entry.player_id == player.player_id %}current-player{% endif %}">
+                            <span>{{ loop.index }}. {{ entry.username }}</span>
+                            <span>{{ entry.points }} pts</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
             <button type="submit">Generate Mission</button>
         </form>
     </section>

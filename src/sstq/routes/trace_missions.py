@@ -267,26 +267,16 @@ def _generate_mission(product, tier):
         return _make_intermediate_question(product)
     return _make_advanced_question(product)
 
-def get_player_rankings():
-    players = db.session.query(Player).order_by(Player.points.desc()).all()
-    leaderboard = []
-    for player in players:
-        leaderboard.append({
-        "player_id": player.player_id,
-        "username": player.user.username,
-        "points": player.points
-    })
-    return leaderboard
 
-@tracequest_bp.route("/trace_quest", methods=["GET", "POST"])
+@tracequest_bp.route("/trace_quest_game", methods=["GET", "POST"])
 @login_required
-def tracequest():
+def tracequest_game():
     player = _ensure_player()
 
     products = Product.query.order_by(Product.name.asc()).limit(200).all()
-    selected_barcode = request.form.get("product_barcode") or (products[0].barcode if products else "")
+    
     selected_tier = (request.form.get("tier") or "basic").strip().lower()
-    if selected_tier not in {"basic", "intermediate", "advanced"}:
+    if selected_tier not in {"Basic", "Intermediate", "Advanced", "Adaptive"}:
         selected_tier = "basic"
 
     current_mission = None
@@ -351,7 +341,6 @@ def tracequest():
         .all()
     )
     badges = Badge.query.filter_by(player_id=player.player_id).order_by(Badge.badge_id.desc()).all()
-    player_rankings = get_player_rankings()
 
     return render_template(
         "tracequest.html",
@@ -364,5 +353,4 @@ def tracequest():
         player=player,
         recent_missions=recent_missions,
         badges=badges,
-        player_rankings=player_rankings
     )
