@@ -1,10 +1,12 @@
 import { BrowserMultiFormatReader, NotFoundException } from "https://cdn.jsdelivr.net/npm/@zxing/library@0.21.2/+esm";
-
+document.getElementById("details-form").style.display = "none";
 const barcodeForm = document.getElementById("barcode-form");
 const barcodeInput = document.getElementById("barcode");
 const detailsForm = document.getElementById("details-form");
 const productDetailsForm = document.getElementById("productDetailsForm");
 const errorText = document.getElementById("error");
+const barcodeContainer = document.getElementById("barcode-container");
+const barcodeSection = document.getElementById("barcode-section");
 
 const startButton = document.getElementById("start-scan");
 const stopButton = document.getElementById("stop-scan");
@@ -64,6 +66,7 @@ function stopScanning(updateStatus = true) {
 }
 
 function stopPhotoCamera(updateStatus = true) {
+
     if (photoStream instanceof MediaStream) {
         photoStream.getTracks().forEach((track) => track.stop());
     }
@@ -71,6 +74,7 @@ function stopPhotoCamera(updateStatus = true) {
 
     if (photoVideo) {
         photoVideo.srcObject = null;
+        photoVideo.style.height = "0";
     }
 
     if (updateStatus && imageStatus) {
@@ -107,8 +111,16 @@ async function handleBarcodeSubmit(event) {
     if (barcodeForm) {
         barcodeForm.hidden = true;
     }
+
+    document.getElementById("details-form").style.display = "flex";
     if (detailsForm) {
         detailsForm.hidden = false;
+    }
+
+    
+    barcodeContainer.style.display = "none";
+    if (barcodeContainer) {
+        barcodeContainer.hidden = true;
     }
 }
 
@@ -177,6 +189,7 @@ async function startScanning() {
 }
 
 async function startPhotoCamera() {
+
     if (!photoVideo || !imageStatus) {
         return;
     }
@@ -194,6 +207,7 @@ async function startPhotoCamera() {
             audio: false,
         });
         photoVideo.srcObject = photoStream;
+        photoVideo.style.height = "500px";
         imageStatus.textContent = "Photo camera ready.";
     } catch (error) {
         imageStatus.textContent = `Could not open photo camera: ${error?.name || error}`;
