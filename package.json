@@ -1,0 +1,12 @@
+{
+  "name": "sstq-frontend",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "build:scan-barcode": "esbuild src/sstq/static/js/scan_barcode.js --bundle --format=esm --outfile=src/sstq/static/js/scan_barcode.bundle.js"
+  },
+  "dependencies": {
+    "@zxing/browser": "^0.1.5",
+    "esbuild": "^0.27.4"
+  }
+}

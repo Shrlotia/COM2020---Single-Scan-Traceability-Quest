@@ -21,6 +21,7 @@ def create_app():
     from sstq.routes.home import home_bp
     from sstq.routes.product import product_bp
     from sstq.routes.profile import profile_bp
+    from sstq.routes.scan_barcode import scan_barcode_bp
     from sstq.routes.search_product import search_product_bp
     from sstq.routes.timeline import timeline_bp
     from sstq.routes.tracequest import tracequest_bp
@@ -31,6 +32,7 @@ def create_app():
     app.register_blueprint(home_bp)
     app.register_blueprint(product_bp)
     app.register_blueprint(profile_bp)
+    app.register_blueprint(scan_barcode_bp)
     app.register_blueprint(search_product_bp)
     app.register_blueprint(timeline_bp)
     app.register_blueprint(tracequest_bp)

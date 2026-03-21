@@ -12,23 +12,14 @@
     <p>Type in a valid barcode (including leading zeroes) to start</p>
 
     <form id="barcode-form">
-        <input id="barcode" name="barcode" placeholder="Barcode" required>
+        <input id="barcode" name="barcode" placeholder="Barcode" value="{{ initial_barcode }}" required>
         <button type="submit">Next</button>
     </form>
     <p id="error" class="error-message" hidden></p>
 
     <h2>Or scan barcode with camera</h2>
     <div>
-        <button id="start-scan" type="button">Start Camera</button>
-        <button id="stop-scan" type="button">Stop / Close</button>
-    </div>
-    <p id="status">Scanner is idle.</p>
-    <p id="detected"></p>
-    <div class="scanner">
-        <video id="preview" autoplay muted playsinline></video>
-        <div class="scan-overlay" aria-hidden="true">
-            <div class="scan-box"></div>
-        </div>
+        <a href="{{ url_for('scan_barcode.scan_barcode', target='product_add') }}">Open Barcode Scanner</a>
     </div>
 
     <div id="details-form" hidden>

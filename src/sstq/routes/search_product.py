@@ -7,9 +7,11 @@ search_product_bp = Blueprint("search_product", __name__)
 @search_product_bp.route("/search_product", methods=["GET", "POST"])
 @login_required # means you cannot access this page without being authenticated
 def search_product():
+    barcode = request.args.get("barcode", "").strip()
+
     # if we want to see the main scan page, we load it in this branch
     if request.method == "GET":
-        return render_template("search_product.html")
+        return render_template("search_product.html", initial_barcode=barcode)
     # once we scan the barcode, we can process it and show the product info
     elif request.method == "POST":
         # if the barcode is empty, the value is set to ""

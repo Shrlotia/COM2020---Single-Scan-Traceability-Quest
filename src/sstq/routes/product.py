@@ -432,7 +432,7 @@ def product_add():
         return jsonify({"success": True, "barcode": barcode}), 200
 
     # if not JSON it will show the html
-    return render_template("product_add.html")
+    return render_template("product_add.html", initial_barcode=(request.args.get("barcode") or "").strip())
 
 
 # endpoint to delete a product from the DB, only accessible to verifiers and admins

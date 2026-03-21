@@ -28,5 +28,8 @@ dist/
 .idea/
 *.swp
 
+# === Node ===
+node_modules/
+
 # === Jupyter ===
 .ipynb_checkpoints/
