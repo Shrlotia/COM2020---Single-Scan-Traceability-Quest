@@ -20,6 +20,7 @@ venv/
 env/
 ENV/
 dist/
+bin/
 
 # === logs ===
 *.log

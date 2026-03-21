@@ -13,10 +13,42 @@
         <article class="stat-card"><p class="label">Missions Played</p><p class="value">{{ progress.missions_total }}</p></article>
         <article class="stat-card"><p class="label">Missions Correct</p><p class="value">{{ progress.missions_correct }}</p></article>
         <article class="stat-card"><p class="label">Accuracy</p><p class="value">{{ progress.accuracy }}%</p></article>
-        <article class="stat-card"><p class="label">Basic</p><p class="value">{{ progress.tier_counts.basic }}</p></article>
-        <article class="stat-card"><p class="label">Intermediate</p><p class="value">{{ progress.tier_counts.intermediate }}</p></article>
-        <article class="stat-card"><p class="label">Advanced</p><p class="value">{{ progress.tier_counts.advanced }}</p></article>
+        <article class="stat-card"><p class="label">Easy</p><p class="value">{{ progress.tier_counts.easy }}</p></article>
+        <article class="stat-card"><p class="label">Normal</p><p class="value">{{ progress.tier_counts.normal }}</p></article>
+        <article class="stat-card"><p class="label">Hard</p><p class="value">{{ progress.tier_counts.hard }}</p></article>
     </div>
+
+    <section class="panel">
+        <h2>Completed Missons</h2>
+        {% if mission_runs %}
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Misson</th>
+                            <th>Category</th>
+                            <th>Difficulty</th>
+                            <th>Score</th>
+                            <th>Completed At</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for mission in mission_runs %}
+                            <tr>
+                                <td><a href="{{ url_for('misson.misson_detail', misson_id=mission.mission_id) }}">#{{ mission.mission_id }}</a></td>
+                                <td>{{ mission.mission_category or "-" }}</td>
+                                <td>{{ mission.tier|title }}</td>
+                                <td>{{ mission.score or 0 }}/{{ mission.total_questions or 6 }}</td>
+                                <td>{{ mission.completed_at or "-" }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="muted">No completed missons yet.</p>
+        {% endif %}
+    </section>
 
     <section class="panel">
         <h2>Badges</h2>

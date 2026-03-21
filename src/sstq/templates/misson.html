@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Misson{% endblock %}
+{% block custom_css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/misson.css') }}">{% endblock %}
+
+{% block content %}
+<section class="quest-page">
+    <header class="quest-hero">
+        <div>
+            <p class="eyebrow">Misson Detail</p>
+            <h1>{{ mission_first.mission_category }} · {{ mission_tier_label }}</h1>
+            <p class="intro">Misson ID #{{ mission_first.mission_id }}. This page shows the 6-question pack and, after submission, the full result breakdown for the player profile.</p>
+        </div>
+        <article class="hero-card">
+            <p class="hero-label">Result</p>
+            <p class="hero-value">{{ mission_score }}/{{ mission_total }}</p>
+            <p class="hero-meta">{% if mission_completed %}Completed{% else %}In progress{% endif %}</p>
+        </article>
+    </header>
+
+    {% if not mission_completed %}
+        <section class="panel">
+            <div class="panel-heading">
+                <div>
+                    <p class="section-kicker">Answer misson</p>
+                    <h2>Complete all 6 questions</h2>
+                </div>
+            </div>
+
+            <form method="POST" class="mission-form">
+                <div class="question-list">
+                    {% for row in mission_rows %}
+                        <article class="question-card">
+                            <div class="question-meta">
+                                <span class="question-index">Q{{ row.question_number }}</span>
+                                <span class="question-product">{{ row.product_name }}</span>
+                                <a href="{{ row.section_url }}" class="section-link">{{ row.section_label }}</a>
+                            </div>
+                            <p class="question-text">{{ row.question }}</p>
+
+                            <div class="choice-grid">
+                                {% for choice in row.choices %}
+                                    <label class="choice-row">
+                                        <input type="radio" name="answer_{{ row.question_number }}" value="{{ choice }}" required>
+                                        <span>{{ choice }}</span>
+                                    </label>
+                                {% endfor %}
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+
+                <button type="submit" class="primary-button">Submit Misson</button>
+            </form>
+        </section>
+    {% else %}
+        <section class="panel result-panel">
+            <div class="panel-heading">
+                <div>
+                    <p class="section-kicker">Misson result</p>
+                    <h2>{{ mission_first.mission_category }} · {{ mission_tier_label }}</h2>
+                </div>
+                <p class="score-pill">{{ mission_score }}/{{ mission_total }} correct</p>
+            </div>
+
+            <div class="review-list">
+                {% for row in mission_rows %}
+                    <article class="review-card {% if row.correct %}correct{% else %}incorrect{% endif %}">
+                        <div class="review-top">
+                            <p class="review-title">Q{{ row.question_number }} · {{ row.product_name }}</p>
+                            <span class="review-status">{% if row.correct %}Correct{% else %}Incorrect{% endif %}</span>
+                        </div>
+                        <p class="review-question">{{ row.question }}</p>
+                        <p><strong>Your answer:</strong> {{ row.player_answer }}</p>
+                        <p><strong>Correct answer:</strong> {{ row.answer }}</p>
+                        <p><strong>Why:</strong> {{ row.explanation }}</p>
+                        <p><a href="{{ row.section_url }}" class="section-link">Open {{ row.section_label }}</a></p>
+                    </article>
+                {% endfor %}
+            </div>
+        </section>
+    {% endif %}
+
+    <section class="panel">
+        <div class="page-actions">
+            <a class="section-link" href="{{ url_for('tracequest.tracequest') }}">Back to Trace Quest</a>
+            <a class="section-link" href="{{ url_for('profile.profile') }}">Open Profile</a>
+        </div>
+    </section>
+</section>
+{% endblock %}

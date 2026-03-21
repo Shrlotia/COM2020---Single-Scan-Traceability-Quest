@@ -18,14 +18,37 @@
         />
     </div>
 
+    <div class="product-controls">
+        <label class="control-group" for="categoryFilter">
+            <span>Category</span>
+            <select id="categoryFilter">
+                <option value="">All categories</option>
+                {% for category in categories %}
+                    <option value="{{ category }}">{{ category }}</option>
+                {% endfor %}
+            </select>
+        </label>
+
+        <label class="control-group" for="sortProducts">
+            <span>Sort</span>
+            <select id="sortProducts">
+                <option value="name-asc">Name A-Z</option>
+                <option value="name-desc">Name Z-A</option>
+                <option value="category-asc">Category A-Z</option>
+                <option value="category-desc">Category Z-A</option>
+            </select>
+        </label>
+    </div>
+
     {% if products %}
-            <div class="product-grid" id="productGrid">
+        <div class="product-grid" id="productGrid">
             {% for product in products %}
                 <a
                     class="product-block"
                     href="{{ url_for('product.product_detail', barcode=product.barcode) }}"
                     data-barcode="{{ product.barcode|e }}"
                     data-name="{{ product.name|e }}"
+                    data-category="{{ product.category|e }}"
                 >
                     <div class="product-thumb-wrapper">
                         {% if product.image %}
@@ -42,6 +65,7 @@
                     </div>
                     <p class="product-barcode">{{ product.barcode }}</p>
                     <p class="product-name">{{ product.name }}</p>
+                    <p class="product-category">{{ product.category }}</p>
                 </a>
             {% endfor %}
         </div>

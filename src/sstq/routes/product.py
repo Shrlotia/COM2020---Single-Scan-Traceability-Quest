@@ -1,4 +1,6 @@
 from datetime import datetime
+from pathlib import Path
+from urllib.parse import urlparse
 
 from flask import Blueprint, current_app, flash, jsonify, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
@@ -47,6 +49,32 @@ def _format_date(value):
     if isinstance(value, datetime):
         return value.strftime("%Y-%m-%d")
     return value.strftime("%Y-%m-%d")
+
+
+def _split_categories(raw_category):
+    parts = []
+    seen = set()
+
+    for part in str(raw_category or "").split(","):
+        category = part.strip()
+        if not category:
+            continue
+        normalized = category.casefold()
+        if normalized in seen:
+            continue
+        seen.add(normalized)
+        parts.append(category)
+
+    return parts or ["Uncategorized"]
+
+def _list_categories(products):
+    categories = {}
+
+    for product in products:
+        for category in _split_categories(product.category):
+            categories.setdefault(category.casefold(), category)
+
+    return [categories[key] for key in sorted(categories)]
 
 
 def _build_edit_payload(product):
@@ -114,12 +142,57 @@ def _log_change(summary):
         db.session.add(ChangeLog(user_id=current_user.user_id, change_summary=summary))
 
 
+def _resolve_product_image_path(image_value):
+    if not image_value:
+        return None
+
+    image_path = urlparse(image_value).path or str(image_value)
+    if "/static/" in image_path:
+        relative_path = image_path.split("/static/", 1)[1]
+    elif image_path.startswith("static/"):
+        relative_path = image_path.removeprefix("static/")
+    else:
+        return None
+
+    static_root = Path(current_app.static_folder).resolve()
+    candidate = (static_root / relative_path).resolve()
+    try:
+        candidate.relative_to(static_root)
+    except ValueError:
+        return None
+
+    return candidate
+
+
+def _delete_product_image_file(image_value):
+    image_path = _resolve_product_image_path(image_value)
+    if not image_path:
+        return
+
+    image_path.unlink(missing_ok=True)
+
+
+def _delete_product_related_records(product):
+    claim_ids = [claim.claim_id for claim in Claim.query.filter_by(product_barcode=product.barcode).all()]
+    if claim_ids:
+        Evidence.query.filter(Evidence.claim_id.in_(claim_ids)).delete(synchronize_session=False)
+        Issue.query.filter(Issue.claim_id.in_(claim_ids)).delete(synchronize_session=False)
+
+    Claim.query.filter_by(product_barcode=product.barcode).delete(synchronize_session=False)
+    Stage.query.filter_by(product_barcode=product.barcode).delete(synchronize_session=False)
+    Breakdown.query.filter_by(product_barcode=product.barcode).delete(synchronize_session=False)
+
+
 # product list page that shows all products in the DB
 @product_bp.route("/product", methods=["GET"])
 @login_required
 def product():
     products = Product.query.order_by(Product.name.asc()).all()
-    return render_template("product.html", products=products)
+    return render_template(
+        "product.html",
+        products=products,
+        categories=_list_categories(products),
+    )
 
 
 @product_bp.route("/product/<barcode>", methods=["GET"])
@@ -444,8 +517,10 @@ def delete_product(barcode):
         flash("Product not found.", "error")
         return redirect(url_for("product.product"))
 
+    image_value = product.image
     try:
         product_name = product.name
+        _delete_product_related_records(product)
         db.session.delete(product)
         _log_change(f"Deleted product '{product_name}' ({barcode}).")
         db.session.commit()
@@ -453,6 +528,12 @@ def delete_product(barcode):
         db.session.rollback()
         flash("Failed to delete product. It may be referenced by other records.", "error")
         return redirect(url_for("product.product_edit", barcode=barcode))
+
+    try:
+        _delete_product_image_file(image_value)
+    except OSError:
+        current_app.logger.exception("Failed to delete image file for product %s", barcode)
+        flash("Product deleted, but its image file could not be removed.", "warning")
 
     flash("Product deleted successfully.", "success")
     return redirect(url_for("product.product"))

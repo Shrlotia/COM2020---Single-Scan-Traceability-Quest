@@ -1,0 +1,234 @@
+:root {
+    --misson-ink: #152033;
+    --misson-muted: #607087;
+    --misson-line: #d7dee8;
+    --misson-panel: #ffffff;
+    --misson-bg: #f4f7fb;
+    --misson-accent: #0e7490;
+    --misson-accent-deep: #155e75;
+    --misson-success: #0f7b4b;
+    --misson-success-bg: #eefbf3;
+    --misson-error: #b42318;
+    --misson-error-bg: #fff4f2;
+}
+
+.quest-page {
+    max-width: 1160px;
+    margin: 24px auto;
+    padding: 0 10px 28px;
+}
+
+.quest-hero {
+    display: grid;
+    grid-template-columns: 1.7fr minmax(240px, 320px);
+    gap: 18px;
+    align-items: stretch;
+    margin-bottom: 18px;
+}
+
+.eyebrow,
+.section-kicker {
+    margin: 0 0 6px;
+    color: var(--misson-accent);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.quest-page h1 {
+    margin: 0 0 10px;
+    color: var(--misson-ink);
+}
+
+.intro {
+    color: var(--misson-muted);
+}
+
+.hero-card,
+.panel,
+.question-card,
+.review-card {
+    background: var(--misson-panel);
+    border: 1px solid var(--misson-line);
+    border-radius: 16px;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+}
+
+.hero-card {
+    padding: 18px;
+    background: linear-gradient(180deg, #0f766e 0%, #115e59 100%);
+    color: #f8fffe;
+}
+
+.hero-label,
+.hero-meta {
+    margin: 0;
+}
+
+.hero-label {
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.82;
+}
+
+.hero-value {
+    margin: 10px 0 8px;
+    font-size: 2.2rem;
+    font-weight: 800;
+}
+
+.panel {
+    margin-top: 16px;
+    padding: 18px;
+    background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+}
+
+.panel-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 14px;
+}
+
+.panel-heading h2 {
+    margin: 0;
+    color: var(--misson-ink);
+}
+
+.mission-form,
+.question-list,
+.review-list {
+    display: grid;
+    gap: 14px;
+}
+
+.question-card,
+.review-card {
+    padding: 16px;
+}
+
+.question-meta,
+.review-top,
+.page-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px 12px;
+}
+
+.question-index,
+.question-product,
+.section-link,
+.score-pill,
+.review-status {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 5px 10px;
+    font-size: 0.86rem;
+}
+
+.question-index {
+    background: #dff4f8;
+    color: var(--misson-accent-deep);
+    font-weight: 700;
+}
+
+.question-product {
+    background: #eef3f8;
+    color: var(--misson-ink);
+}
+
+.section-link {
+    background: #effafc;
+    color: var(--misson-accent-deep);
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.question-text,
+.review-title,
+.review-question {
+    margin: 0;
+    color: var(--misson-ink);
+    font-weight: 700;
+}
+
+.choice-grid {
+    display: grid;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.choice-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    border: 1px solid var(--misson-line);
+    border-radius: 12px;
+    padding: 10px 12px;
+    background: #fff;
+}
+
+.primary-button {
+    width: fit-content;
+    border: 0;
+    border-radius: 999px;
+    padding: 12px 18px;
+    background: var(--misson-accent);
+    color: #fff;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.primary-button:hover {
+    background: var(--misson-accent-deep);
+}
+
+.result-panel {
+    background: linear-gradient(180deg, #f9fcff 0%, #ffffff 100%);
+}
+
+.score-pill {
+    background: #e2f7ea;
+    color: var(--misson-success);
+    font-weight: 800;
+}
+
+.review-card.correct {
+    border-color: #9bd4b1;
+    background: var(--misson-success-bg);
+}
+
+.review-card.incorrect {
+    border-color: #f3b3ab;
+    background: var(--misson-error-bg);
+}
+
+.review-card.correct .review-status {
+    background: #d7f5e2;
+    color: var(--misson-success);
+}
+
+.review-card.incorrect .review-status {
+    background: #ffe2de;
+    color: var(--misson-error);
+}
+
+@media (max-width: 860px) {
+    .quest-hero {
+        grid-template-columns: 1fr;
+    }
+
+    .panel-heading,
+    .review-top,
+    .page-actions {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

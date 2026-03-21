@@ -25,6 +25,7 @@ def create_app():
     from sstq.routes.search_product import search_product_bp
     from sstq.routes.timeline import timeline_bp
     from sstq.routes.tracequest import tracequest_bp
+    from sstq.routes.misson import misson_bp
 
     app.register_blueprint(admin_bp)
     app.register_blueprint(auth_bp)
@@ -36,5 +37,9 @@ def create_app():
     app.register_blueprint(search_product_bp)
     app.register_blueprint(timeline_bp)
     app.register_blueprint(tracequest_bp)
+    app.register_blueprint(misson_bp)
+
+    with app.app_context():
+        db.create_all()
 
     return app

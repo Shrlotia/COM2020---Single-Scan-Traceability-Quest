@@ -121,12 +121,23 @@ class Mission(db.Model):
     
     mission_id = db.Column(db.Integer, primary_key=True)
     player_id = db.Column(db.Integer, db.ForeignKey("players.player_id"), nullable=False)
+    mission_group_id = db.Column(db.String(36), nullable=True)
+    mission_category = db.Column(db.String(64), nullable=True)
     tier = db.Column(db.String(16), nullable=False)
+    product_barcode = db.Column(db.String(32), nullable=True)
+    product_name = db.Column(db.String(128), nullable=True)
+    question_number = db.Column(db.Integer, nullable=True)
+    total_questions = db.Column(db.Integer, nullable=True)
     question = db.Column(db.String(128), nullable=False)
     player_answer = db.Column(db.String(128), nullable=False)
     answer = db.Column(db.String(128), nullable=False)
     all_answers = db.Column(db.String(128), nullable=False) #comma separated list with no spaces
+    choice_blob = db.Column(db.Text, nullable=True)
     explanation = db.Column(db.String(256), nullable=False)
+    section_label = db.Column(db.String(64), nullable=True)
+    section_url = db.Column(db.String(256), nullable=True)
+    score = db.Column(db.Integer, nullable=True)
+    completed_at = db.Column(db.DateTime, nullable=True)
     
     player = db.relationship("Player", backref="missions")
     

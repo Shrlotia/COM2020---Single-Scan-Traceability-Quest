@@ -7,6 +7,15 @@ from sstq.models import Badge, ChangeLog, Issue, Mission, Player
 
 profile_bp = Blueprint("profile", __name__)
 
+TIER_MAP = {
+    "basic": "easy",
+    "intermediate": "normal",
+    "advanced": "hard",
+    "easy": "easy",
+    "normal": "normal",
+    "hard": "hard",
+}
+
 
 @profile_bp.route("/profile", methods=["GET"])
 @login_required
@@ -15,12 +24,13 @@ def profile():
 
     missions = []
     badges = []
+    mission_runs = []
     progress = {
         "points": 0,
         "missions_total": 0,
         "missions_correct": 0,
         "accuracy": 0,
-        "tier_counts": {"basic": 0, "intermediate": 0, "advanced": 0},
+        "tier_counts": {"easy": 0, "normal": 0, "hard": 0},
     }
 
     if player:
@@ -42,10 +52,13 @@ def profile():
         )
 
         tier_counts = {
-            "basic": sum(1 for mission in missions if (mission.tier or "").lower() == "basic"),
-            "intermediate": sum(1 for mission in missions if (mission.tier or "").lower() == "intermediate"),
-            "advanced": sum(1 for mission in missions if (mission.tier or "").lower() == "advanced"),
+            "easy": 0,
+            "normal": 0,
+            "hard": 0,
         }
+
+        for mission in missions:
+            tier_counts[TIER_MAP.get((mission.tier or "").lower(), "easy")] += 1
 
         progress = {
             "points": player.points,
@@ -54,6 +67,18 @@ def profile():
             "accuracy": round((missions_correct / len(missions)) * 100, 1) if missions else 0,
             "tier_counts": tier_counts,
         }
+
+        mission_runs = (
+            Mission.query.filter(
+                Mission.player_id == player.player_id,
+                Mission.mission_group_id.isnot(None),
+                Mission.question_number == 1,
+                Mission.completed_at.isnot(None),
+            )
+            .order_by(Mission.completed_at.desc(), Mission.mission_id.desc())
+            .limit(12)
+            .all()
+        )
 
     my_issues = (
         Issue.query.filter_by(user_id=current_user.user_id)
@@ -80,6 +105,7 @@ def profile():
         "profile.html",
         player=player,
         missions=missions,
+        mission_runs=mission_runs,
         badges=badges,
         progress=progress,
         my_issues=my_issues,
