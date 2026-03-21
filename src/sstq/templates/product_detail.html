@@ -53,12 +53,20 @@
         {% if stages %}
             <div class="list-wrapper">
                 {% for stage in stages %}
-                    <article class="list-item">
-                        <h3>{{ stage.stage_type }}</h3>
-                        <p>{{ stage.country }}{% if stage.region %}, {{ stage.region }}{% endif %}</p>
-                        <p>{{ stage.start_date or "-" }} to {{ stage.end_date or "-" }}</p>
-                        <p>{{ stage.description }}</p>
-                    </article>
+                    <div class="tl-item s{{ ((loop.index0 % 5) + 1) }}">
+                    <div class="tl-left">
+                        <div class="tl-num">{{ loop.index }}</div>
+                        <div class="tl-line"></div>
+                    </div>
+                    <div class="tl-card">
+                        <div class="tl-top">
+                            <span class="tl-stage">{{ stage.stage_type }}</span>
+                            <span class="tl-date">{{ stage.start_date or "-" }} – {{ stage.end_date or "-" }}</span>
+                        </div>
+                        <p class="tl-location">{{ stage.country }}{% if stage.region %}, {{ stage.region }}{% endif %}</p>
+                        <p class="tl-desc">{{ stage.description }}</p>
+                    </div>
+                </div>
                 {% endfor %}
             </div>
         {% else %}
@@ -69,15 +77,16 @@
     <section class="content-card">
         <h2>Origin Breakdown</h2>
         {% if breakdowns %}
-            <div class="list-wrapper">
+            <div class="breakdown-grid">
                 {% for breakdown in breakdowns %}
-                    <article class="list-item">
-                        <h3>{{ breakdown.breakdown_name }}</h3>
-                        <p>{{ breakdown.country }} | {{ "%.2f"|format(breakdown.percentage) }}%</p>
-                        {% if breakdown.notes %}
-                            <p>{{ breakdown.notes }}</p>
-                        {% endif %}
-                    </article>
+                    <div class="breakdown-item">
+                        <p class="breakdown-name">{{ breakdown.breakdown_name }}</p>
+                        <div class="breakdown-bar-bg">
+                            <div class="breakdown-bar" style="width:{{ breakdown.percentage }}%;background:#2563eb;"></div>
+                        </div>
+                        <p class="breakdown-country">{{ breakdown.country }}</p>
+                        <p class="breakdown-pct">{{ "%.2f"|format(breakdown.percentage) }}%{% if breakdown.notes %} — {{ breakdown.notes }}{% endif %}</p>
+                    </div>
                 {% endfor %}
             </div>
         {% else %}
@@ -93,7 +102,7 @@
                     <a class="claim-card" href="{{ url_for('product.product_evidence', barcode=product.barcode) }}#claim-{{ claim.claim_id }}">
                         <p class="claim-type">{{ claim.claim_type }}</p>
                         <p class="claim-text">{{ claim.claim_text }}</p>
-                        <p class="claim-confidence">{{ claim.confidence_label or "No label" }}</p>
+                        <p class="claim-confidence {{ claim.confidence_label }}">{{ claim.confidence_label }}</p>
                     </a>
                 {% endfor %}
             </div>

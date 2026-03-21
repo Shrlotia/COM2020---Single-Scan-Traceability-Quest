@@ -108,38 +108,184 @@
     white-space: pre-line;
 }
 
+/* Timeline */
 .list-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.tl-item {
     display: grid;
-    gap: 10px;
+    grid-template-columns: 64px 1fr;
 }
 
-.list-item {
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    padding: 12px;
+.tl-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.list-item h3 {
-    margin: 0 0 6px;
+.tl-num {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
 }
 
-.list-item p {
+.tl-line {
+    flex: 1;
+    width: 2px;
     margin: 4px 0;
+    min-height: 16px;
+    background: #e2e8f0;
 }
 
+.tl-item:last-child .tl-line {
+    display: none;
+}
+
+.tl-card {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid;
+    transition: transform 0.2s;
+}
+
+.tl-card:hover {
+    transform: translateX(3px);
+}
+
+.tl-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.4rem;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+}
+
+.tl-stage {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+}
+
+.tl-date {
+    font-size: 0.72rem;
+    color: #94a3b8;
+}
+
+.tl-location {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #0f172a;
+    margin-bottom: 0.3rem;
+}
+
+.tl-desc {
+    font-size: 0.82rem;
+    color: #64748b;
+    line-height: 1.5;
+}
+
+.s1 .tl-num { background: #2563eb; }
+.s1 .tl-card { border-color: #2563eb; }
+.s1 .tl-stage { background: #eff6ff; color: #1d4ed8; }
+
+.s2 .tl-num { background: #0f6e56; }
+.s2 .tl-card { border-color: #0f6e56; }
+.s2 .tl-stage { background: #ecfdf5; color: #065f46; }
+
+.s3 .tl-num { background: #b45309; }
+.s3 .tl-card { border-color: #b45309; }
+.s3 .tl-stage { background: #fffbeb; color: #92400e; }
+
+.s4 .tl-num { background: #9333ea; }
+.s4 .tl-card { border-color: #9333ea; }
+.s4 .tl-stage { background: #faf5ff; color: #6b21a8; }
+
+.s5 .tl-num { background: #0369a1; }
+.s5 .tl-card { border-color: #0369a1; }
+.s5 .tl-stage { background: #f0f9ff; color: #0369a1; }
+
+/* Origin Breakdown */
+.breakdown-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.breakdown-item {
+    background: #f8fafc;
+    border-radius: 12px;
+    padding: 1rem;
+    border: 1px solid #e2e8f0;
+}
+
+
+.breakdown-name {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #94a3b8;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.breakdown-bar-bg {
+    background: #e2e8f0;
+    border-radius: 999px;
+    height: 8px;
+    margin-bottom: 0.5rem;
+    overflow: hidden;
+}
+
+.breakdown-bar {
+    height: 8px;
+    border-radius: 999px;
+}
+
+.breakdown-country {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.breakdown-pct {
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-top: 0.2rem;
+}
+
+/* Claim Cards */
 .claim-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 10px;
+    gap: 1rem;
 }
 
 .claim-card {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
     border: 1px solid var(--border-color);
-    border-radius: 10px;
-    padding: 12px;
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
     color: inherit;
     text-decoration: none;
+    background: #f8fafc;
     transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
@@ -150,19 +296,47 @@
 
 .claim-type {
     margin: 0;
-    color: var(--text-muted);
+    font-size: 0.68rem;
+    font-weight: 700;
     text-transform: uppercase;
-    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    color: #94a3b8;
 }
 
 .claim-text {
-    margin: 8px 0;
+    margin: 0;
+    font-size: 0.9rem;
     font-weight: 600;
+    color: #0f172a;
+    line-height: 1.4;
+    flex: 1;
 }
 
 .claim-confidence {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.25rem 0.8rem;
+    border-radius: 999px;
+    white-space: nowrap;
+    align-self: flex-start;
     margin: 0;
-    color: var(--accent);
+}
+
+.claim-confidence.verified {
+    background: #22c55e;
+    color: white;
+}
+
+.claim-confidence.partially_verified,
+.claim-confidence.partially-verified {
+    background: #f59e0b;
+    color: white;
+}
+
+.claim-confidence.unverified {
+    background: #ef4444;
+    color: white;
 }
 
 .empty-text {

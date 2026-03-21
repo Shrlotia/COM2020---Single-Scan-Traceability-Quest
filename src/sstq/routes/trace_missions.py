@@ -149,8 +149,6 @@ def quiz_game():
         questions = _generate_quiz(category, tier)
 
         return jsonify(questions)
-#if __name__ == "__main__":
- #   from sstq import create_app
-  #  app = create_app()
-   # with app.app_context():
-    #    print(_generate_quiz("Snacks, Sweet snacks, Cocoa and its products, Confectioneries, Chocolate candies", "Advanced"))
+
+def get_feedback():
+    ok=0
