@@ -12,6 +12,7 @@ __pycache__/
 *.pyo
 *.pyd
 .pytest_cache
+.ruff_cache
 
 # === Virtual_environment ===
 venv/
