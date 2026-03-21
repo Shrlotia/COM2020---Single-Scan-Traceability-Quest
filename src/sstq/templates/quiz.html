@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Quiz Game{% endblock %}
+{% block custom_css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/quiz.css') }}">{% endblock %}
+{% block custom_js%}<script type="module" src="{{ url_for('static', filename='js/quiz.js') }}" defer></script>{% endblock %}
+
+{% block content %}
+<div class="body-element">
+    <div class="button-leaderboard-grid" id="button-leaderboard-grid">
+        <div class="left-section">
+            <label for="category">Category</label>
+            <select class="category" id="category" name="category" required>
+                {% for category in categories %}
+                    <option value="{{ category }}">{{ category }}</option>
+                {% endfor %}
+            </select>
+            <button class="category-submit" type="button" id="category-submit">Select Category</button>
+
+            <div class="button-grid" id="button-grid" style="display: none;">
+                <button class="basic-button">Basic</button>
+                <button class="intermediate-button">Intermediate</button>
+                <button class="advanced-button">Advanced</button>
+            </div>
+        </div>
+
+        <div class="leaderboard-grid">
+            <h2>LeaderBoard</h2>
+            <ul>
+                {% for entry in player_rankings %}
+                <li class="player-rank {% if entry.player_id == player.player_id %}current-player{% endif %}">
+                    <span>{{ loop.index }}. {{ entry.username }}</span>
+                    <span>{{ entry.points }} pts</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div id="questions" style="display: none;"></div>
+</div>
+{% endblock %}

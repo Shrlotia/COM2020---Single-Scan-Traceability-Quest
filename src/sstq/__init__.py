@@ -24,6 +24,7 @@ def create_app():
     from sstq.routes.scan import scan_bp
     from sstq.routes.timeline import timeline_bp
     from sstq.routes.tracequest import tracequest_bp
+    from sstq.routes.trace_missions import quiz_bp
 
     app.register_blueprint(admin_bp)
     app.register_blueprint(auth_bp)
@@ -34,5 +35,5 @@ def create_app():
     app.register_blueprint(scan_bp)
     app.register_blueprint(timeline_bp)
     app.register_blueprint(tracequest_bp)
-
+    app.register_blueprint(quiz_bp)
     return app
