@@ -3,10 +3,12 @@
 {% block title %}Error{% endblock %}
 
 {% block content %}
-<div class="error-page">
-  <h1>Oops!</h1>
-  <p>{{ message }}</p>
-
-  <a href="javascript:history.back()">← Back to previous page</a>
-</div>
+<section class="utility-page page-shell">
+  <article class="surface-panel error-page">
+    <span class="eyebrow">Something went wrong</span>
+    <h1>Oops.</h1>
+    <p>{{ message }}</p>
+    <a class="secondary-link-button" href="javascript:history.back()">Back to previous page</a>
+  </article>
+</section>
 {% endblock %}

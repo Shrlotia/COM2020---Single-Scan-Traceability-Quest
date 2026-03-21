@@ -1,21 +1,15 @@
 :root {
-    --card-bg: #ffffff;
-    --border-color: #d9dde5;
-    --text-main: #1b1f24;
-    --text-muted: #5f6b7a;
-    --accent: #1f6feb;
-    --accent-hover: #195bcc;
+    --card-bg: rgba(255, 255, 255, 0.78);
+    --border-color: rgba(23, 53, 48, 0.1);
+    --text-main: var(--ink-strong);
+    --text-muted: var(--ink-muted);
+    --accent: var(--accent-strong);
+    --accent-hover: var(--accent);
 }
 
 .product-page {
     max-width: 980px;
-    margin: 24px auto;
-    padding: 0 8px 24px;
-}
-
-.product-page h1 {
-    color: var(--text-main);
-    margin-bottom: 18px;
+    margin: 0 auto;
 }
 
 .page-subtitle {
@@ -27,9 +21,9 @@
 .content-card {
     background: var(--card-bg);
     border: 1px solid var(--border-color);
-    border-radius: 14px;
+    border-radius: 24px;
     padding: 18px;
-    box-shadow: 0 6px 20px rgba(16, 24, 40, 0.08);
+    box-shadow: var(--shadow-soft);
 }
 
 .product-card {
@@ -55,9 +49,9 @@
     width: 100%;
     aspect-ratio: 1 / 1;
     object-fit: cover;
-    border-radius: 12px;
+    border-radius: 20px;
     border: 1px solid var(--border-color);
-    background: #f2f4f8;
+    background: rgba(255, 255, 255, 0.42);
 }
 
 .product-image-fallback {
@@ -65,7 +59,7 @@
     place-items: center;
     width: 100%;
     aspect-ratio: 1 / 1;
-    border-radius: 12px;
+    border-radius: 20px;
     border: 1px dashed var(--border-color);
     color: var(--text-muted);
     background: #f8fafc;
@@ -114,8 +108,6 @@
 }
 
 .list-item {
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
     padding: 12px;
 }
 
@@ -135,9 +127,6 @@
 
 .claim-card {
     display: block;
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    padding: 12px;
     color: inherit;
     text-decoration: none;
     transition: transform 0.15s ease, box-shadow 0.15s ease;
@@ -172,42 +161,6 @@
 
 .report-form {
     margin-top: 10px;
-    display: grid;
-    gap: 6px;
-}
-
-.report-form input,
-.report-form textarea,
-.report-form button {
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 8px;
-    font: inherit;
-}
-
-.report-form button {
-    background: var(--accent);
-    color: #fff;
-    border: 0;
-    cursor: pointer;
-}
-
-.page-actions {
-    margin-top: 16px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-.action-link {
-    color: var(--accent);
-    text-decoration: none;
-    font-weight: 600;
-}
-
-.action-link:hover {
-    text-decoration: underline;
 }
 
 @media (max-width: 860px) {

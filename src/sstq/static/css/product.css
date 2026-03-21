@@ -1,12 +1,10 @@
 .product-list-page {
     max-width: 980px;
-    margin: 22px auto;
-    padding: 0 8px 24px;
+    margin: 0 auto;
 }
 
 .product-list-page h1 {
     margin-bottom: 18px;
-    color: #1b1f24;
 }
 
 .product-grid {
@@ -21,12 +19,7 @@
     justify-content: space-between;
     text-decoration: none;
     color: inherit;
-    border: 1px solid #d8dce3;
-    border-radius: 12px;
-    background: #ffffff;
-    padding: 14px;
     min-height: 120px;
-    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
     transition: transform 0.15s ease, box-shadow 0.15s ease;
     box-sizing: border-box;
 }
@@ -39,14 +32,14 @@
 .product-barcode {
     margin: 0;
     font-size: 0.92rem;
-    color: #4f5b6b;
+    color: var(--ink-muted);
 }
 
 .product-name {
     margin: 8px 0 0;
     font-size: 1.03rem;
     font-weight: 600;
-    color: #111827;
+    color: var(--ink-strong);
     line-height: 1.35;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -61,10 +54,9 @@
 #productSearch {
   width: 100%;
   max-width: 520px;
-  padding: 10px 12px;
   font-size: 16px;
 }
 
 .empty-message {
-    color: #4f5b6b;
+    color: var(--ink-muted);
 }

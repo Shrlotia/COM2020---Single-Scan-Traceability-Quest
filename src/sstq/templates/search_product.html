@@ -5,25 +5,34 @@
 {% block custom_js%}<script type="module" src="{{ url_for('static', filename='js/search_product.js') }}" defer></script>{% endblock %}
 
 {% block content %}
+<section class="utility-page page-shell">
+    <section class="page-hero utility-hero">
+        <div>
+            <span class="eyebrow">Product Search</span>
+            <h1>Start with a barcode.</h1>
+            <p class="intro">Search manually or hand the flow off to the scanner and return here automatically.</p>
+        </div>
+    </section>
 
-<div class="body-element">
-    <h1>Enter a Barcode</h1>
+    <section class="section-grid utility-grid">
+        <article class="surface-panel utility-panel">
+            <h2>Enter a barcode</h2>
+            <p>Type a valid barcode, including leading zeroes if the product uses them.</p>
 
-    <p>Type in a valid barcode (including leading zeroes)</p>
+            <form id="barcode-form" class="stack-form" action="{{ url_for('search_product.search_product') }}" method="POST">
+                <label class="field-shell" for="barcode">
+                    <span>Barcode</span>
+                    <input id="barcode" name="barcode" placeholder="e.g. 0012000041396" value="{{ initial_barcode }}" required>
+                </label>
+                <button type="submit" class="primary-action">Search product</button>
+            </form>
+        </article>
 
-    <form id="barcode-form" action="{{ url_for('search_product.search_product') }}" method="POST">
-        <input id="barcode" name="barcode" placeholder="Barcode" value="{{ initial_barcode }}" required>
-        <button type="submit">Search</button>
-    </form>
-</div>
-
-<div class="body-element">
-    <h1>Scan a Barcode</h1>
-
-    <p>Open the scanner page, scan the barcode, and return here automatically.</p>
-
-    <div>
-        <a href="{{ url_for('scan_barcode.scan_barcode', target='search_product') }}">Open Barcode Scanner</a>
-    </div>
-</div>
+        <article class="surface-panel utility-panel">
+            <h2>Scan with camera</h2>
+            <p>Open the scanner page, read the barcode live, and jump back here with the value filled in.</p>
+            <a class="secondary-link-button" href="{{ url_for('scan_barcode.scan_barcode', target='search_product') }}">Open Barcode Scanner</a>
+        </article>
+    </section>
+</section>
 {% endblock %}

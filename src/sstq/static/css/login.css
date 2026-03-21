@@ -1,43 +1,253 @@
-/* Login/Register page layout */
-.login-register-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    /* Two equal columns */
-    gap: 2rem;
-    /* Space between login and register */
-    height: 100vh;
-    /* Full viewport height */
-    padding: 2rem;
-    box-sizing: border-box;
-    background-color: #f5f5f5;
-    align-items: center;
-    /* Vertically center both sections */
-    justify-items: center;
-    /* Horizontally center content inside columns */
+.content {
+    padding: 0;
+    background:
+        radial-gradient(circle at top left, rgba(18, 128, 122, 0.22), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(240, 148, 60, 0.18), transparent 22%),
+        linear-gradient(135deg, #eff6f3 0%, #dfeae6 48%, #f5efe4 100%);
 }
 
-/* Shared styling for login and register sections */
-.login-element,
-.register-element {
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+.login-shell {
+    min-height: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(320px, 460px);
+    gap: 2rem;
+    align-items: center;
     padding: 2rem;
+}
+
+.login-hero {
+    position: relative;
+    padding: 3rem;
+    color: #12322d;
+}
+
+.login-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 32px;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.24));
+    border: 1px solid rgba(18, 50, 45, 0.08);
+    box-shadow: 0 24px 60px rgba(16, 45, 41, 0.08);
+    backdrop-filter: blur(14px);
+}
+
+.login-hero > * {
+    position: relative;
+    z-index: 1;
+}
+
+.login-eyebrow,
+.login-kicker {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    padding: 0.35rem 0.8rem;
+    border-radius: 999px;
+    background: rgba(18, 128, 122, 0.12);
+    color: #0f5f59;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.login-hero h1 {
+    margin: 1rem 0 1.25rem;
+    max-width: 10ch;
+    font-size: clamp(2.6rem, 4vw, 4.6rem);
+    line-height: 0.96;
+    letter-spacing: -0.04em;
+}
+
+.login-intro {
+    max-width: 58ch;
+    margin: 0;
+    font-size: 1.05rem;
+    line-height: 1.75;
+    color: #33554f;
+}
+
+.login-highlights {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.login-highlight-card {
+    padding: 1.2rem;
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.72);
+    border: 1px solid rgba(18, 50, 45, 0.08);
+}
+
+.login-highlight-card h2 {
+    margin: 0 0 0.5rem;
+    font-size: 1rem;
+    color: #183f39;
+}
+
+.login-highlight-card p,
+.login-card-header p {
+    margin: 0;
+    color: #4c6762;
+    line-height: 1.65;
+}
+
+.login-panel {
+    display: flex;
+    justify-content: center;
+}
+
+.login-card {
     width: 100%;
-    /* Takes up full width of column */
-    max-width: 400px;
-    /* Optional max width to keep it compact */
+    padding: 2rem;
+    border-radius: 28px;
+    background: rgba(13, 25, 24, 0.9);
+    color: #f2f5f3;
+    box-shadow: 0 28px 70px rgba(10, 22, 20, 0.28);
+}
+
+.login-card-header {
+    margin-bottom: 1.75rem;
+}
+
+.login-card-header h2 {
+    margin: 0.9rem 0 0.75rem;
+    font-size: 1.8rem;
+    line-height: 1.15;
+}
+
+.login-form {
     display: flex;
     flex-direction: column;
     gap: 1rem;
 }
 
-/* Optional separator bar between login and register (if desired) */
-.login-register-container::before {
-    content: "";
-    grid-column: 1 / 3;
-    height: 1px;
-    background-color: #ccc;
-    align-self: center;
-    justify-self: stretch;
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    font-weight: 600;
+    color: #d8e3df;
+}
+
+.input-group span {
+    font-size: 0.95rem;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 0.95rem 1rem;
+    border: 1px solid rgba(197, 218, 211, 0.18);
+    border-radius: 16px;
+    background: rgba(245, 248, 246, 0.08);
+    color: #ffffff;
+    font: inherit;
+    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.input-group input::placeholder {
+    color: #9eb4ad;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: rgba(111, 228, 208, 0.7);
+    background: rgba(245, 248, 246, 0.12);
+    box-shadow: 0 0 0 4px rgba(79, 184, 167, 0.16);
+    transform: translateY(-1px);
+}
+
+.role-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin-top: 0.25rem;
+    color: #c4d3ce;
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+
+.role-toggle input {
+    width: 1rem;
+    height: 1rem;
+    accent-color: #69d2c0;
+}
+
+.login-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.85rem;
+    margin-top: 0.5rem;
+}
+
+.login-actions button {
+    border: none;
+    border-radius: 16px;
+    padding: 0.95rem 1rem;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+.login-actions button:hover {
+    transform: translateY(-2px);
+}
+
+.login-actions button:active {
+    transform: translateY(0);
+}
+
+.primary-action {
+    background: linear-gradient(135deg, #67d6c1, #f2bf72);
+    color: #14302c;
+    box-shadow: 0 16px 28px rgba(242, 191, 114, 0.24);
+}
+
+.secondary-action {
+    background: rgba(255, 255, 255, 0.08);
+    color: #f3f6f4;
+    border: 1px solid rgba(209, 224, 218, 0.16);
+}
+
+@media (max-width: 1100px) {
+    .login-shell {
+        grid-template-columns: 1fr;
+    }
+
+    .login-hero h1 {
+        max-width: 14ch;
+    }
+
+    .login-panel {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 720px) {
+    .content {
+        padding: 0;
+    }
+
+    .login-shell {
+        padding: 1rem;
+        gap: 1rem;
+    }
+
+    .login-hero,
+    .login-card {
+        padding: 1.4rem;
+    }
+
+    .login-highlights,
+    .login-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .login-hero h1 {
+        font-size: clamp(2.1rem, 10vw, 3rem);
+    }
 }

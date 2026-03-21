@@ -15,6 +15,7 @@
 </head>
 
 <body>
+    <div class="app-background" aria-hidden="true"></div>
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
         <div class="flash-container">
@@ -32,7 +33,7 @@
                 <a href="{{ url_for('home.home') }}">HKconner-SSTQ</a>
             </div>
             <div class="page-title">
-                {{ title }}
+                {{ self.title()|striptags }}
             </div>
         </div>
 

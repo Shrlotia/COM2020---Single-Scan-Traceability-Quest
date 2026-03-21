@@ -5,8 +5,25 @@
 {% block custom_js%}<script type="module" src="{{ url_for('static', filename='js/timeline.js') }}" defer></script>{% endblock %}
 
 {% block content %}
-<div class="body-element">
-    <h1>Traceability Timeline</h1>
-    
-</div>
+<section class="utility-page page-shell">
+    <section class="page-hero utility-hero">
+        <div>
+            <span class="eyebrow">Timeline</span>
+            <h1>Traceability Timeline</h1>
+            <p class="intro">
+                Timeline rendering will appear here as the product journey view expands. Use the product pages
+                to inspect current timeline data today.
+            </p>
+        </div>
+    </section>
+
+    <article class="surface-panel placeholder-panel">
+        <h2>Coming into focus</h2>
+        <p>
+            This page is ready for a richer visual timeline component, but the underlying traceability data is
+            already available through product detail and evidence pages.
+        </p>
+        <a class="secondary-link-button" href="{{ url_for('product.product') }}">Browse products</a>
+    </article>
+</section>
 {% endblock %}

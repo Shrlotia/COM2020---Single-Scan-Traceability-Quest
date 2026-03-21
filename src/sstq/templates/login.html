@@ -5,16 +5,57 @@
 {% block custom_js%}<script type="module" src="{{ url_for('static', filename='js/login.js') }}" defer></script>{% endblock %}
 
 {% block content %}
-<div class="body-element">
-    <h1>Login</h1>
+<section class="login-shell">
+    <div class="login-hero">
+        <span class="login-eyebrow">Single Scan Traceability Quest</span>
+        <h1>Track products with a cleaner, faster account flow.</h1>
+        <p class="login-intro">
+            Sign in to keep your progress, review your profile, and unlock a smoother way to explore
+            product timelines and Trace Quest sessions.
+        </p>
 
-    <p>Enter your username and password below</p>
+        <div class="login-highlights">
+            <div class="login-highlight-card">
+                <h2>Why sign in?</h2>
+                <p>Store your activity in one place and return to the data that matters without starting over.</p>
+            </div>
+            <div class="login-highlight-card">
+                <h2>For verifiers</h2>
+                <p>Create a verifier account when you need access to product management and evidence workflows.</p>
+            </div>
+        </div>
+    </div>
 
-    <form id="login-register-form" action="{{ url_for('auth.login') }}" method="POST">
-        <input id="username" name="username" placeholder="Username" required>
-        <input id="password" name="password" type="password" placeholder="Password" required>
-        <button type="submit" name="action" value="login">Login</button>
-        <button type="submit" name="action" value="register">Register</button>
-    </form>
-</div>
+    <div class="login-panel">
+        <div class="login-card">
+            <div class="login-card-header">
+                <p class="login-kicker">Account Access</p>
+                <h2>Login or create an account</h2>
+                <p>Use the same form to sign in instantly or register a new profile.</p>
+            </div>
+
+            <form id="login-register-form" class="login-form" action="{{ url_for('auth.login') }}" method="POST">
+                <label class="input-group" for="username">
+                    <span>Username</span>
+                    <input id="username" name="username" placeholder="Enter your username" autocomplete="username" required>
+                </label>
+
+                <label class="input-group" for="password">
+                    <span>Password</span>
+                    <input id="password" name="password" type="password" placeholder="Enter your password" autocomplete="current-password" required>
+                </label>
+
+                <label class="role-toggle" for="is_verifier">
+                    <input id="is_verifier" name="is_verifier" type="checkbox">
+                    <span>Register as verifier</span>
+                </label>
+
+                <div class="login-actions">
+                    <button class="primary-action" type="submit" name="action" value="login">Login</button>
+                    <button class="secondary-action" type="submit" name="action" value="register">Register</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
 {% endblock %}

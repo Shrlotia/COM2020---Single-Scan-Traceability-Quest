@@ -5,44 +5,71 @@
 {% block custom_js%}<script type="module" src="{{ url_for('static', filename='js/product_add.js') }}" defer></script>{% endblock %}
 
 {% block content %}
-<div class="body-element">
-    <h1>Add Products</h1>
-    <h2>Enter a Barcode</h2>
+<section class="utility-page page-shell">
+    <section class="page-hero utility-hero">
+        <div>
+            <span class="eyebrow">Verifier Workflow</span>
+            <h1>Add a product without breaking the flow.</h1>
+            <p class="intro">
+                Start with a barcode, then capture the core product details and an image in one guided panel.
+            </p>
+        </div>
+    </section>
 
-    <p>Type in a valid barcode (including leading zeroes) to start</p>
+    <section class="section-grid utility-grid">
+        <article class="surface-panel utility-panel">
+            <h2>Step 1. Identify the product</h2>
+            <p>Enter a valid barcode manually or switch to the camera scanner.</p>
 
-    <form id="barcode-form">
-        <input id="barcode" name="barcode" placeholder="Barcode" value="{{ initial_barcode }}" required>
-        <button type="submit">Next</button>
-    </form>
-    <p id="error" class="error-message" hidden></p>
+            <form id="barcode-form" class="stack-form">
+                <label class="field-shell" for="barcode">
+                    <span>Barcode</span>
+                    <input id="barcode" name="barcode" placeholder="Barcode" value="{{ initial_barcode }}" required>
+                </label>
+                <button type="submit" class="primary-action">Next</button>
+            </form>
+            <p id="error" class="error-message" hidden></p>
 
-    <h2>Or scan barcode with camera</h2>
-    <div>
-        <a href="{{ url_for('scan_barcode.scan_barcode', target='product_add') }}">Open Barcode Scanner</a>
-    </div>
+            <a class="secondary-link-button" href="{{ url_for('scan_barcode.scan_barcode', target='product_add') }}">Open Barcode Scanner</a>
+        </article>
 
-    <div id="details-form" hidden>
-        <form id="productDetailsForm">
-            <input id="image_url" name="image_url" type="hidden">
+        <article id="details-form" class="surface-panel utility-panel detail-panel" hidden>
+            <form id="productDetailsForm" class="stack-form">
+                <input id="image_url" name="image_url" type="hidden">
 
-            <h3>Take Product Photo</h3>
-            <div>
-                <button id="start-photo-camera" type="button">Open Photo Camera</button>
-                <button id="capture-photo" type="button">Capture Photo</button>
-                <button id="stop-photo-camera" type="button">Close Photo Camera</button>
-            </div>
-            <p id="image-status">No photo uploaded yet.</p>
-            <div class="scanner">
-                <video id="photo-preview" autoplay muted playsinline></video>
-            </div>
-            <img id="captured-image" class="captured-image" alt="Captured product photo" hidden>
-            <input id="name" name="name" placeholder="Product Name" required>
-            <input id="category" name="category" placeholder="Product Category" required>
-            <input id="brand" name="brand" placeholder="Product Brand" required>
-            <input id="Description" name="Description" placeholder="Product Description" required>
-            <button type="submit">Submit</button>
-        </form>
-    </div>
-</div>
+                <h2>Step 2. Add product details</h2>
+
+                <div class="button-row">
+                    <button id="start-photo-camera" type="button" class="secondary-action">Open Photo Camera</button>
+                    <button id="capture-photo" type="button" class="primary-action">Capture Photo</button>
+                    <button id="stop-photo-camera" type="button" class="secondary-action">Close Photo Camera</button>
+                </div>
+
+                <p id="image-status" class="muted-text">No photo uploaded yet.</p>
+                <div class="scanner">
+                    <video id="photo-preview" autoplay muted playsinline></video>
+                </div>
+                <img id="captured-image" class="captured-image" alt="Captured product photo" hidden>
+
+                <label class="field-shell" for="name">
+                    <span>Product Name</span>
+                    <input id="name" name="name" placeholder="Product Name" required>
+                </label>
+                <label class="field-shell" for="category">
+                    <span>Category</span>
+                    <input id="category" name="category" placeholder="Product Category" required>
+                </label>
+                <label class="field-shell" for="brand">
+                    <span>Brand</span>
+                    <input id="brand" name="brand" placeholder="Product Brand" required>
+                </label>
+                <label class="field-shell" for="Description">
+                    <span>Description</span>
+                    <textarea id="Description" name="Description" rows="4" placeholder="Product Description" required></textarea>
+                </label>
+                <button type="submit" class="primary-action">Submit Product</button>
+            </form>
+        </article>
+    </section>
+</section>
 {% endblock %}

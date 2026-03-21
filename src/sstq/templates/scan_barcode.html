@@ -5,17 +5,27 @@
 {% block custom_js%}<script type="module" src="{{ url_for('static', filename='js/scan_barcode.bundle.js') }}" defer></script>{% endblock %}
 
 {% block content %}
-<div class="scan-page">
-    <button id="start-scan" class="scan-start" type="button">Tap to start camera</button>
-    <p id="status">Scanner is idle.</p>
-
-    <div class="scanner">
-        <video id="preview" autoplay muted playsinline></video>
-        <div class="scan-overlay" aria-hidden="true">
-            <div class="scan-box"></div>
+<section class="utility-page page-shell">
+    <section class="page-hero utility-hero">
+        <div>
+            <span class="eyebrow">Camera Scanner</span>
+            <h1>Scan a barcode live.</h1>
+            <p class="intro">Start the camera, center the code in frame, and the app will route you back automatically.</p>
         </div>
-    </div>
+    </section>
+
+    <article class="surface-panel scan-page">
+        <button id="start-scan" class="scan-start primary-action" type="button">Tap to start camera</button>
+        <p id="status">Scanner is idle.</p>
+
+        <div class="scanner">
+            <video id="preview" autoplay muted playsinline></video>
+            <div class="scan-overlay" aria-hidden="true">
+                <div class="scan-box"></div>
+            </div>
+        </div>
+    </article>
 
     <div id="scan-config" data-return-url="{{ return_url }}" data-target="{{ target }}"></div>
-</div>
+</section>
 {% endblock %}
