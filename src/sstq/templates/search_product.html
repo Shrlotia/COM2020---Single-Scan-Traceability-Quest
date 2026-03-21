@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 
 {% block title %}Search for Products{% endblock %}
-{% block custom_css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/scan.css') }}">{% endblock %}
-{% block custom_js%}<script type="module" src="{{ url_for('static', filename='js/scan.js') }}" defer></script>{% endblock %}
+{% block custom_css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/search_product.css') }}">{% endblock %}
+{% block custom_js%}<script type="module" src="{{ url_for('static', filename='js/search_product.js') }}" defer></script>{% endblock %}
 
 {% block content %}
 
@@ -11,7 +11,7 @@
 
     <p>Type in a valid barcode (including leading zeroes)</p>
 
-    <form id="barcode-form" action="{{ url_for('scan.scan') }}" method="POST">
+    <form id="barcode-form" action="{{ url_for('search_product.search_product') }}" method="POST">
         <input id="barcode" name="barcode" placeholder="Barcode" required>
         <button type="submit">Search</button>
     </form>
