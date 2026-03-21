@@ -5,9 +5,18 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!input || !grid) return;
 
   const items = grid.querySelectorAll(".product-block");
+  const images = grid.querySelectorAll(".product-thumb");
 
   const normalize = (str) =>
     (str || "").toString().trim().toLowerCase();
+
+  images.forEach((image) => {
+    image.addEventListener("error", () => {
+      image.hidden = true;
+      const fallback = image.parentElement?.querySelector(".product-thumb-fallback");
+      if (fallback) fallback.hidden = false;
+    });
+  });
 
   input.addEventListener("input", () => {
     const query = normalize(input.value);

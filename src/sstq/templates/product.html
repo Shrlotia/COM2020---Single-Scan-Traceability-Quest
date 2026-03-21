@@ -27,6 +27,19 @@
                     data-barcode="{{ product.barcode|e }}"
                     data-name="{{ product.name|e }}"
                 >
+                    <div class="product-thumb-wrapper">
+                        {% if product.image %}
+                            <img
+                                class="product-thumb"
+                                src="{{ product.image }}"
+                                alt="{{ product.name }} image"
+                                loading="lazy"
+                            />
+                            <div class="product-thumb-fallback" hidden>No image</div>
+                        {% else %}
+                            <div class="product-thumb-fallback">No image</div>
+                        {% endif %}
+                    </div>
                     <p class="product-barcode">{{ product.barcode }}</p>
                     <p class="product-name">{{ product.name }}</p>
                 </a>
