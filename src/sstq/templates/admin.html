@@ -5,28 +5,155 @@
 
 {% block content %}
 <section class="admin-page">
-    <h1>Admin Portal</h1>
-    <p class="intro">Verifier workflow dashboard: edit products, moderate issues, and review change history.</p>
+    <header class="admin-hero">
+        <div>
+            <p class="eyebrow">Admin Portal</p>
+            <h1>Operations dashboard</h1>
+            <p class="intro">Manage users, mission history, issue moderation, and change logs from a single control page.</p>
+        </div>
+        <div class="action-row hero-actions">
+            <a class="action-box" href="{{ url_for('product.product_add') }}">Add Product</a>
+            <a class="action-box" href="{{ url_for('product.product') }}">Open Product List</a>
+            {% if current_user.is_admin %}
+                <a class="action-box" href="{{ url_for('admin.download_logs') }}">Download Logs</a>
+            {% endif %}
+        </div>
+    </header>
 
     <div class="stats-grid">
         <article class="stat-card"><p class="label">Products</p><p class="value">{{ stats.products }}</p></article>
         <article class="stat-card"><p class="label">Stages</p><p class="value">{{ stats.stages }}</p></article>
         <article class="stat-card"><p class="label">Claims</p><p class="value">{{ stats.claims }}</p></article>
         <article class="stat-card"><p class="label">Evidence</p><p class="value">{{ stats.evidence }}</p></article>
+        <article class="stat-card"><p class="label">Users</p><p class="value">{{ stats.users }}</p></article>
+        <article class="stat-card"><p class="label">Mission Rows</p><p class="value">{{ stats.missions }}</p></article>
         <article class="stat-card"><p class="label">Open/In Review Issues</p><p class="value">{{ stats.issues_open }}</p></article>
         <article class="stat-card"><p class="label">Total Issues</p><p class="value">{{ stats.issues_total }}</p></article>
     </div>
 
+    {% if current_user.is_admin %}
+        <section class="panel">
+            <div class="panel-heading">
+                <div>
+                    <p class="section-kicker">User Management</p>
+                    <h2>Create and maintain accounts</h2>
+                </div>
+            </div>
+
+            <form class="create-user-form" method="POST" action="{{ url_for('admin.create_user') }}">
+                <input name="username" placeholder="Username" required>
+                <input name="password" type="password" placeholder="Password" required>
+                <select name="role" required>
+                    <option value="consumer">consumer</option>
+                    <option value="verifier">verifier</option>
+                    <option value="admin">admin</option>
+                </select>
+                <button type="submit">Create User</button>
+            </form>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Role</th>
+                            <th>Points</th>
+                            <th>Missions</th>
+                            <th>Badges</th>
+                            <th>Issues</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in user_summaries %}
+                            <tr>
+                                <td>
+                                    <strong>{{ row.user.username }}</strong><br>
+                                    <span class="muted">#{{ row.user.user_id }}</span>
+                                </td>
+                                <td><span class="status-chip">{{ row.user.role }}</span></td>
+                                <td>{{ row.player.points if row.player else 0 }}</td>
+                                <td>{{ row.mission_count }}</td>
+                                <td>{{ row.badge_count }}</td>
+                                <td>{{ row.issue_count }}</td>
+                                <td>
+                                    <div class="inline-actions">
+                                        <form method="POST" action="{{ url_for('admin.clear_user_missions', user_id=row.user.user_id) }}" onsubmit="return confirm('Clear all missions and badges for this user?');">
+                                            <button type="submit" class="secondary-button">Clear Missions</button>
+                                        </form>
+                                        {% if row.user.role != "admin" %}
+                                            <form method="POST" action="{{ url_for('admin.delete_user', user_id=row.user.user_id) }}" onsubmit="return confirm('Delete this user account?');">
+                                                <button type="submit" class="danger-button">Delete User</button>
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    {% endif %}
+
     <section class="panel">
-        <h2>Quick Actions</h2>
-        <div class="action-row">
-            <a class="action-link" href="{{ url_for('product.product_add') }}">Add Product</a>
-            <a class="action-link" href="{{ url_for('product.product') }}">Open Product List</a>
+        <div class="panel-heading">
+            <div>
+                <p class="section-kicker">Mission Management</p>
+                <h2>Manage user mission runs</h2>
+            </div>
         </div>
+
+        {% if mission_rows %}
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Mission</th>
+                            <th>Category</th>
+                            <th>Tier</th>
+                            <th>Score</th>
+                            <th>Completed</th>
+                            {% if current_user.is_admin %}<th>Actions</th>{% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for mission, user in mission_rows %}
+                            <tr>
+                                <td>{{ user.username }}</td>
+                                <td>
+                                    <a href="{{ url_for('misson.misson_detail', misson_id=mission.mission_id) }}">#{{ mission.mission_id }}</a><br>
+                                    <span class="muted">{{ mission.product_name }}</span>
+                                </td>
+                                <td>{{ mission.mission_category or "-" }}</td>
+                                <td>{{ mission.tier }}</td>
+                                <td>{{ mission.score if mission.score is not none else "-" }}/{{ mission.total_questions or 6 }}</td>
+                                <td>{{ mission.completed_at or "In progress" }}</td>
+                                {% if current_user.is_admin %}
+                                    <td>
+                                        <form method="POST" action="{{ url_for('admin.delete_mission_group', mission_id=mission.mission_id) }}" onsubmit="return confirm('Delete this mission run?');">
+                                            <button type="submit" class="danger-button">Delete Mission</button>
+                                        </form>
+                                    </td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="muted">No mission runs found.</p>
+        {% endif %}
     </section>
 
     <section class="panel">
-        <h2>Issue Moderation</h2>
+        <div class="panel-heading">
+            <div>
+                <p class="section-kicker">Issue Moderation</p>
+                <h2>Review, update, or delete issues</h2>
+            </div>
+        </div>
         <p class="muted">Status summary:
             {% for status, count in status_breakdown.items() %}
                 <span class="status-chip">{{ status }}: {{ count }}</span>
@@ -43,8 +170,8 @@
                             <th>Claim</th>
                             <th>Reporter</th>
                             <th>Status</th>
-                            <th>Resolution Note</th>
-                            <th>Update</th>
+                            <th>Resolution</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -75,6 +202,9 @@
                                         <input name="resolution_note" placeholder="Resolution note" value="{{ issue.resolution_note or '' }}">
                                         <button type="submit">Save</button>
                                     </form>
+                                    <form method="POST" action="{{ url_for('admin.delete_issue', issue_id=issue.issue_id) }}" onsubmit="return confirm('Delete this issue?');">
+                                        <button type="submit" class="danger-button small-danger-button">Delete Issue</button>
+                                    </form>
                                 </td>
                             </tr>
                         {% endfor %}
@@ -87,17 +217,42 @@
     </section>
 
     <section class="panel">
-        <h2>Recent Change Log</h2>
+        <div class="panel-heading">
+            <div>
+                <p class="section-kicker">Change Log</p>
+                <h2>Review, clear, or export recent changes</h2>
+            </div>
+            {% if current_user.is_admin %}
+                <div class="inline-actions">
+                    <a class="action-box" href="{{ url_for('admin.download_logs') }}">Download CSV</a>
+                    <form method="POST" action="{{ url_for('admin.clear_logs') }}" onsubmit="return confirm('Clear the entire change log?');">
+                        <button type="submit" class="danger-button">Clear Log</button>
+                    </form>
+                </div>
+            {% endif %}
+        </div>
+
         {% if recent_changes %}
-            <ul class="change-list">
-                {% for log, user in recent_changes %}
-                    <li>
-                        <span class="time">{{ log.timestamp }}</span>
-                        <strong>{{ user.username }}</strong>
-                        <span>{{ log.change_summary }}</span>
-                    </li>
-                {% endfor %}
-            </ul>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>User</th>
+                            <th>Summary</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log, user in recent_changes %}
+                            <tr>
+                                <td>{{ log.timestamp }}</td>
+                                <td>{{ user.username }}</td>
+                                <td>{{ log.change_summary }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         {% else %}
             <p class="muted">No changes logged yet.</p>
         {% endif %}

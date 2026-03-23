@@ -5,7 +5,7 @@ from flask import Blueprint, abort, flash, redirect, render_template, request, u
 
 from sstq.auth_decorators import login_required
 from sstq.extensions import db
-from sstq.models import Badge, Mission
+from sstq.models import Badge, Mission, Product
 from sstq.routes.tracequest import (
     DIFFICULTY_CONFIG,
     _award_badges,
@@ -45,6 +45,40 @@ def _load_mission_group(misson_id, player_id):
         return row, group_rows
 
     return row, [row]
+
+
+def _tip_payload(product):
+    stages = sorted(product.stages, key=lambda row: row.stage_id)
+    breakdowns = sorted(product.breakdowns, key=lambda row: row.breakdown_id)
+    claims = sorted(product.claims, key=lambda row: row.claim_id)
+    evidence_rows = []
+    for claim in claims:
+        for evidence in sorted(claim.evidence, key=lambda row: row.evidence_id):
+            evidence_rows.append(
+                f"{evidence.evidence_type} · {evidence.issuer or '-'} · {evidence.date.date() if evidence.date else '-'}"
+            )
+
+    return {
+        "name": product.name,
+        "barcode": product.barcode,
+        "brand": product.brand,
+        "category": product.category,
+        "description": product.description,
+        "stages": [
+            f"{stage.stage_type} · {stage.country}"
+            for stage in stages[:5]
+        ],
+        "breakdowns": [
+            f"{row.breakdown_name} · {row.country} · {row.percentage:.0f}%"
+            for row in breakdowns[:4]
+        ],
+        "claims": [
+            f"{claim.claim_type} · {claim.confidence_label or 'No label'}"
+            for claim in claims[:4]
+        ],
+        "evidence": evidence_rows[:4],
+        "evidence_count": sum(len(claim.evidence) for claim in claims),
+    }
 
 
 @misson_bp.route("/misson", methods=["GET"])
@@ -96,6 +130,7 @@ def misson_detail(misson_id):
 
     review_rows = []
     for row in mission_rows:
+        product = db.session.get(Product, row.product_barcode) if row.product_barcode else None
         choices = _deserialize_choices(row.choice_blob) or [_clean_text(item) for item in row.all_answers.split(",") if _clean_text(item)]
         review_rows.append(
             {
@@ -111,6 +146,7 @@ def misson_detail(misson_id):
                 "explanation": row.explanation,
                 "section_label": row.section_label or "Product Detail",
                 "section_url": row.section_url or url_for("product.product_detail", barcode=row.product_barcode),
+                "tip_payload": _tip_payload(product) if product else None,
             }
         )
 
@@ -127,4 +163,5 @@ def misson_detail(misson_id):
         mission_completed=first_row.completed_at is not None,
         mission_score=first_row.score if first_row.score is not None else 0,
         mission_total=first_row.total_questions or len(review_rows),
+        mission_tip_mode=_normalize(first_row.tier),
     )

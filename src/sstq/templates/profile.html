@@ -5,27 +5,42 @@
 
 {% block content %}
 <section class="profile-page">
-    <h1>{{ current_user.username }}'s Profile</h1>
-    <p class="intro">Role: <strong>{{ current_user.role }}</strong></p>
+    <header class="profile-hero">
+        <div>
+            <p class="eyebrow">Profile</p>
+            <h1>{{ current_user.username }}</h1>
+            <p class="intro">Track progress, review completed mission packs, and check your recent account activity.</p>
+        </div>
+        <article class="profile-role-card">
+            <p class="role-label">Account Role</p>
+            <p class="role-value">{{ current_user.role }}</p>
+        </article>
+    </header>
 
     <div class="stats-grid">
         <article class="stat-card"><p class="label">Points</p><p class="value">{{ progress.points }}</p></article>
         <article class="stat-card"><p class="label">Missions Played</p><p class="value">{{ progress.missions_total }}</p></article>
         <article class="stat-card"><p class="label">Missions Correct</p><p class="value">{{ progress.missions_correct }}</p></article>
         <article class="stat-card"><p class="label">Accuracy</p><p class="value">{{ progress.accuracy }}%</p></article>
-        <article class="stat-card"><p class="label">Easy</p><p class="value">{{ progress.tier_counts.easy }}</p></article>
-        <article class="stat-card"><p class="label">Normal</p><p class="value">{{ progress.tier_counts.normal }}</p></article>
-        <article class="stat-card"><p class="label">Hard</p><p class="value">{{ progress.tier_counts.hard }}</p></article>
+        <article class="stat-card"><p class="label">Basic</p><p class="value">{{ progress.tier_counts.easy }}</p></article>
+        <article class="stat-card"><p class="label">Intermediate</p><p class="value">{{ progress.tier_counts.normal }}</p></article>
+        <article class="stat-card"><p class="label">Advanced</p><p class="value">{{ progress.tier_counts.hard }}</p></article>
     </div>
 
     <section class="panel">
-        <h2>Completed Missons</h2>
+        <div class="panel-heading">
+            <div>
+                <p class="section-kicker">Mission History</p>
+                <h2>Completed mission packs</h2>
+            </div>
+        </div>
+
         {% if mission_runs %}
             <div class="table-wrap">
                 <table>
                     <thead>
                         <tr>
-                            <th>Misson</th>
+                            <th>Mission</th>
                             <th>Category</th>
                             <th>Difficulty</th>
                             <th>Score</th>
@@ -51,7 +66,13 @@
     </section>
 
     <section class="panel">
-        <h2>Badges</h2>
+        <div class="panel-heading">
+            <div>
+                <p class="section-kicker">Badges</p>
+                <h2>Unlocked achievements</h2>
+            </div>
+        </div>
+
         {% if badges %}
             <div class="badge-grid">
                 {% for badge in badges %}
@@ -67,7 +88,13 @@
     </section>
 
     <section class="panel">
-        <h2>My Reported Issues</h2>
+        <div class="panel-heading">
+            <div>
+                <p class="section-kicker">Issue Reports</p>
+                <h2>My reported issues</h2>
+            </div>
+        </div>
+
         {% if my_issues %}
             <p class="muted">
                 {% for status, count in issue_status_breakdown.items() %}
@@ -102,16 +129,22 @@
     </section>
 
     <section class="panel">
-        <h2>Recent Account Activity</h2>
+        <div class="panel-heading">
+            <div>
+                <p class="section-kicker">Activity</p>
+                <h2>Recent account activity</h2>
+            </div>
+        </div>
+
         {% if my_changes %}
-            <ul class="change-list">
+            <div class="activity-list">
                 {% for change in my_changes %}
-                    <li>
-                        <span class="time">{{ change.timestamp }}</span>
-                        <span>{{ change.change_summary }}</span>
-                    </li>
+                    <article class="activity-card">
+                        <p class="activity-time">{{ change.timestamp }}</p>
+                        <p class="activity-summary">{{ change.change_summary }}</p>
+                    </article>
                 {% endfor %}
-            </ul>
+            </div>
         {% else %}
             <p class="muted">No recorded changes yet.</p>
         {% endif %}

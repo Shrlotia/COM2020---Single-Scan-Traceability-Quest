@@ -2,6 +2,7 @@
 
 {% block title %}Misson{% endblock %}
 {% block custom_css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/misson.css') }}">{% endblock %}
+{% block custom_js %}<script type="module" src="{{ url_for('static', filename='js/misson.js') }}" defer></script>{% endblock %}
 
 {% block content %}
 <section class="quest-page">
@@ -37,6 +38,80 @@
                                 <a href="{{ row.section_url }}" class="section-link">{{ row.section_label }}</a>
                             </div>
                             <p class="question-text">{{ row.question }}</p>
+
+                            {% if mission_tip_mode != "hard" and row.tip_payload %}
+                                <div class="tip-actions">
+                                    <button
+                                        type="button"
+                                        class="tip-button"
+                                        data-tip-trigger
+                                        data-tip-used="false"
+                                        data-tip-mode="{{ mission_tip_mode }}"
+                                        {% if mission_tip_mode == "normal" %}data-tip-seconds="10"{% endif %}
+                                    >
+                                        Open Tips
+                                    </button>
+                                    {% if mission_tip_mode == "normal" %}
+                                        <span class="tip-note">Tips auto-close after 10 seconds.</span>
+                                    {% endif %}
+                                </div>
+
+                                <template data-tip-template>
+                                    <div class="tip-modal-copy">
+                                        <p class="tip-kicker">Product Tips</p>
+                                        <h3>{{ row.tip_payload.name }}</h3>
+                                        <p class="tip-meta">{{ row.tip_payload.barcode }} · {{ row.tip_payload.brand }}</p>
+                                        <p class="tip-description">{{ row.tip_payload.description or "No description available." }}</p>
+
+                                        <div class="tip-grid">
+                                            <section class="tip-section">
+                                                <h4>Timeline</h4>
+                                                <ul>
+                                                    {% for item in row.tip_payload.stages %}
+                                                        <li>{{ item }}</li>
+                                                    {% else %}
+                                                        <li>No timeline rows</li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </section>
+
+                                            <section class="tip-section">
+                                                <h4>Origin Breakdown</h4>
+                                                <ul>
+                                                    {% for item in row.tip_payload.breakdowns %}
+                                                        <li>{{ item }}</li>
+                                                    {% else %}
+                                                        <li>No breakdown rows</li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </section>
+
+                                            <section class="tip-section">
+                                                <h4>Claims</h4>
+                                                <ul>
+                                                    {% for item in row.tip_payload.claims %}
+                                                        <li>{{ item }}</li>
+                                                    {% else %}
+                                                        <li>No claims</li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </section>
+
+                                            <section class="tip-section">
+                                                <h4>Evidence</h4>
+                                                <p>{{ row.tip_payload.evidence_count }} evidence item(s) linked to this product.</p>
+                                                <ul>
+                                                    {% for item in row.tip_payload.evidence %}
+                                                        <li>{{ item }}</li>
+                                                    {% else %}
+                                                        <li>No evidence rows</li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </section>
+                                        </div>
+                                    </div>
+                                </template>
+                            {% endif %}
 
                             <div class="choice-grid">
                                 {% for choice in row.choices %}
@@ -88,4 +163,23 @@
         </div>
     </section>
 </section>
+
+{% if not mission_completed and mission_tip_mode != "hard" %}
+    <div id="tipModal" class="tip-modal" hidden>
+        <div class="tip-modal-backdrop" data-tip-close></div>
+        <div class="tip-modal-panel" role="dialog" aria-modal="true" aria-labelledby="tipModalTitle">
+            <div class="tip-modal-header">
+                <div>
+                    <p class="tip-kicker" id="tipModalModeLabel">Tips</p>
+                    <h2 id="tipModalTitle">Product tips</h2>
+                </div>
+                <div class="tip-modal-actions">
+                    <p id="tipModalTimer" class="tip-timer" hidden></p>
+                    <button type="button" class="tip-close-button" data-tip-close>Close</button>
+                </div>
+            </div>
+            <div id="tipModalContent"></div>
+        </div>
+    </div>
+{% endif %}
 {% endblock %}

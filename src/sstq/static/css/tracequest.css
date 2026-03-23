@@ -339,6 +339,22 @@
     padding: 15px;
 }
 
+.leaderboard-current-row {
+    background: #eefbf3;
+}
+
+.current-user-pill {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 8px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: #d7f5e2;
+    color: var(--quest-success);
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
 .review-card.correct {
     border-color: #9bd4b1;
     background: var(--quest-success-bg);

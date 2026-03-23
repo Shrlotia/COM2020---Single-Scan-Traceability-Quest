@@ -13,21 +13,54 @@
             <p class="intro">Choose one of the required categories, set `easy`, `normal`, or `hard`, then complete a 6-question mission pack grounded in the passport data shown on the product pages.</p>
         </div>
         <article class="hero-card">
-            <p class="hero-label">Progress</p>
-            <p class="hero-value">{{ player.points }} pts</p>
+            <p class="hero-label">Quest Summary</p>
+            <p class="hero-value">{{ stats.accuracy }}%</p>
             <p class="hero-meta">{{ stats.correct }} correct out of {{ stats.total }} answered questions</p>
         </article>
     </header>
 
-    <div class="stats-grid">
-        <article class="stat-card"><p class="label">Points</p><p class="value">{{ player.points }}</p></article>
-        <article class="stat-card"><p class="label">Questions Played</p><p class="value">{{ stats.total }}</p></article>
-        <article class="stat-card"><p class="label">Correct</p><p class="value">{{ stats.correct }}</p></article>
-        <article class="stat-card"><p class="label">Accuracy</p><p class="value">{{ stats.accuracy }}%</p></article>
-        <article class="stat-card"><p class="label">Easy</p><p class="value">{{ stats.tier_counts.easy }}</p></article>
-        <article class="stat-card"><p class="label">Normal</p><p class="value">{{ stats.tier_counts.normal }}</p></article>
-        <article class="stat-card"><p class="label">Hard</p><p class="value">{{ stats.tier_counts.hard }}</p></article>
-    </div>
+    <section class="panel">
+        <div class="panel-heading">
+            <div>
+                <p class="section-kicker">Leaderboard</p>
+                <h2>Top players by points</h2>
+            </div>
+        </div>
+
+        {% if leaderboard_rows %}
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>User</th>
+                            <th>Role</th>
+                            <th>Points</th>
+                            <th>Missions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in leaderboard_rows %}
+                            <tr {% if row.is_current_user %}class="leaderboard-current-row"{% endif %}>
+                                <td>#{{ row.rank }}</td>
+                                <td>
+                                    <strong>{{ row.username }}</strong>
+                                    {% if row.is_current_user %}
+                                        <span class="current-user-pill">You</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ row.role }}</td>
+                                <td>{{ row.points }}</td>
+                                <td>{{ row.missions }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="muted">No leaderboard data yet.</p>
+        {% endif %}
+    </section>
 
     <section class="panel">
         <div class="panel-heading">
@@ -102,44 +135,6 @@
             </div>
         {% else %}
             <p class="muted">No badges unlocked yet.</p>
-        {% endif %}
-    </section>
-
-    <section class="panel">
-        <div class="panel-heading">
-            <div>
-                <p class="section-kicker">History</p>
-                <h2>Recent answered questions</h2>
-            </div>
-        </div>
-
-        {% if recent_attempts %}
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Difficulty</th>
-                            <th>Question</th>
-                            <th>Your Answer</th>
-                            <th>Correct</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for row in recent_attempts %}
-                            <tr>
-                                <td>{{ row.mission_id }}</td>
-                                <td>{{ row.tier }}</td>
-                                <td>{{ row.question }}</td>
-                                <td>{{ row.player_answer }}</td>
-                                <td>{% if row.correct %}yes{% else %}no{% endif %}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        {% else %}
-            <p class="muted">No answered questions yet.</p>
         {% endif %}
     </section>
 </section>

@@ -7,7 +7,7 @@ from flask_login import current_user
 
 from sstq.auth_decorators import login_required
 from sstq.extensions import db
-from sstq.models import Badge, Mission, Player, Product
+from sstq.models import Badge, Mission, Player, Product, User
 
 tracequest_bp = Blueprint("tracequest", __name__)
 
@@ -721,6 +721,42 @@ def _recent_attempts(player):
     return rows
 
 
+def _in_progress_mission_start(player_id):
+    return (
+        Mission.query.filter(
+            Mission.player_id == player_id,
+            Mission.completed_at.is_(None),
+        )
+        .order_by(Mission.mission_id.asc())
+        .first()
+    )
+
+
+def _leaderboard_rows(limit=10):
+    rows = (
+        db.session.query(Player, User)
+        .join(User, User.user_id == Player.user_id)
+        .order_by(Player.points.desc(), User.username.asc())
+        .limit(limit)
+        .all()
+    )
+
+    leaderboard = []
+    for index, (player, user) in enumerate(rows, start=1):
+        mission_total = Mission.query.filter_by(player_id=player.player_id).count()
+        leaderboard.append(
+            {
+                "rank": index,
+                "username": user.username,
+                "role": user.role,
+                "points": player.points,
+                "missions": mission_total,
+                "is_current_user": user.user_id == current_user.user_id,
+            }
+        )
+    return leaderboard
+
+
 @tracequest_bp.route("/trace_quest", methods=["GET", "POST"])
 @login_required
 def tracequest():
@@ -737,6 +773,11 @@ def tracequest():
         selected_difficulty = "easy"
 
     if request.method == "POST":
+        in_progress = _in_progress_mission_start(player.player_id)
+        if in_progress:
+            flash("You already have a mission in progress. Finish it before starting a new one.", "error")
+            return redirect(url_for("misson.misson_detail", misson_id=in_progress.mission_id))
+
         category_products = _products_for_category(products, selected_category)
         try:
             pack = _build_mission_pack(selected_category, selected_difficulty, category_products)
@@ -786,4 +827,5 @@ def tracequest():
         difficulties=DIFFICULTY_CONFIG,
         selected_category=selected_category,
         selected_difficulty=selected_difficulty,
+        leaderboard_rows=_leaderboard_rows(),
     )
