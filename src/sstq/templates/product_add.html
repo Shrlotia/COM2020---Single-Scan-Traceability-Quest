@@ -1,48 +1,138 @@
 {% extends "base.html" %}
 
 {% block title %}Add Product{% endblock %}
-{% block custom_css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/product_add.css') }}">{% endblock %}
+{% block custom_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/product_edit.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/product_add.css') }}">
+{% endblock %}
 {% block custom_js%}<script type="module" src="{{ url_for('static', filename='js/product_add.js') }}" defer></script>{% endblock %}
 
 {% block content %}
-<div class="body-element">
-    <h1>Add Products</h1>
-    <h2>Enter a Barcode</h2>
+<section class="product-page add-product-page">
+    <h1>Add Product</h1>
 
-    <p>Type in a valid barcode (including leading zeroes) to start</p>
-
-    <form id="barcode-form">
-        <input id="barcode" name="barcode" placeholder="Barcode" value="{{ initial_barcode }}" required>
-        <button type="submit">Next</button>
-    </form>
-    <p id="error" class="error-message" hidden></p>
-
-    <h2>Or scan barcode with camera</h2>
-    <div>
-        <a href="{{ url_for('scan_barcode.scan_barcode', target='product_add') }}">Open Barcode Scanner</a>
-    </div>
-
-    <div id="details-form" hidden>
-        <form id="productDetailsForm">
-            <input id="image_url" name="image_url" type="hidden">
-
-            <h3>Take Product Photo</h3>
-            <div>
-                <button id="start-photo-camera" type="button">Open Photo Camera</button>
-                <button id="capture-photo" type="button">Capture Photo</button>
-                <button id="stop-photo-camera" type="button">Close Photo Camera</button>
+    <section class="editor-panel">
+        <h2>Create a new product record</h2>
+        <form id="product-add-form" class="editor-form" method="POST" action="{{ url_for('product.product_add') }}">
+            <div class="barcode-row">
+                <label class="barcode-field" for="add-barcode">
+                    <span>Barcode</span>
+                    <input id="add-barcode" name="barcode" value="{{ initial_barcode }}" required>
+                </label>
+                <a class="scan-barcode-button" href="{{ url_for('scan_barcode.scan_barcode', target='product_add') }}">
+                    <img src="{{ url_for('static', filename='icons/barcode-read.svg') }}" alt="" aria-hidden="true">
+                    <span>Scan Barcode</span>
+                </a>
             </div>
-            <p id="image-status">No photo uploaded yet.</p>
-            <div class="scanner">
-                <video id="photo-preview" autoplay muted playsinline></video>
+            <p id="barcode-error" class="error-message" hidden></p>
+
+            <label for="add-name">Product Name</label>
+            <input id="add-name" name="name" required>
+
+            <label for="add-category">Product Category</label>
+            <input id="add-category" name="category" required>
+
+            <label for="add-brand">Product Brand</label>
+            <input id="add-brand" name="brand" required>
+
+            <label for="add-description">Description</label>
+            <textarea id="add-description" name="description" rows="4"></textarea>
+
+            <label>Product Image</label>
+            <input id="add-image" name="image" type="hidden" value="{{ image or '' }}">
+            <div class="image-edit-tools">
+                <button type="button" id="choose-image-file" class="image-action-box image-action-button">
+                    <span class="image-action-box-title">Choose File</span>
+                    <span class="image-action-box-text">Pick an image and upload it straight to cache.</span>
+                </button>
+                <input id="add-image-file" class="image-file-input" type="file" accept="image/*">
+                <a id="open-picture-capture" class="image-action-box" href="{{ url_for('scan_picture.scan_picture', target='product_add', barcode=initial_barcode) }}">
+                    <img src="{{ url_for('static', filename='icons/camera-viewfinder.svg') }}" alt="" aria-hidden="true">
+                    <span class="image-action-box-title">Open Picture Capture</span>
+                    <span class="image-action-box-text">Use the camera capture flow and save the image into cache.</span>
+                </a>
             </div>
-            <img id="captured-image" class="captured-image" alt="Captured product photo" hidden>
-            <input id="name" name="name" placeholder="Product Name" required>
-            <input id="category" name="category" placeholder="Product Category" required>
-            <input id="brand" name="brand" placeholder="Product Brand" required>
-            <input id="Description" name="Description" placeholder="Product Description" required>
-            <button type="submit">Submit</button>
+
+            <p id="add-image-status" class="image-status">
+                {% if image %}Cached image ready. Save the product to publish it.{% else %}No image set yet.{% endif %}
+            </p>
+            <img id="add-captured-image" class="captured-image" src="{{ image or '' }}" alt="Product image preview" {% if not image %}hidden{% endif %}>
+
+            <section class="record-editor" data-editor="timeline">
+                <div class="record-editor-header">
+                    <div>
+                        <h3>Timeline</h3>
+                        <p class="format-help">Add timeline rows if available. Dates use YYYY-MM-DD.</p>
+                    </div>
+                    <button type="button" class="add-row-button" data-add-row="timeline">
+                        <img src="{{ url_for('static', filename='icons/plus.svg') }}" alt="" aria-hidden="true">
+                        <span>Add Row</span>
+                    </button>
+                </div>
+                <div class="record-list" id="timeline-list"></div>
+                <textarea name="timeline_rows" id="timeline_rows" hidden>{{ stage_rows }}</textarea>
+            </section>
+
+            <section class="record-editor" data-editor="breakdown">
+                <div class="record-editor-header">
+                    <div>
+                        <h3>Origin Breakdown</h3>
+                        <p class="format-help">Add origin breakdown rows if available.</p>
+                    </div>
+                    <button type="button" class="add-row-button" data-add-row="breakdown">
+                        <img src="{{ url_for('static', filename='icons/plus.svg') }}" alt="" aria-hidden="true">
+                        <span>Add Row</span>
+                    </button>
+                </div>
+                <div class="record-list" id="breakdown-list"></div>
+                <textarea name="breakdown_rows" id="breakdown_rows" hidden>{{ breakdown_rows }}</textarea>
+            </section>
+
+            <section class="record-editor" data-editor="claim">
+                <div class="record-editor-header">
+                    <div>
+                        <h3>Claims</h3>
+                        <p class="format-help">Add claim rows if available.</p>
+                    </div>
+                    <button type="button" class="add-row-button" data-add-row="claim">
+                        <img src="{{ url_for('static', filename='icons/plus.svg') }}" alt="" aria-hidden="true">
+                        <span>Add Row</span>
+                    </button>
+                </div>
+                <div class="record-list" id="claim-list"></div>
+                <textarea name="claim_rows" id="claim_rows" hidden>{{ claim_rows }}</textarea>
+            </section>
+
+            <section class="record-editor" data-editor="evidence">
+                <div class="record-editor-header">
+                    <div>
+                        <h3>Evidence</h3>
+                        <p class="format-help">Claim index starts from 1 based on the claim cards.</p>
+                    </div>
+                    <button type="button" class="add-row-button" data-add-row="evidence">
+                        <img src="{{ url_for('static', filename='icons/plus.svg') }}" alt="" aria-hidden="true">
+                        <span>Add Row</span>
+                    </button>
+                </div>
+                <div class="record-list" id="evidence-list"></div>
+                <textarea name="evidence_rows" id="evidence_rows" hidden>{{ evidence_rows }}</textarea>
+            </section>
         </form>
+    </section>
+
+    <div class="sticky-editor-actions">
+        <div class="sticky-nav-actions">
+            <a class="page-action-box compact-action-box" href="{{ url_for('product.product') }}">
+                <span class="page-action-title">Back to all products</span>
+            </a>
+        </div>
+        <div class="sticky-primary-actions">
+            <button type="submit" form="product-add-form" class="primary-button">Create Product</button>
+        </div>
     </div>
-</div>
+</section>
+<script id="timeline-items" type="application/json">{{ stage_items|tojson }}</script>
+<script id="breakdown-items" type="application/json">{{ breakdown_items|tojson }}</script>
+<script id="claim-items" type="application/json">{{ claim_items|tojson }}</script>
+<script id="evidence-items" type="application/json">{{ evidence_items|tojson }}</script>
 {% endblock %}

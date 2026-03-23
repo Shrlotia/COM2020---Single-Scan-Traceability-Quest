@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+{% block custom_css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/scan_barcode.css') }}">{% endblock %}
+{% block custom_js %}<script type="module" src="{{ url_for('static', filename='js/scan_picture.js') }}" defer></script>{% endblock %}
+
+{% block content %}
+<div class="scan-page">
+    <h1>{{ page_title }}</h1>
+    <p>{{ description }}</p>
+
+    <button id="start-picture-camera" class="scan-start" type="button">Tap to start camera</button>
+    <p id="picture-status">Camera is idle.</p>
+
+    <div class="scanner">
+        <video id="picture-preview" autoplay muted playsinline></video>
+        <div class="scan-overlay" aria-hidden="true">
+            <div class="scan-box"></div>
+        </div>
+    </div>
+
+    <div class="page-actions">
+        <button id="capture-picture" type="button">Capture</button>
+        <button id="cancel-picture" type="button">Cancel</button>
+    </div>
+
+    <div id="picture-config" data-return-url="{{ return_url }}" data-barcode="{{ barcode }}" data-target="{{ target }}"></div>
+</div>
+{% endblock %}

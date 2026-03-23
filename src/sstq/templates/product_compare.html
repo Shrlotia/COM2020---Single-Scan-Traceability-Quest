@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}Compare Products{% endblock %}
+
+{% block custom_css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/product_detail.css') }}">{% endblock %}
+
+{% block content %}
+<section class="product-page">
+    <h1>Product Comparison</h1>
+    <p class="page-subtitle">Compare origin breakdown and claim confidence side by side.</p>
+
+    <section class="claim-grid">
+        {% for side in [left, right] %}
+            <article class="content-card">
+                <h2>{{ side.product.name }}</h2>
+                <p><strong>Barcode:</strong> {{ side.product.barcode }}</p>
+                <p><strong>Brand:</strong> {{ side.product.brand }}</p>
+                <p><strong>Category:</strong> {{ side.product.category }}</p>
+                <p><strong>Description:</strong> {{ side.product.description }}</p>
+
+                <h3>Origin Breakdown</h3>
+                {% if side.breakdowns %}
+                    <div class="list-wrapper">
+                        {% for row in side.breakdowns %}
+                            <article class="list-item">
+                                <p><strong>{{ row.label }}</strong></p>
+                                <p>{{ row.country }} | {{ "%.2f"|format(row.percentage) }}%</p>
+                                {% if row.notes %}
+                                    <p>{{ row.notes }}</p>
+                                {% endif %}
+                            </article>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="empty-text">No origin breakdown data yet.</p>
+                {% endif %}
+
+                <h3>Claim Confidence Summary</h3>
+                <div class="list-wrapper">
+                    <article class="list-item">
+                        <p><strong>Verified</strong> {{ side.confidence_summary["verified"] }}</p>
+                        <p><strong>Partially verified</strong> {{ side.confidence_summary["partially-verified"] }}</p>
+                        <p><strong>Unverified</strong> {{ side.confidence_summary["unverified"] }}</p>
+                        {% if side.confidence_summary["other"] %}
+                            <p><strong>Other labels</strong> {{ side.confidence_summary["other"] }}</p>
+                        {% endif %}
+                    </article>
+                </div>
+
+                <h3>Claims</h3>
+                {% if side.claims %}
+                    <div class="list-wrapper">
+                        {% for claim in side.claims %}
+                            <article class="list-item">
+                                <p><strong>{{ claim.claim_type }}</strong></p>
+                                <p>{{ claim.claim_text }}</p>
+                                <p><strong>Confidence:</strong> {{ claim.confidence_label }}</p>
+                                <p><strong>Evidence items:</strong> {{ claim.evidence_count }}</p>
+                            </article>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="empty-text">No claims yet.</p>
+                {% endif %}
+
+                <div class="page-actions">
+                    <a class="action-link" href="{{ url_for('product.product_detail', barcode=side.product.barcode) }}">Open product detail</a>
+                    <a class="action-link" href="{{ url_for('product.product_evidence', barcode=side.product.barcode) }}">Open evidence view</a>
+                </div>
+            </article>
+        {% endfor %}
+    </section>
+
+    <div class="page-actions">
+        <a class="action-link" href="{{ url_for('product.product') }}">Back to all products</a>
+    </div>
+</section>
+{% endblock %}

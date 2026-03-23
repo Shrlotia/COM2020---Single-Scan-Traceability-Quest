@@ -1,62 +1,74 @@
 document.addEventListener("DOMContentLoaded", () => {
   const input = document.getElementById("productSearch");
+  const resetFilters = document.getElementById("resetFilters");
+  const filtersForm = document.getElementById("productFiltersForm");
   const grid = document.getElementById("productGrid");
   const categoryFilter = document.getElementById("categoryFilter");
   const sortProducts = document.getElementById("sortProducts");
+  const compareForm = document.getElementById("compareForm");
+  const compareDock = document.getElementById("compareDock");
+  const compareCancel = document.getElementById("compareCancel");
+  const compareConfirm = document.getElementById("compareConfirm");
+  const compareIds = document.getElementById("compareIds");
+  const compareSelectionText = document.getElementById("compareSelectionText");
 
-  if (!input || !grid || !categoryFilter || !sortProducts) return;
+  if (
+    !input ||
+    !resetFilters ||
+    !filtersForm ||
+    !grid ||
+    !categoryFilter ||
+    !sortProducts ||
+    !compareForm ||
+    !compareDock ||
+    !compareCancel ||
+    !compareConfirm ||
+    !compareIds ||
+    !compareSelectionText
+  ) return;
 
   const items = Array.from(grid.querySelectorAll(".product-block"));
   const images = grid.querySelectorAll(".product-thumb");
+  const checkboxes = Array.from(grid.querySelectorAll(".compare-checkbox"));
+  const compareLabels = Array.from(grid.querySelectorAll(".compare-select"));
+  const detailLinks = Array.from(grid.querySelectorAll(".product-main-link"));
+  let compareMode = false;
 
-  const normalize = (str) =>
-    (str || "").toString().trim().toLowerCase();
+  const selectedCheckboxes = () =>
+    checkboxes.filter((checkbox) => checkbox.checked);
 
-  const matchesCategory = (item, selectedCategory) => {
-    if (!selectedCategory) return true;
+  const syncCompareState = () => {
+    const selected = selectedCheckboxes();
+    const selectedIds = selected.map((checkbox) => checkbox.value);
+    const remaining = Math.max(0, 2 - selected.length);
 
-    const categories = item.dataset.category
-      .split(",")
-      .map((category) => normalize(category));
+    if (compareMode && selected.length === 0) {
+      setCompareMode(false);
+      return;
+    }
 
-    return categories.includes(normalize(selectedCategory));
-  };
+    compareIds.value = selectedIds.join(",");
+    compareConfirm.disabled = selected.length !== 2;
+    compareSelectionText.textContent =
+      selected.length === 2 ? "2 products selected" : `Select ${remaining} more product${remaining === 1 ? "" : "s"}`;
 
-  const compareValues = (left, right, direction = "asc") => {
-    const result = left.localeCompare(right, undefined, { numeric: true, sensitivity: "base" });
-    return direction === "desc" ? -result : result;
-  };
-
-  const applyFiltersAndSort = () => {
-    const query = normalize(input.value);
-    const selectedCategory = categoryFilter.value;
-    const [sortKey, direction] = sortProducts.value.split("-");
-
-    items.forEach((item) => {
-      const barcode = normalize(item.dataset.barcode);
-      const name = normalize(item.dataset.name);
-      const category = normalize(item.dataset.category);
-
-      const matchSearch =
-        query === "" ||
-        barcode.includes(query) ||
-        name.includes(query) ||
-        category.includes(query);
-
-      const matchCategory = matchesCategory(item, selectedCategory);
-      item.style.display = matchSearch && matchCategory ? "" : "none";
+    checkboxes.forEach((checkbox) => {
+      checkbox.disabled = !compareMode || (!checkbox.checked && selected.length >= 2);
     });
+  };
 
-    items
-      .slice()
-      .sort((leftItem, rightItem) => {
-        const leftValue = normalize(leftItem.dataset[sortKey]);
-        const rightValue = normalize(rightItem.dataset[sortKey]);
-        return compareValues(leftValue, rightValue, direction);
-      })
-      .forEach((item) => {
-        grid.appendChild(item);
+  const setCompareMode = (enabled) => {
+    compareMode = enabled;
+    compareDock.hidden = !enabled;
+
+    if (!enabled) {
+      checkboxes.forEach((checkbox) => {
+        checkbox.checked = false;
       });
+      compareIds.value = "";
+    }
+
+    syncCompareState();
   };
 
   images.forEach((image) => {
@@ -67,9 +79,60 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  input.addEventListener("input", applyFiltersAndSort);
-  categoryFilter.addEventListener("change", applyFiltersAndSort);
-  sortProducts.addEventListener("change", applyFiltersAndSort);
+  checkboxes.forEach((checkbox) => {
+    checkbox.addEventListener("change", syncCompareState);
+  });
 
-  applyFiltersAndSort();
+  compareLabels.forEach((label, index) => {
+    label.addEventListener("click", (event) => {
+      if (compareMode) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+      const checkbox = checkboxes[index];
+      if (checkbox && !checkbox.checked) {
+        checkbox.checked = true;
+      }
+      setCompareMode(true);
+    });
+  });
+
+  detailLinks.forEach((link) => {
+    link.addEventListener("click", (event) => {
+      if (compareMode) {
+        event.preventDefault();
+      }
+    });
+  });
+
+  compareCancel.addEventListener("click", () => {
+    setCompareMode(false);
+  });
+
+  compareForm.addEventListener("submit", (event) => {
+    if (selectedCheckboxes().length !== 2) {
+      event.preventDefault();
+    }
+  });
+
+  resetFilters.addEventListener("click", () => {
+    window.location.href = filtersForm.action;
+  });
+
+  categoryFilter.addEventListener("change", () => {
+    filtersForm.requestSubmit();
+  });
+
+  sortProducts.addEventListener("change", () => {
+    filtersForm.requestSubmit();
+  });
+
+  input.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      filtersForm.requestSubmit();
+    }
+  });
+
+  setCompareMode(false);
 });

@@ -1,7 +1,6 @@
 import json
 import random
 import uuid
-from collections import Counter
 
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import current_user
@@ -40,9 +39,9 @@ MISSION_CATEGORIES = [
 CATEGORY_INDEX = {item["key"]: item for item in MISSION_CATEGORIES}
 
 DIFFICULTY_CONFIG = {
-    "easy": {"label": "Easy", "points": 10, "description": "Quick passport facts and product basics."},
-    "normal": {"label": "Normal", "points": 20, "description": "Interpret timeline, breakdown, and claim sections."},
-    "hard": {"label": "Hard", "points": 30, "description": "Work through comparisons, counts, and evidence-backed reasoning."},
+    "easy": {"label": "Basic", "points": 10, "description": "Read the core passport sections and identify key facts."},
+    "normal": {"label": "Intermediate", "points": 20, "description": "Interpret counts, labels, and origin breakdown patterns."},
+    "hard": {"label": "Advanced", "points": 30, "description": "Combine evidence, confidence, and percentage reasoning."},
 }
 
 LEGACY_TIER_MAP = {
@@ -196,71 +195,140 @@ def _serialize_choices(choices):
     return json.dumps([_clean_text(choice) for choice in choices])
 
 
-def _category_labels():
-    return [item["label"] for item in MISSION_CATEGORIES]
+def _claim_label(claim):
+    return claim.confidence_label or "No label"
 
 
-def _metadata_questions(product, category_products, difficulty, selected_category_label):
-    all_brands = [item.brand for item in category_products]
-    all_names = [item.name for item in category_products]
-    all_barcodes = [item.barcode for item in category_products]
+def _product_evidence_rows(product):
+    rows = []
+    for claim in sorted(product.claims, key=lambda row: row.claim_id):
+        for evidence in sorted(claim.evidence, key=lambda row: row.evidence_id):
+            rows.append((claim, evidence))
+    return rows
+
+
+def _breakdown_country_totals(breakdowns):
+    totals = {}
+    for row in breakdowns:
+        totals[row.country] = totals.get(row.country, 0.0) + float(row.percentage)
+    return totals
+
+
+def _section_row_counts(product):
+    evidence_rows = _product_evidence_rows(product)
+    return {
+        "Timeline": len(product.stages),
+        "Origin Breakdown": len(product.breakdowns),
+        "Claim Cards": len(product.claims),
+        "Evidence View": len(evidence_rows),
+    }
+
+
+def _basic_questions(product, category_products):
+    stages = sorted(product.stages, key=lambda row: row.stage_id)
+    breakdowns = sorted(product.breakdowns, key=lambda row: row.breakdown_id)
+    claims = sorted(product.claims, key=lambda row: row.claim_id)
+    evidence_rows = _product_evidence_rows(product)
+
+    stage_country_pool = [stage.country for item in category_products for stage in item.stages]
+    breakdown_country_pool = [row.country for item in category_products for row in item.breakdowns]
+    breakdown_name_pool = [row.breakdown_name for item in category_products for row in item.breakdowns]
+    claim_type_pool = [claim.claim_type for item in category_products for claim in item.claims]
+    confidence_pool = [_claim_label(claim) for item in category_products for claim in item.claims]
+    evidence_type_pool = [row.evidence_type for item in category_products for _, row in _product_evidence_rows(item)]
+
     questions = [
-        _question(
-            product,
-            difficulty,
-            "brand",
-            f"Which brand is listed for {product.name}?",
-            product.brand,
-            _options_from_pool(product.brand, all_brands),
-            "Check Product Detail > Brand.",
-            "Brand",
-            url_for("product.product_detail", barcode=product.barcode),
-        ),
-        _question(
-            product,
-            difficulty,
-            "barcode",
-            f"Which barcode matches {product.name}?",
-            product.barcode,
-            _options_from_pool(product.barcode, all_barcodes),
-            "Check Product Detail > Barcode.",
-            "Barcode",
-            url_for("product.product_detail", barcode=product.barcode),
-        ),
-        _question(
-            product,
-            difficulty,
-            "name_from_barcode",
-            f"Which product name matches barcode {product.barcode}?",
-            product.name,
-            _options_from_pool(product.name, all_names),
-            "Use the product title on Product Detail.",
-            "Product Detail",
-            url_for("product.product_detail", barcode=product.barcode),
-        ),
-        _question(
-            product,
-            difficulty,
-            "mission_category",
-            f"Which mission category should include {product.name}?",
-            selected_category_label,
-            _options_from_pool(selected_category_label, _category_labels()),
-            "Use the category labels shown for the product.",
-            "Category",
-            url_for("product.product_detail", barcode=product.barcode),
-        ),
-        _question(
-            product,
-            difficulty,
-            "image_presence",
-            f"Does {product.name} currently have a display image on the product page?",
-            "Yes" if product.image else "No",
-            _options_from_pool("Yes" if product.image else "No", ["Yes", "No"]),
-            "Check the image area at the top of Product Detail.",
-            "Product Image",
-            url_for("product.product_detail", barcode=product.barcode),
-        ),
     ]
+
+    if stages:
+        questions.extend(
+            [
+                _question(
+                    product,
+                    "easy",
+                    "first_stage_country",
+                    f"Which country is shown for the first timeline stage of {product.name}?",
+                    stages[0].country,
+                    _options_from_pool(stages[0].country, stage_country_pool),
+                    "Check the first row in Product Detail > Timeline.",
+                    "Timeline",
+                    url_for("product.product_detail", barcode=product.barcode) + "#timeline",
+                ),
+                _question(
+                    product,
+                    "easy",
+                    "last_stage_country",
+                    f"Which country is shown for the final timeline stage of {product.name}?",
+                    stages[-1].country,
+                    _options_from_pool(stages[-1].country, stage_country_pool),
+                    "Check the last row in Product Detail > Timeline.",
+                    "Timeline",
+                    url_for("product.product_detail", barcode=product.barcode) + "#timeline",
+                ),
+            ]
+        )
+
+    if breakdowns:
+        largest = max(breakdowns, key=lambda row: row.percentage)
+        questions.extend(
+            [
+                _question(
+                    product,
+                    "easy",
+                    "largest_origin_country",
+                    f"Which country has the largest origin share for {product.name}?",
+                    largest.country,
+                    _options_from_pool(largest.country, breakdown_country_pool),
+                    "Find the largest percentage in Product Detail > Origin Breakdown.",
+                    "Origin Breakdown",
+                    url_for("product.product_detail", barcode=product.barcode) + "#origin-breakdown",
+                ),
+                _question(
+                    product,
+                    "easy",
+                    "largest_origin_input",
+                    f"Which input has the largest origin share for {product.name}?",
+                    largest.breakdown_name,
+                    _options_from_pool(largest.breakdown_name, breakdown_name_pool),
+                    "Match the largest percentage to its input in Origin Breakdown.",
+                    "Origin Breakdown",
+                    url_for("product.product_detail", barcode=product.barcode) + "#origin-breakdown",
+                ),
+            ]
+        )
+
+    if claims:
+        first_claim = claims[0]
+        questions.append(
+            _question(
+                product,
+                "easy",
+                "first_claim_confidence",
+                f"What confidence label is shown on the first claim for {product.name}?",
+                _claim_label(first_claim),
+                _options_from_pool(_claim_label(first_claim), confidence_pool + ["verified", "partially-verified", "unverified", "No label"]),
+                "Check the first card in Product Detail > Claim Cards.",
+                "Claim Cards",
+                url_for("product.product_detail", barcode=product.barcode) + "#claim-cards",
+            )
+        )
+
+    if evidence_rows:
+        first_claim, first_evidence = evidence_rows[0]
+        questions.append(
+            _question(
+                product,
+                "easy",
+                "first_evidence_type",
+                f"Which evidence type appears first in the evidence view for {product.name}?",
+                first_evidence.evidence_type,
+                _options_from_pool(first_evidence.evidence_type, evidence_type_pool),
+                "Open Product Evidence View and check the first evidence item.",
+                "Evidence View",
+                url_for("product.product_evidence", barcode=product.barcode),
+            )
+        )
+
     return questions
 
 
@@ -272,7 +340,6 @@ def _normal_questions(product, category_products):
 
     if stages:
         country_pool = [stage.country for item in category_products for stage in item.stages]
-        stage_type_pool = [stage.stage_type for item in category_products for stage in item.stages]
         questions.extend(
             [
                 _question(
@@ -289,22 +356,11 @@ def _normal_questions(product, category_products):
                 _question(
                     product,
                     "normal",
-                    "first_stage_country",
-                    f"Where does the first timeline stage happen for {product.name}?",
-                    stages[0].country,
-                    _options_from_pool(stages[0].country, country_pool),
-                    "Use the first row in Product Detail > Timeline.",
-                    "Timeline",
-                    url_for("product.product_detail", barcode=product.barcode) + "#timeline",
-                ),
-                _question(
-                    product,
-                    "normal",
-                    "last_stage_type",
-                    f"What is the last timeline stage type shown for {product.name}?",
-                    stages[-1].stage_type,
-                    _options_from_pool(stages[-1].stage_type, stage_type_pool),
-                    "Use the last row in Product Detail > Timeline.",
+                    "timeline_country_count",
+                    f"How many countries appear across the timeline for {product.name}?",
+                    str(len({stage.country for stage in stages})),
+                    _number_choices(len({stage.country for stage in stages}), 1, 8),
+                    "Count distinct countries listed in Product Detail > Timeline.",
                     "Timeline",
                     url_for("product.product_detail", barcode=product.barcode) + "#timeline",
                 ),
@@ -314,27 +370,39 @@ def _normal_questions(product, category_products):
     if breakdowns:
         country_pool = [row.country for item in category_products for row in item.breakdowns]
         largest = max(breakdowns, key=lambda row: row.percentage)
+        smallest = min(breakdowns, key=lambda row: row.percentage)
         questions.extend(
             [
                 _question(
                     product,
                     "normal",
-                    "largest_origin_country",
-                    f"Which country contributes the largest origin share for {product.name}?",
-                    largest.country,
-                    _options_from_pool(largest.country, country_pool),
-                    "Find the largest percentage in Product Detail > Origin Breakdown.",
+                    "origin_country_count",
+                    f"How many countries appear in the origin breakdown for {product.name}?",
+                    str(len({row.country for row in breakdowns})),
+                    _number_choices(len({row.country for row in breakdowns}), 1, 6),
+                    "Count distinct countries in Product Detail > Origin Breakdown.",
                     "Origin Breakdown",
                     url_for("product.product_detail", barcode=product.barcode) + "#origin-breakdown",
                 ),
                 _question(
                     product,
                     "normal",
-                    "largest_origin_name",
-                    f"Which breakdown item has the largest share for {product.name}?",
-                    largest.breakdown_name,
-                    _options_from_pool(largest.breakdown_name, [row.breakdown_name for item in category_products for row in item.breakdowns]),
-                    "Check the item with the biggest percentage in Product Detail > Origin Breakdown.",
+                    "smallest_origin_country",
+                    f"Which country has the smallest origin share for {product.name}?",
+                    smallest.country,
+                    _options_from_pool(smallest.country, country_pool),
+                    "Find the smallest percentage in Product Detail > Origin Breakdown.",
+                    "Origin Breakdown",
+                    url_for("product.product_detail", barcode=product.barcode) + "#origin-breakdown",
+                ),
+                _question(
+                    product,
+                    "normal",
+                    "largest_origin_percentage",
+                    f"What is the largest origin share for {product.name}, rounded to a whole percent?",
+                    str(int(round(largest.percentage))),
+                    _number_choices(int(round(largest.percentage)), 0, 100),
+                    "Read the biggest percentage in Product Detail > Origin Breakdown.",
                     "Origin Breakdown",
                     url_for("product.product_detail", barcode=product.barcode) + "#origin-breakdown",
                 ),
@@ -360,6 +428,17 @@ def _normal_questions(product, category_products):
                 _question(
                     product,
                     "normal",
+                    "verified_claim_count",
+                    f"How many claims for {product.name} are marked verified?",
+                    str(sum(1 for claim in claims if _normalize(claim.confidence_label) == "verified")),
+                    _number_choices(sum(1 for claim in claims if _normalize(claim.confidence_label) == "verified"), 0, 6),
+                    "Count verified labels in Product Detail > Claim Cards.",
+                    "Claim Cards",
+                    url_for("product.product_detail", barcode=product.barcode) + "#claim-cards",
+                ),
+                _question(
+                    product,
+                    "normal",
                     "first_claim_type",
                     f"Which claim type appears first for {product.name}?",
                     claims[0].claim_type,
@@ -368,28 +447,55 @@ def _normal_questions(product, category_products):
                     "Claim Cards",
                     url_for("product.product_detail", barcode=product.barcode) + "#claim-cards",
                 ),
+            ]
+        )
+
+        unverified_claims = [claim for claim in claims if _normalize(claim.confidence_label) == "unverified"]
+        if unverified_claims:
+            questions.append(
                 _question(
                     product,
                     "normal",
-                    "first_claim_confidence",
-                    f"What confidence label is shown on the first claim card for {product.name}?",
-                    claims[0].confidence_label or "No label",
-                    _options_from_pool(claims[0].confidence_label or "No label", confidence_pool + ["Verified", "Partially verified", "Unverified", "No label"]),
-                    "Check the first card in Product Detail > Claim Cards.",
+                    "unverified_claim_type",
+                    f"Which claim type is marked unverified for {product.name}?",
+                    unverified_claims[0].claim_type,
+                    _options_from_pool(unverified_claims[0].claim_type, claim_type_pool),
+                    "Look for the unverified label in Product Detail > Claim Cards.",
                     "Claim Cards",
                     url_for("product.product_detail", barcode=product.barcode) + "#claim-cards",
-                ),
-            ]
+                )
+            )
+
+    evidence_rows = _product_evidence_rows(product)
+    if evidence_rows:
+        issuer_pool = [evidence.issuer for item in category_products for _, evidence in _product_evidence_rows(item)]
+        latest_claim, latest_evidence = max(
+            evidence_rows,
+            key=lambda row: (row[1].date or "", row[1].evidence_id),
+        )
+        questions.append(
+            _question(
+                product,
+                "normal",
+                "latest_evidence_issuer",
+                f"Who issued the latest evidence item shown for {product.name}?",
+                latest_evidence.issuer or "-",
+                _options_from_pool(latest_evidence.issuer or "-", issuer_pool),
+                "Open Product Evidence View and find the most recent evidence date.",
+                "Evidence View",
+                url_for("product.product_evidence", barcode=product.barcode),
+            )
         )
 
     return questions
 
 
-def _hard_questions(product, category_products, selected_category_label):
+def _hard_questions(product, category_products):
     questions = []
     stages = sorted(product.stages, key=lambda row: row.stage_id)
     breakdowns = sorted(product.breakdowns, key=lambda row: row.breakdown_id)
     claims = sorted(product.claims, key=lambda row: row.claim_id)
+    evidence_rows = _product_evidence_rows(product)
 
     if breakdowns:
         largest = max(breakdowns, key=lambda row: row.percentage)
@@ -408,11 +514,31 @@ def _hard_questions(product, category_products, selected_category_label):
             )
         )
 
+        country_totals = _breakdown_country_totals(breakdowns)
+        repeated_countries = [(country, total) for country, total in country_totals.items() if sum(1 for row in breakdowns if row.country == country) > 1]
+        if repeated_countries:
+            repeated_country, repeated_total = max(repeated_countries, key=lambda item: item[1])
+            questions.append(
+                _question(
+                    product,
+                    "hard",
+                    "repeated_country_total",
+                    f"What is the combined share for {repeated_country} in {product.name}, rounded to a whole percent?",
+                    str(int(round(repeated_total))),
+                    _number_choices(int(round(repeated_total)), 0, 100),
+                    "Add repeated country percentages in Product Detail > Origin Breakdown.",
+                    "Origin Breakdown",
+                    url_for("product.product_detail", barcode=product.barcode) + "#origin-breakdown",
+                )
+            )
+
     if stages and breakdowns:
-        section_answer = "Timeline"
-        if len(breakdowns) > len(stages):
-            section_answer = "Origin Breakdown"
-        elif len(breakdowns) == len(stages):
+        section_counts = {
+            "Timeline": len(stages),
+            "Origin Breakdown": len(breakdowns),
+        }
+        section_answer = max(section_counts, key=section_counts.get)
+        if len(stages) == len(breakdowns):
             section_answer = "Equal"
         questions.append(
             _question(
@@ -429,80 +555,83 @@ def _hard_questions(product, category_products, selected_category_label):
         )
 
     if claims:
-        verified_count = sum(1 for claim in claims if _normalize(claim.confidence_label) == "verified")
-        questions.append(
-            _question(
-                product,
-                "hard",
-                "verified_claim_count",
-                f"How many claims for {product.name} are marked verified?",
-                str(verified_count),
-                _number_choices(verified_count, 0, 6),
-                "Open the claim cards or evidence view and count the verified labels.",
-                "Claim Cards",
-                url_for("product.product_detail", barcode=product.barcode) + "#claim-cards",
-            )
-        )
-
-        evidence_counts = [(claim, len(claim.evidence)) for claim in claims]
-        top_claim, _ = max(evidence_counts, key=lambda item: item[1])
-        questions.append(
-            _question(
-                product,
-                "hard",
-                "top_evidence_claim",
-                f"Which claim type has the most evidence entries for {product.name}?",
-                top_claim.claim_type,
-                _options_from_pool(top_claim.claim_type, [claim.claim_type for claim in claims]),
-                "Use Product Evidence View and compare the evidence blocks under each claim.",
-                "Evidence View",
-                url_for("product.product_evidence", barcode=product.barcode),
-            )
-        )
-
-    brand_counts = Counter(_clean_text(item.brand) for item in category_products if _clean_text(item.brand))
-    if brand_counts:
-        most_common_brand, count = brand_counts.most_common(1)[0]
-        if count > 1:
+        label_counts = {}
+        for claim in claims:
+            label = _claim_label(claim)
+            label_counts[label] = label_counts.get(label, 0) + 1
+        dominant_label, dominant_count = max(label_counts.items(), key=lambda item: (item[1], item[0]))
+        if list(label_counts.values()).count(dominant_count) == 1:
             questions.append(
                 _question(
                     product,
                     "hard",
-                    "brand_frequency",
-                    f"Which brand appears most often in the {selected_category_label} category list?",
-                    most_common_brand,
-                    _options_from_pool(most_common_brand, list(brand_counts.keys())),
-                    "Use the product cards and compare brand repetition within the selected mission category.",
-                    "Category Product List",
-                    url_for("tracequest.tracequest"),
-                    key_scope=selected_category_label,
+                    "dominant_confidence_label",
+                    f"Which confidence label appears most often for {product.name}?",
+                    dominant_label,
+                    _options_from_pool(dominant_label, list(label_counts.keys()) + ["verified", "partially-verified", "unverified", "No label"]),
+                    "Count confidence labels in Product Detail > Claim Cards.",
+                    "Claim Cards",
+                    url_for("product.product_detail", barcode=product.barcode) + "#claim-cards",
                 )
             )
 
-    category_size = len(category_products)
-    questions.append(
-        _question(
-            product,
-            "hard",
-            "category_size",
-            f"How many products are currently available in the selected {selected_category_label} mission category?",
-            str(category_size),
-            _number_choices(category_size, max(0, category_size - 6), category_size + 6),
-            "Use the category overview on the Trace Quest page.",
-            "Mission Category Overview",
-            url_for("tracequest.tracequest"),
-            key_scope=selected_category_label,
+    if evidence_rows:
+        latest_claim, latest_evidence = max(
+            evidence_rows,
+            key=lambda row: (row[1].date or "", row[1].evidence_id),
         )
-    )
+        total_evidence = len(evidence_rows)
+        section_counts = _section_row_counts(product)
+        section_answer = max(section_counts, key=section_counts.get)
+        if list(section_counts.values()).count(section_counts[section_answer]) == 1:
+            questions.append(
+                _question(
+                    product,
+                    "hard",
+                    "largest_section_count",
+                    f"Which passport section has the most rows for {product.name}?",
+                    section_answer,
+                    _options_from_pool(section_answer, ["Timeline", "Origin Breakdown", "Claim Cards", "Evidence View"]),
+                    "Compare row counts across the passport sections.",
+                    "Product Detail / Evidence View",
+                    url_for("product.product_detail", barcode=product.barcode),
+                )
+            )
+
+        questions.extend(
+            [
+                _question(
+                    product,
+                    "hard",
+                    "total_evidence_count",
+                    f"How many evidence items are listed for {product.name} in total?",
+                    str(total_evidence),
+                    _number_choices(total_evidence, 0, 12),
+                    "Count all evidence entries in Product Evidence View.",
+                    "Evidence View",
+                    url_for("product.product_evidence", barcode=product.barcode),
+                ),
+                _question(
+                    product,
+                    "hard",
+                    "latest_evidence_type",
+                    f"Which evidence type is attached to the latest evidence item for {product.name}?",
+                    latest_evidence.evidence_type,
+                    _options_from_pool(latest_evidence.evidence_type, [row.evidence_type for item in category_products for _, row in _product_evidence_rows(item)]),
+                    "Use the most recent date in Product Evidence View.",
+                    "Evidence View",
+                    url_for("product.product_evidence", barcode=product.barcode),
+                ),
+            ]
+        )
 
     return questions
 
 
 def _fallback_pack(category_key, difficulty, category_products):
     fallback_questions = []
-    category_label = CATEGORY_INDEX[category_key]["label"]
     for product in category_products:
-        fallback_questions.extend(_metadata_questions(product, category_products, difficulty, category_label))
+        fallback_questions.extend(_basic_questions(product, category_products))
     return fallback_questions
 
 
@@ -520,11 +649,12 @@ def _build_mission_pack(category_key, difficulty, category_products):
     candidates = []
 
     for product in shuffled_products[: min(len(shuffled_products), 16)]:
-        candidates.extend(_metadata_questions(product, category_products, difficulty, category_label))
+        candidates.extend(_basic_questions(product, category_products))
         if difficulty == "normal":
             candidates.extend(_normal_questions(product, category_products))
         elif difficulty == "hard":
-            candidates.extend(_hard_questions(product, category_products, category_label))
+            candidates.extend(_normal_questions(product, category_products))
+            candidates.extend(_hard_questions(product, category_products))
 
     if difficulty in {"normal", "hard"} and len(candidates) < PACK_SIZE:
         candidates.extend(_fallback_pack(category_key, difficulty, category_products))

@@ -1,45 +1,55 @@
-.error-message {
-    color: #b42318;
-    margin-top: 8px;
+.add-product-page .editor-panel {
+    margin-top: 0;
 }
 
-.scanner {
-    position: relative;
-    margin-top: 12px;
-    width: 100%;
-    max-width: 480px;
+.barcode-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px;
+    align-items: end;
 }
 
-.scanner video#preview {
-    display: block;
-    width: 100%;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    background: #000;
+.barcode-field {
+    display: grid;
+    gap: 6px;
 }
 
-.scan-overlay {
-    position: absolute;
-    inset: 0;
-    display: flex;
+.barcode-field span {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.scan-barcode-button {
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
-    pointer-events: none;
-}
-
-.scan-box {
-    width: 72%;
-    height: 46%;
-    border: 3px solid #ffffff;
-    border-radius: 10px;
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.35);
-}
-
-.captured-image {
-    margin-top: 10px;
-    width: 100%;
-    max-width: 320px;
-    border: 1px solid #ccc;
+    gap: 8px;
+    min-height: 46px;
+    padding: 0 14px;
+    border: 1px solid #c7dafc;
     border-radius: 8px;
-    display: block;
+    background: #e8f0fe;
+    color: #123d7a;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.scan-barcode-button img {
+    width: 18px;
+    height: 18px;
+}
+
+.error-message {
+    margin: 2px 0 0;
+    color: #b42318;
+}
+
+@media (max-width: 860px) {
+    .barcode-row {
+        grid-template-columns: 1fr;
+        align-items: stretch;
+    }
+
+    .scan-barcode-button {
+        justify-content: center;
+    }
 }

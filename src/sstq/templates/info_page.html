@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+{% block custom_css %}<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">{% endblock %}
+
+{% block content %}
+<section class="home-page">
+    <section class="info-hero-card">
+        <p class="hero-eyebrow">Information</p>
+        <h1>{{ page_title }}</h1>
+        <p class="hero-text">{{ page_subtitle }}</p>
+    </section>
+
+    <section class="info-section-list">
+        {% for section in sections %}
+            <article class="home-info-card">
+                <h2>{{ section.title }}</h2>
+                {% for paragraph in section.body %}
+                    <p>{{ paragraph }}</p>
+                {% endfor %}
+            </article>
+        {% endfor %}
+    </section>
+    
+    <div class="sticky-page-actions">
+        <a class="page-action-box compact-action-box" href="{{ url_for('home.home') }}">
+            <span class="page-action-title">Back to Home</span>
+        </a>
+    </div>
+</section>
+{% endblock %}

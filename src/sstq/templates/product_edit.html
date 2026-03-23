@@ -43,15 +43,9 @@
         </div>
     </article>
 
-    <div class="page-actions">
-        <a class="action-link" href="{{ url_for('product.product_detail', barcode=barcode) }}">Back to product detail</a>
-        <a class="action-link" href="{{ url_for('product.product_evidence', barcode=barcode) }}">Open Evidence View</a>
-        <a class="action-link" href="{{ url_for('product.product') }}">Back to all products</a>
-    </div>
-
     <section class="editor-panel">
         <h2>Edit Product + Timeline + Origin Breakdown + Claims</h2>
-        <form class="editor-form" method="POST" action="{{ url_for('product.product_update', barcode=barcode) }}">
+        <form id="product-edit-form" class="editor-form" method="POST" action="{{ url_for('product.product_update', barcode=barcode) }}">
             <label for="edit-barcode">Barcode</label>
             <input id="edit-barcode" name="barcode" value="{{ barcode }}" required>
 
@@ -67,49 +61,111 @@
             <label for="edit-description">Description</label>
             <textarea id="edit-description" name="description" rows="4" required>{{ description }}</textarea>
 
-            <label>Product Image ** .jpg only **</label>
+            <label>Product Image</label>
             <input id="edit-image" name="image" type="hidden" value="{{ image or '' }}">
             <div class="image-edit-tools">
-                <input id="edit-image-file" type="file" accept="image/*">
-                <button id="upload-image-file" type="button">Upload Selected Image</button>
-            </div>
-
-            <div class="image-edit-tools">
-                <button id="start-edit-photo-camera" type="button">Open Camera</button>
-                <button id="capture-edit-photo" type="button">Capture Photo</button>
-                <button id="stop-edit-photo-camera" type="button">Close Camera</button>
+                <button type="button" id="choose-image-file" class="image-action-box image-action-button">
+                    <span class="image-action-box-title">Choose File</span>
+                    <span class="image-action-box-text">Pick an image and upload it straight to cache.</span>
+                </button>
+                <input id="edit-image-file" class="image-file-input" type="file" accept="image/*">
+                <a class="image-action-box" href="{{ url_for('scan_picture.scan_picture', target='product_edit', barcode=barcode) }}">
+                    <img src="{{ url_for('static', filename='icons/camera-viewfinder.svg') }}" alt="" aria-hidden="true">
+                    <span class="image-action-box-title">Open Picture Capture</span>
+                    <span class="image-action-box-text">Use the camera capture flow and save the image into cache.</span>
+                </a>
             </div>
 
             <p id="edit-image-status" class="image-status">
                 {% if image %}Current image is set.{% else %}No image set yet.{% endif %}
             </p>
-            <div class="scanner">
-                <video id="edit-photo-preview" autoplay muted playsinline></video>
-            </div>
             <img id="edit-captured-image" class="captured-image" src="{{ image or '' }}" alt="Product image preview" {% if not image %}hidden{% endif %}>
 
-            <h3>Timeline Rows</h3>
-            <p class="format-help">One row per line: <code>stage_type|country|region|start_date|end_date|description</code> (date format: YYYY-MM-DD)</p>
-            <textarea name="timeline_rows" rows="8" placeholder="Raw Material|Brazil|Amazon|2024-01-01|2024-01-08|Cocoa bean sourcing">{{ stage_rows }}</textarea>
+            <section class="record-editor" data-editor="timeline">
+                <div class="record-editor-header">
+                    <div>
+                        <h3>Timeline</h3>
+                        <p class="format-help">Edit one timeline row per card. Dates use YYYY-MM-DD.</p>
+                    </div>
+                    <button type="button" class="add-row-button" data-add-row="timeline">
+                        <img src="{{ url_for('static', filename='icons/plus.svg') }}" alt="" aria-hidden="true">
+                        <span>Add Row</span>
+                    </button>
+                </div>
+                <div class="record-list" id="timeline-list"></div>
+                <textarea name="timeline_rows" id="timeline_rows" hidden>{{ stage_rows }}</textarea>
+            </section>
 
-            <h3>Origin Breakdown Rows</h3>
-            <p class="format-help">One row per line: <code>name|country|percentage|notes</code></p>
-            <textarea name="breakdown_rows" rows="6" placeholder="Cocoa|Brazil|65|Rainforest farm region">{{ breakdown_rows }}</textarea>
+            <section class="record-editor" data-editor="breakdown">
+                <div class="record-editor-header">
+                    <div>
+                        <h3>Origin Breakdown</h3>
+                        <p class="format-help">Edit one breakdown row per card.</p>
+                    </div>
+                    <button type="button" class="add-row-button" data-add-row="breakdown">
+                        <img src="{{ url_for('static', filename='icons/plus.svg') }}" alt="" aria-hidden="true">
+                        <span>Add Row</span>
+                    </button>
+                </div>
+                <div class="record-list" id="breakdown-list"></div>
+                <textarea name="breakdown_rows" id="breakdown_rows" hidden>{{ breakdown_rows }}</textarea>
+            </section>
 
-            <h3>Claim Rows</h3>
-            <p class="format-help">One row per line: <code>claim_type|claim_text|confidence_label|rationale</code></p>
-            <textarea name="claim_rows" rows="8" placeholder="Sustainability|Uses certified farms|verified|Checked against latest certificates">{{ claim_rows }}</textarea>
+            <section class="record-editor" data-editor="claim">
+                <div class="record-editor-header">
+                    <div>
+                        <h3>Claims</h3>
+                        <p class="format-help">Edit one claim row per card.</p>
+                    </div>
+                    <button type="button" class="add-row-button" data-add-row="claim">
+                        <img src="{{ url_for('static', filename='icons/plus.svg') }}" alt="" aria-hidden="true">
+                        <span>Add Row</span>
+                    </button>
+                </div>
+                <div class="record-list" id="claim-list"></div>
+                <textarea name="claim_rows" id="claim_rows" hidden>{{ claim_rows }}</textarea>
+            </section>
 
-            <h3>Evidence Rows</h3>
-            <p class="format-help">One row per line: <code>claim_index|evidence_type|issuer|date|summary|file_reference</code> (claim index starts from 1 based on Claim Rows)</p>
-            <textarea name="evidence_rows" rows="10" placeholder="1|Certificate|Rainforest Alliance|2024-02-15|Annual certificate renewed|docs/cert-2024.pdf">{{ evidence_rows }}</textarea>
-
-            <button type="submit" class="primary-button">Save Changes</button>
+            <section class="record-editor" data-editor="evidence">
+                <div class="record-editor-header">
+                    <div>
+                        <h3>Evidence</h3>
+                        <p class="format-help">Claim index starts from 1 based on the claim cards.</p>
+                    </div>
+                    <button type="button" class="add-row-button" data-add-row="evidence">
+                        <img src="{{ url_for('static', filename='icons/plus.svg') }}" alt="" aria-hidden="true">
+                        <span>Add Row</span>
+                    </button>
+                </div>
+                <div class="record-list" id="evidence-list"></div>
+                <textarea name="evidence_rows" id="evidence_rows" hidden>{{ evidence_rows }}</textarea>
+            </section>
         </form>
 
-        <form method="POST" action="{{ url_for('product.delete_product', barcode=barcode) }}" onsubmit="return confirm('Delete this product? This cannot be undone.');">
-            <button type="submit" class="danger-button">Delete Product</button>
+        <form id="product-delete-form" method="POST" action="{{ url_for('product.delete_product', barcode=barcode) }}" onsubmit="return confirm('Delete this product? This cannot be undone.');">
         </form>
     </section>
+
+    <div class="sticky-editor-actions">
+        <div class="sticky-nav-actions">
+            <a class="page-action-box compact-action-box" href="{{ url_for('product.product_detail', barcode=barcode) }}">
+                <span class="page-action-title">Back to product detail</span>
+            </a>
+            <a class="page-action-box compact-action-box" href="{{ url_for('product.product_evidence', barcode=barcode) }}">
+                <span class="page-action-title">Open Evidence View</span>
+            </a>
+            <a class="page-action-box compact-action-box" href="{{ url_for('product.product') }}">
+                <span class="page-action-title">Back to all products</span>
+            </a>
+        </div>
+        <div class="sticky-primary-actions">
+            <button type="submit" form="product-edit-form" class="primary-button">Save Changes</button>
+            <button type="submit" form="product-delete-form" class="danger-button">Delete Product</button>
+        </div>
+    </div>
 </section>
+<script id="timeline-items" type="application/json">{{ stage_items|tojson }}</script>
+<script id="breakdown-items" type="application/json">{{ breakdown_items|tojson }}</script>
+<script id="claim-items" type="application/json">{{ claim_items|tojson }}</script>
+<script id="evidence-items" type="application/json">{{ evidence_items|tojson }}</script>
 {% endblock %}

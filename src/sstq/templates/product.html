@@ -8,67 +8,117 @@
 <section class="product-list-page">
     <h1>All Products</h1>
 
-    <div class="product-search">
-        <input
-            id="productSearch"
-            type="search"
-            placeholder="Search by barcode or name…"
-            aria-label="Search products"
-            autocomplete="off"
-        />
-    </div>
+    <form id="productFiltersForm" method="GET" action="{{ url_for('product.product') }}">
+        <div class="product-search-row">
+            <input
+                id="productSearch"
+                name="q"
+                type="search"
+                placeholder="Search by barcode, name, or category…"
+                aria-label="Search by barcode, name, or category"
+                autocomplete="off"
+                value="{{ initial_search }}"
+            />
+            <a class="icon-button" href="{{ url_for('scan_barcode.scan_barcode', target='product_list') }}" aria-label="Scan barcode">
+                <img src="{{ url_for('static', filename='icons/barcode-read.svg') }}" alt="" aria-hidden="true">
+            </a>
+        </div>
 
-    <div class="product-controls">
-        <label class="control-group" for="categoryFilter">
-            <span>Category</span>
-            <select id="categoryFilter">
-                <option value="">All categories</option>
-                {% for category in categories %}
-                    <option value="{{ category }}">{{ category }}</option>
-                {% endfor %}
-            </select>
-        </label>
+        <div class="product-controls">
+            <label class="control-group" for="categoryFilter">
+                <span>Category</span>
+                <select id="categoryFilter" name="category">
+                    <option value="">All categories</option>
+                    {% for category in categories %}
+                        <option value="{{ category }}" {% if category == selected_category %}selected{% endif %}>{{ category }}</option>
+                    {% endfor %}
+                </select>
+            </label>
 
-        <label class="control-group" for="sortProducts">
-            <span>Sort</span>
-            <select id="sortProducts">
-                <option value="name-asc">Name A-Z</option>
-                <option value="name-desc">Name Z-A</option>
-                <option value="category-asc">Category A-Z</option>
-                <option value="category-desc">Category Z-A</option>
-            </select>
-        </label>
-    </div>
+            <label class="control-group" for="sortProducts">
+                <span>Sort</span>
+                <select id="sortProducts" name="sort">
+                    <option value="name-asc" {% if selected_sort == "name-asc" %}selected{% endif %}>Name A-Z</option>
+                    <option value="name-desc" {% if selected_sort == "name-desc" %}selected{% endif %}>Name Z-A</option>
+                    <option value="barcode-asc" {% if selected_sort == "barcode-asc" %}selected{% endif %}>Barcode 0-9</option>
+                    <option value="barcode-desc" {% if selected_sort == "barcode-desc" %}selected{% endif %}>Barcode 9-0</option>
+                    <option value="category-asc" {% if selected_sort == "category-asc" %}selected{% endif %}>Category A-Z</option>
+                    <option value="category-desc" {% if selected_sort == "category-desc" %}selected{% endif %}>Category Z-A</option>
+                </select>
+            </label>
+
+            <button id="resetFilters" type="button" class="icon-button reset-icon-button" aria-label="Reset filters">
+                <img src="{{ url_for('static', filename='icons/sort-reset.svg') }}" alt="" aria-hidden="true">
+            </button>
+        </div>
+    </form>
+
+    <form id="compareForm" method="GET" action="{{ url_for('product.product_compare') }}">
+        <input id="compareIds" type="hidden" name="ids" value="">
+        <div id="compareDock" class="compare-dock" hidden>
+            <div>
+                <p id="compareSelectionText" class="compare-selection-text">Select 2 products to compare</p>
+                <p class="compare-help">Choose two products, then confirm to open the side-by-side comparison page.</p>
+            </div>
+            <div class="compare-dock-actions">
+                <button id="compareCancel" type="button" class="compare-cancel">Cancel</button>
+                <button id="compareConfirm" type="submit" class="compare-confirm" disabled>Confirm</button>
+            </div>
+        </div>
+    </form>
 
     {% if products %}
         <div class="product-grid" id="productGrid">
             {% for product in products %}
-                <a
+                <article
                     class="product-block"
-                    href="{{ url_for('product.product_detail', barcode=product.barcode) }}"
                     data-barcode="{{ product.barcode|e }}"
                     data-name="{{ product.name|e }}"
                     data-category="{{ product.category|e }}"
                 >
-                    <div class="product-thumb-wrapper">
-                        {% if product.image %}
-                            <img
-                                class="product-thumb"
-                                src="{{ product.image }}"
-                                alt="{{ product.name }} image"
-                                loading="lazy"
-                            />
-                            <div class="product-thumb-fallback" hidden>No image</div>
-                        {% else %}
-                            <div class="product-thumb-fallback">No image</div>
-                        {% endif %}
-                    </div>
-                    <p class="product-barcode">{{ product.barcode }}</p>
-                    <p class="product-name">{{ product.name }}</p>
-                    <p class="product-category">{{ product.category }}</p>
-                </a>
+                    <label class="compare-select">
+                        <input type="checkbox" class="compare-checkbox" name="barcode" value="{{ product.barcode }}">
+                        <span>Selected for comparison</span>
+                    </label>
+                    <a class="product-main-link" href="{{ url_for('product.product_detail', barcode=product.barcode) }}">
+                        <div class="product-thumb-wrapper">
+                            {% if product.image %}
+                                <img
+                                    class="product-thumb"
+                                    src="{{ product.image }}"
+                                    alt="{{ product.name }} image"
+                                    loading="lazy"
+                                />
+                                <div class="product-thumb-fallback" hidden>No image</div>
+                            {% else %}
+                                <div class="product-thumb-fallback">No image</div>
+                            {% endif %}
+                        </div>
+                        <p class="product-barcode">{{ product.barcode }}</p>
+                        <p class="product-name">{{ product.name }}</p>
+                        <p class="product-category">{{ product.category }}</p>
+                    </a>
+                </article>
             {% endfor %}
         </div>
+
+        {% if pagination.pages > 1 %}
+            <nav class="pagination-bar" aria-label="Product pages">
+                {% if pagination.has_prev %}
+                    <a class="pagination-link" href="{{ url_for('product.product', q=initial_search, category=selected_category, sort=selected_sort, page=pagination.prev_num) }}">Previous</a>
+                {% else %}
+                    <span class="pagination-link is-disabled">Previous</span>
+                {% endif %}
+
+                <p class="pagination-summary">Page {{ pagination.page }} of {{ pagination.pages }}</p>
+
+                {% if pagination.has_next %}
+                    <a class="pagination-link" href="{{ url_for('product.product', q=initial_search, category=selected_category, sort=selected_sort, page=pagination.next_num) }}">Next</a>
+                {% else %}
+                    <span class="pagination-link is-disabled">Next</span>
+                {% endif %}
+            </nav>
+        {% endif %}
     {% else %}
         <p class="empty-message">No products found in database.</p>
     {% endif %}

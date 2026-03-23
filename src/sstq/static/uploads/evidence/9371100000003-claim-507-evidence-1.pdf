@@ -1,0 +1,76 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+5 0 obj
+<< /Length 1589 >>
+stream
+BT
+/F1 11 Tf
+50 780 Td
+14 TL
+(TRACEABILITY SUPPORTING EVIDENCE) Tj
+T* () Tj
+T* (Evidence Reference: EV-9371100000003-507-20250507) Tj
+T* (Document Type: Shipment Record) Tj
+T* (Issued By: Independent Lab) Tj
+T* (Issue Date: 2025-05-07) Tj
+T* (Review Status: Available for verifier and consumer evidence view) Tj
+T* () Tj
+T* (PRODUCT DETAILS) Tj
+T* (Product Name: Apple iPhone 12 \(128GB\) - Black) Tj
+T* (Barcode: 9371100000003) Tj
+T* (Brand: Apple) Tj
+T* (Category: Phones, Audio & cameras, Electronics) Tj
+T* () Tj
+T* (CLAIM UNDER REVIEW) Tj
+T* (Claim Type: Sustainability) Tj
+T* (Claim Text: Sourcing aligns with published procurement standards.) Tj
+T* (Confidence Label: partially-verified) Tj
+T* () Tj
+T* (EVIDENCE SUMMARY) Tj
+T* (Supporting record confirming the traceability claim for this product) Tj
+T* (batch.) Tj
+T* () Tj
+T* (VERIFICATION NOTES) Tj
+T* (- Supplier identity matched against registered onboarding records.) Tj
+T* (- Supporting dates fell within the declared production period.) Tj
+T* (- Country and stage metadata were consistent with the product passport.) Tj
+T* () Tj
+T* (CHAIN OF CUSTODY SNAPSHOT) Tj
+T* (- Linked claim id: 507) Tj
+T* (- Linked product barcode: 9371100000003) Tj
+T* (- Document issuer: Independent Lab) Tj
+T* (- Review timestamp: 2026-03-23 05:36 UTC) Tj
+T* () Tj
+T* (REVIEW OUTCOME) Tj
+T* (Evidence supports the stated claim within the scope of the sampled batch.) Tj
+T* () Tj
+T* (SIGN-OFF) Tj
+T* (Prepared for: Apple traceability passport demo) Tj
+T* (Verifier Note: Generated supporting file for coursework dataset and UI walkthrough.) Tj
+ET
+endstream
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000241 00000 n 
+0000000311 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+1952
+%%EOF

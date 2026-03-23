@@ -10,7 +10,7 @@
 .product-page {
     max-width: 980px;
     margin: 24px auto;
-    padding: 0 8px 24px;
+    padding: 0 8px 108px;
 }
 
 .product-page h1 {
@@ -192,22 +192,78 @@
     cursor: pointer;
 }
 
-.page-actions {
-    margin-top: 16px;
-    display: flex;
-    align-items: center;
+.evidence-file-block {
+    display: grid;
     gap: 10px;
-    flex-wrap: wrap;
 }
 
-.action-link {
-    color: var(--accent);
+.file-download-box {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    width: fit-content;
+    padding: 10px 14px;
+    border: 1px solid #c7dafc;
+    border-radius: 10px;
+    background: #eef4fb;
+    color: #123d7a;
     text-decoration: none;
     font-weight: 600;
 }
 
-.action-link:hover {
-    text-decoration: underline;
+.file-download-box:hover {
+    background: #e4eefc;
+}
+
+.file-download-box img {
+    width: 18px;
+    height: 18px;
+}
+
+.sticky-page-actions {
+    position: sticky;
+    bottom: 16px;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    width: fit-content;
+    margin: 18px auto 0;
+    padding: 12px;
+    background: rgba(236, 242, 248, 0.97);
+    border: 1px solid #ccd9e7;
+    border-radius: 14px;
+    box-shadow: 0 10px 28px rgba(52, 84, 120, 0.12);
+    backdrop-filter: blur(8px);
+}
+
+.page-action-box {
+    display: inline-flex;
+    align-items: center;
+    padding: 11px 14px;
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    color: var(--text-main);
+    text-decoration: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.page-action-box:hover {
+    border-color: #bfd1ec;
+    background: #f3f7fc;
+    box-shadow: 0 4px 14px rgba(31, 111, 235, 0.08);
+}
+
+.compact-action-box {
+    background: #ffffff;
+}
+
+.page-action-title {
+    font-weight: 600;
+    color: var(--text-main);
 }
 
 @media (max-width: 860px) {
@@ -217,5 +273,15 @@
 
     .product-image-wrapper {
         max-width: 360px;
+    }
+
+    .sticky-page-actions {
+        width: 100%;
+        justify-content: stretch;
+    }
+
+    .page-action-box {
+        width: 100%;
+        justify-content: center;
     }
 }

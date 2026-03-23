@@ -53,13 +53,12 @@ REGIONS = [
     "River Basin",
 ]
 
-STAGE_TYPES = [
-    "Raw Material Sourcing",
-    "Primary Processing",
-    "Quality Check",
-    "Packaging",
-    "Distribution",
-    "Retail Delivery",
+STAGE_SEQUENCE = [
+    ("Raw Material Sourcing", "Raw inputs were sourced and logged for traceability."),
+    ("Processing", "Inputs were processed into production-ready materials."),
+    ("Assembly", "Processed materials were assembled into the finished product."),
+    ("Transport", "Finished goods were transported between supply chain locations."),
+    ("Retail", "Final stock was prepared and delivered for retail sale."),
 ]
 
 BREAKDOWN_NAMES = [
@@ -116,6 +115,16 @@ def _build_stage_window(base_start: date) -> tuple[date, date]:
     return start, end
 
 
+def _timeline_sequence(stages_per_product: int) -> list[tuple[str, str]]:
+    if stages_per_product <= len(STAGE_SEQUENCE):
+        return STAGE_SEQUENCE[: max(1, stages_per_product)]
+
+    sequence = list(STAGE_SEQUENCE)
+    while len(sequence) < stages_per_product:
+        sequence.append(STAGE_SEQUENCE[-1])
+    return sequence
+
+
 def _random_weights(count: int) -> list[float]:
     raw = [random.random() for _ in range(count)]
     total = sum(raw)
@@ -141,12 +150,13 @@ def _pick_products(barcode: str | None, limit: int | None) -> list[Product]:
 
 def create_timeline(
     products: Iterable[Product],
-    stages_per_product: int = 4,
+    stages_per_product: int = 5,
     replace_existing: bool = False,
 ) -> int:
     """Create random Stage rows for each given product."""
     created = 0
     today = date.today()
+    stage_sequence = _timeline_sequence(stages_per_product)
 
     for product in products:
         if replace_existing:
@@ -155,18 +165,18 @@ def create_timeline(
             continue
 
         start_cursor = today - timedelta(days=random.randint(180, 360))
-        for _ in range(max(1, stages_per_product)):
+        for stage_type, stage_note in stage_sequence:
             stage_start, stage_end = _build_stage_window(start_cursor)
             start_cursor = stage_end
             db.session.add(
                 Stage(
                     product_barcode=product.barcode,
-                    stage_type=_random_choice(STAGE_TYPES),
+                    stage_type=stage_type,
                     country=_random_choice(COUNTRIES),
                     region=_random_choice(REGIONS),
                     start_date=stage_start,
                     end_date=stage_end,
-                    description=f"{product.name} moved through {_random_choice(STAGE_TYPES).lower()} in this period.",
+                    description=f"{product.name}: {stage_note}",
                 )
             )
             created += 1
@@ -281,7 +291,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--limit", type=int, help="Limit number of products when barcode is not provided.")
     parser.add_argument("--seed", type=int, help="Random seed for deterministic output.")
     parser.add_argument("--replace-existing", action="store_true", help="Overwrite existing data for selected sections.")
-    parser.add_argument("--timeline-per-product", type=int, default=4)
+    parser.add_argument("--timeline-per-product", type=int, default=5)
     parser.add_argument("--breakdown-per-product", type=int, default=3)
     parser.add_argument("--claims-per-product", type=int, default=3)
     parser.add_argument("--evidence-per-claim", type=int, default=2)

@@ -32,7 +32,15 @@
                                         <p><strong>Summary:</strong> {{ evidence.summary }}</p>
                                     {% endif %}
                                     {% if evidence.file_reference %}
-                                        <p><strong>File:</strong> {{ evidence.file_reference }}</p>
+                                        <div class="evidence-file-block">
+                                            <p><strong>File:</strong> {{ evidence.file_reference.rsplit('/', 1)[-1] }}</p>
+                                            {% if evidence.file_reference.startswith('/static/') %}
+                                                <a class="file-download-box" href="{{ evidence.file_reference }}" target="_blank" rel="noopener" download>
+                                                    <img src="{{ url_for('static', filename='icons/download.svg') }}" alt="" aria-hidden="true">
+                                                    <span>Download Evidence</span>
+                                                </a>
+                                            {% endif %}
+                                        </div>
                                     {% endif %}
                                 </article>
                             {% endfor %}
@@ -57,10 +65,14 @@
         <p class="empty-text">No claims found for this product.</p>
     {% endif %}
 
-    <div class="page-actions">
-        <a class="action-link" href="{{ url_for('product.product_detail', barcode=product.barcode) }}">Back to Product Detail</a>
+    <div class="sticky-page-actions">
+        <a class="page-action-box compact-action-box" href="{{ url_for('product.product_detail', barcode=product.barcode) }}">
+            <span class="page-action-title">Back to Product Detail</span>
+        </a>
         {% if current_user.is_authenticated and (current_user.is_verifier or current_user.is_admin) %}
-            <a class="action-link" href="{{ url_for('product.product_edit', barcode=product.barcode) }}">Edit Product Data</a>
+            <a class="page-action-box compact-action-box" href="{{ url_for('product.product_edit', barcode=product.barcode) }}">
+                <span class="page-action-title">Edit Product Data</span>
+            </a>
         {% endif %}
     </div>
 </section>

@@ -5,71 +5,88 @@
 {% block custom_js%}<script type="module" src="{{ url_for('static', filename='js/home.js') }}" defer></script>{% endblock %}
 
 {% block content %}
-<div class="body-element">
-    <h1>Welcome</h1>
+<section class="home-page">
+    <section class="hero-card">
+        <div class="hero-copy">
+            <p class="hero-eyebrow">Single Scan Traceability Quest</p>
+            <h1>Trace product journeys, review evidence, and turn product data into a playable experience.</h1>
+            <p class="hero-text">
+                Explore sourcing, processing, assembly, transport, retail, and supporting claim evidence in one place.
+                The platform combines product traceability with a lightweight learning game so users can inspect data and test understanding.
+            </p>
+        </div>
 
-    <p>
-        It is no surprise that in the 21st century, consumers are more aware about the ecological impact of the products that they buy. 
-        Despite this, many companies do not offer an easy and accessible way to view the true 'origins' of a product, such as where its
-        raw materials were sourced from, where each component part was assembled and what percent each country contributed to the 
-        manufacturing process.
-    </p>
+        <div class="hero-panel">
+            <div class="hero-stat-card">
+                <span class="hero-stat-label">Core workflow</span>
+                <strong>Scan, inspect, compare, verify</strong>
+            </div>
+            <div class="hero-stat-card">
+                <span class="hero-stat-label">Product data</span>
+                <strong>Timeline, breakdown, claims, evidence</strong>
+            </div>
+            <div class="hero-stat-card">
+                <span class="hero-stat-label">Quest mode</span>
+                <strong>Learn through mission packs and badges</strong>
+            </div>
+        </div>
+    </section>
 
-    <p>
-        This application aims to alleviate that issue by giving you a way to check the 'Traceability Timeline' of any given product. 
-        As long as you have the <a href={{ url_for('search_product.search_product') }}>barcode</a>, you can check the entire history of gathering, processing,
-        assembly, transport and retail for your given product. No longer will you have to worry about the precise origins of everyday
-        items.
-    </p>
+    <section class="get-started-card">
+        <div>
+            <p class="hero-eyebrow">Get Started</p>
+            <h2>Sign in to explore product data and quest progress.</h2>
+            <p>
+                Login is required for the main workflow, including viewing products, evidence, missions, and role-based editing tools.
+            </p>
+        </div>
+        <a class="get-started-button" href="{{ url_for('auth.login') }}">Get Started</a>
+    </section>
 
-    <h2>
-</div>
+    <section class="home-section-grid">
+        <article class="home-info-card">
+            <h2>Traceability Passport</h2>
+            <p>
+                Review product timeline stages, origin breakdowns, claim cards, and evidence attachments from a single product page.
+                The workflow is designed to keep product context, supporting files, and issue reporting connected.
+            </p>
+        </article>
 
-<div class="body-element">
-    <h1>Traceability Quest</h1>
+        <article class="home-info-card">
+            <h2>Verifier Workflow</h2>
+            <p>
+                Verifier and admin users can add products, maintain timelines, upload evidence, capture images, and moderate reported issues.
+                Editing tools use the same card-based structure across product data sections.
+            </p>
+        </article>
 
-    <p>
-        While the Traceability Timeline is useful, it is a little boring. That's why we decided to create something to incentivise 
-        players to learn about different products. Right now, you can <a href={{ url_for('tracequest.tracequest') }}>play</a> 'Traceability Quest' - a game where you choose a
-        category, select `easy`, `normal`, or `hard`, and complete a 6-question mission pack using the traceability passport. The
-        goal is to study the evidence, timeline, and claim sections closely enough to answer correctly and build up points and badges.
-    </p>
-</div>
+        <article class="home-info-card">
+            <h2>Traceability Quest</h2>
+            <p>
+                Quest mode turns the traceability passport into a challenge flow where players inspect products and answer questions across multiple difficulty levels.
+            </p>
+        </article>
+    </section>
 
-<div class="body-element">
-    <h1>What to Do Next</h1>
+    <section class="home-section-grid">
+        <article class="home-info-card">
+            <h2>What you can do</h2>
+            <ul class="home-list">
+                <li>Browse all products and search by barcode, name, or category.</li>
+                <li>Compare two products side by side.</li>
+                <li>Open evidence records and report issues against claims.</li>
+                <li>Play Traceability Quest and track your progress.</li>
+            </ul>
+        </article>
 
-    <p>
-        If you don't know where to go, don't worry - you can access all the resources using the menu on the left. Every page will have
-        instructions about how to use its features. Below is a summary of all of resources available to you:
-    </p>
-
-    <div>
-        <ul>
-            <li>Home - Takes you back to this page</li>
-            <li>Search for Products - Allows you to enter or scan a barcode for a product</li>
-            <li>Play Trace Quest - Allows you to generate a 6-question mission pack and then complete it on the misson result page</li>
-            <li>Login - Brings you to a login page, opening up a way for you to access your game statistics</li>
-        </ul>
-    </div>
-</div>
-
-<div>
-    <h1>References</h1>
-
-    <p>
-        In order for this application to work, many public resources and libraries were used. Below is a reference to every resource that 
-        was used:
-    </p>
-
-    <p>
-        checking to see if everything workschecking to see if everything workschecking to see if everything workschecking to see if everything workschecking to see if everything workschecking to see if everything workschecking to see if everything workschecking to see if everything workschecking to see if everything workschecking to see if everything workschecking to see if everything workschecking to see if everything workschecking to see if everything workschecking to see if everything workschecking to see if everything workschecking to see if everything worksv
-    </p>
-
-    <div>
-        <ul>
-            <li>placeholder</li>
-        </ul>
-    </div>
-</div>
+        <article class="home-info-card">
+            <h2>Information pages</h2>
+            <ul class="home-list">
+                <li><a href="{{ url_for('home.terms') }}">Terms and Conditions</a></li>
+                <li><a href="{{ url_for('home.cookies') }}">Cookie Information</a></li>
+                <li><a href="{{ url_for('home.privacy_security') }}">Privacy and Security</a></li>
+            </ul>
+        </article>
+    </section>
+</section>
 {% endblock %}

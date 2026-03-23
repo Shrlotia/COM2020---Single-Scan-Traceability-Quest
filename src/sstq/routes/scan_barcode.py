@@ -10,6 +10,11 @@ scan_barcode_bp = Blueprint("scan_barcode", __name__)
 @login_required
 def scan_barcode():
     targets = {
+        "product_list": {
+            "return_url": url_for("product.product"),
+            "title": "Scan Barcode",
+            "description": "Scan a barcode and return to all products.",
+        },
         "search_product": {
             "return_url": url_for("search_product.search_product"),
             "title": "Scan Barcode",
