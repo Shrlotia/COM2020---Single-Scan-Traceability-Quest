@@ -1,7 +1,8 @@
 def test_product_not_found(logged_in_client):
-    response = logged_in_client.get("/product/000000")
+    response = logged_in_client.get("/product/000000", follow_redirects=True)
 
-    assert response.status_code in (200, 302, 404)
+    assert response.status_code == 200
+    assert b"Product not found." in response.data
 
 
 def test_404_page(client):
@@ -13,4 +14,4 @@ def test_404_page(client):
 def test_wrong_method(logged_in_client):
     response = logged_in_client.post("/add_product")
 
-    assert response.status_code in (200, 400, 405)
+    assert response.status_code == 302

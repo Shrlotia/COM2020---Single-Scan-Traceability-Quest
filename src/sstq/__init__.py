@@ -2,9 +2,11 @@ from flask import Flask
 from sstq.config import Config
 from sstq.extensions import db, login_manager
 
-def create_app():
+def create_app(config_overrides=None):
     app = Flask(__name__)
     app.config.from_object(Config)
+    if config_overrides:
+        app.config.update(config_overrides)
 
     # init extension
     db.init_app(app)

@@ -1,4 +1,4 @@
-from sstq.main import db
+from sstq.extensions import db
 from sstq.models import User, Product, Stage, Claim, Evidence, Player
 from sqlalchemy.exc import IntegrityError
 import pytest

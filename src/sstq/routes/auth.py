@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, flash, redirect, url_for, request
+from flask import Blueprint, current_app, render_template, flash, redirect, url_for, request
 from flask_login import login_user, logout_user
 
 from sstq.extensions import login_manager, db
@@ -40,8 +40,10 @@ def login():
                 return redirect(url_for("home.home"))
             
         if action == "register":
-            # decides whether the user wants to register as a 'consumer' or 'verifier' based on the value of the html checkbox
-            role = "verifier" if (request.form.get("is_verifier") is not None) else "consumer"
+            role = "consumer"
+            requested_verifier = request.form.get("is_verifier") is not None
+            if requested_verifier and current_app.config.get("ALLOW_VERIFIER_SELF_REGISTER"):
+                role = "verifier"
             
             # if there is already a user with that username, a new one spongebobviously can't be registered
             if user:
@@ -59,6 +61,8 @@ def login():
                 
                 # automatically logs the user in (might change later but probably not) and redirects them to the homepage
                 login_user(new_user)
+                if requested_verifier and role != "verifier":
+                    flash("Verifier accounts must be created by an admin.", "info")
                 flash("Account successfully created", "success")
                 return redirect(url_for("home.home"))
             

@@ -118,7 +118,8 @@ class Player(db.Model):
     
 class Mission(db.Model):
     __tablename__ = "missions"
-    
+
+    # Stores generated mission runs and player answer history, not a static mission bank.
     mission_id = db.Column(db.Integer, primary_key=True)
     player_id = db.Column(db.Integer, db.ForeignKey("players.player_id"), nullable=False)
     mission_group_id = db.Column(db.String(36), nullable=True)

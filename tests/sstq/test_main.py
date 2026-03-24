@@ -1,5 +1,4 @@
-# login helper
-from sstq.main import db
+from sstq.extensions import db
 from sstq.models import Breakdown, Claim, Product
 
 
@@ -17,13 +16,38 @@ def test_home(client):
 
 
 def test_register(client):
-    response = client.post("/login", data={
-        "username": "newuser",
-        "password": "1234",
-        "action": "register"
-    })
+    response = client.post(
+        "/login",
+        data={
+            "username": "newuser",
+            "password": "1234",
+            "action": "register",
+        },
+        follow_redirects=True,
+    )
 
-    assert response.status_code == 302
+    assert response.status_code == 200
+    assert b"Account successfully created" in response.data
+
+
+def test_register_cannot_self_assign_verifier(client, app_instance):
+    client.post(
+        "/login",
+        data={
+            "username": "newverifier",
+            "password": "1234",
+            "action": "register",
+            "is_verifier": "on",
+        },
+        follow_redirects=True,
+    )
+
+    with app_instance.app_context():
+        from sstq.models import User
+
+        saved_user = User.query.filter_by(username="newverifier").first()
+        assert saved_user is not None
+        assert saved_user.role == "consumer"
 
 
 def test_login(client):
@@ -37,19 +61,35 @@ def test_add_product_requires_login(client):
 
 
 def test_add_product_logged_in(logged_in_client):
-    response = logged_in_client.get("/add_product", json={
-        "productData": {
+    response = logged_in_client.get("/add_product")
+    assert response.status_code == 200
+    assert b"Add Product" in response.data
+
+
+def test_add_product_post_creates_product(logged_in_client, app_instance):
+    response = logged_in_client.post(
+        "/add_product",
+        data={
             "barcode": "999",
             "name": "Test Product",
             "category": "Food",
             "brand": "Brand",
             "description": "Desc",
-            "image": "img.jpg"
-        }
-    })
+            "timeline_rows": "Raw Materials|Spain||2025-01-01|2025-01-02|Harvested",
+            "breakdown_rows": "Olive Oil|Spain|100|Single-origin",
+            "claim_rows": "Origin|Sourced from Spain|verified|Checked by verifier",
+            "evidence_rows": "1|Certificate|Verifier Org|2025-01-03|Confirms origin|",
+        },
+        follow_redirects=True,
+    )
 
     assert response.status_code == 200
-    assert response.json["success"] is True
+    assert b"Product created successfully." in response.data
+
+    with app_instance.app_context():
+        product = db.session.get(Product, "999")
+        assert product is not None
+        assert product.name == "Test Product"
 
 
 def test_product_compare_page(logged_in_client, app_instance):
@@ -97,3 +137,10 @@ def test_product_compare_page(logged_in_client, app_instance):
     assert b"Product Comparison" in response.data
     assert b"Compare Product A" in response.data
     assert b"Compare Product B" in response.data
+
+
+def test_product_compare_requires_two_products(logged_in_client):
+    response = logged_in_client.get("/products/compare?ids=111", follow_redirects=True)
+
+    assert response.status_code == 200
+    assert b"Select exactly two products to compare." in response.data
