@@ -9,11 +9,11 @@ Traceability Quest questions are generated dynamically from the seeded product p
 ## Team Members & Roles
 
 - **Dawid Kwiecien** - Project Leader, Documentation Lead - GitHub: `Dawid-Kwiecien-86`
-- **Simba Chan** - Programming Lead, Technical Lead - GitHub: `Shrlotia`
+- **Simba Chan** - Programming Lead, Lead UI/UX Lead & Technical Lead - GitHub: `Shrlotia`
 - **Cia Lloyd-Hole** - Data Lead - GitHub: `Cai7700`
-- **Sylvester Koroma** - Requirements Lead - GitHub: ``
-- **Ali Mahdami** - UI/UX Lead - GitHub: `aam232`
-- **Johnny Lam Kwok King** - QA & Testing Lead - GitHub: `johnny371123`
+- **Sylvester Koroma** - UI/UX Lead - GitHub: ``
+- **Ali Mahdami** - Additional Programming & UI/UX Lead - GitHub: `aam232`
+- **Johnny Lam Kwok King** - QA & Testing Lead & Technical Lead- GitHub: `johnny371123`
 
 ## Link to Scrum Board
 
