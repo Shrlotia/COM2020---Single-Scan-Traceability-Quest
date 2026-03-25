@@ -31,18 +31,15 @@ chmod +x run.sh
 export SECRET_KEY="replace-with-a-long-random-value"
 ```
 
-- Run the application
-  `run.sh` will check Python, Node.js, npm, `.venv`, Python packages, Node.js packages, and the frontend bundle. If something is missing, it will install/build it first.
-```./run.sh```
+- Run the application by typing ```./run.sh```. This will check Python, Node.js, npm, `.venv`, Python packages, Node.js packages, and the frontend bundle. If something is missing, it will install/build it first.
 
 - Access the application from your browser by shift-clicking on the ```http://127.0.0.1:8000``` link in the codespace terminal
 
-## How to run the automated tests
+## How to run the automated tests 
 
-- Run the application setup once
-```bash
-./run.sh
-```
+- Make sure you completed all instructions in the above section first
+
+- Stop the application (if you have not already) by pressing ```Ctrl+C```
 
 - If you want to activate the virtual environment manually
 ```bash
@@ -66,7 +63,7 @@ pip install -e ".[test]"
 
 ## How to run the Application (Windows 10 Local)
 
-***Prerequisite**: must have **Python 3.11 (or higher)** and **PIP package installer** installed*
+***Prerequisite**: must have **Python 3.11 (or higher)**, **PIP package installer** and **Node.js 24 (or higher)** installed*
 
 - Move into the root folder of the code repository within the terminal (i.e.: ```cd Downloads\COM2020---Single-Scan-Traceability-Quest-main```)
 
@@ -74,6 +71,17 @@ pip install -e ".[test]"
 ```bat
 set SECRET_KEY=replace-with-a-long-random-value
 ```
+
+- Type in ```run``` or run ```run.bat``` to start the application.
+  This will check Python, Node.js, npm, `.venv`, Python packages, Node.js packages, and the frontend bundle. If something is missing, it will install/build it first.
+
+- You can access the application from your browser by typing ```http://127.0.0.1:8000``` into the address bar in your browser (***Note**: you can exit the application by pressing ```Ctrl+C```*)
+
+## How to run the automated tests 
+
+- Make sure you completed all instructions in the above section first
+
+- Stop the application (if you have not already) by pressing ```Ctrl+C```
 
 - If you want to activate the virtual environment manually in Command Prompt, use:
 ```bat
@@ -85,11 +93,6 @@ call .venv\Scripts\activate.bat
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 .\.venv\Scripts\Activate.ps1
 ```
-
-- Type in ```run``` or run ```run.bat``` to start the application.
-  `run.bat` will check Python, Node.js, npm, `.venv`, Python packages, Node.js packages, and the frontend bundle. If something is missing, it will install/build it first.
-
-- You can access the application from your browser by typing ```http://127.0.0.1:8000``` into the address bar in your browser (***Note**: you can exit the application by pressing ```Ctrl+C```*)
 
 - Run tests after `run.bat` has prepared the environment
 ```bat
